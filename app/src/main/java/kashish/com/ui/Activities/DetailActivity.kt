@@ -15,6 +15,19 @@ class DetailActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detail)
 
+
+
+    }
+
+    private fun getMovie(){
+        movie = intent.getParcelableExtra("movie")
+    }
+    private fun initViews(){
+
+    }
+
+    private fun getMovieDetails(id: Int){
+
     }
 
 }

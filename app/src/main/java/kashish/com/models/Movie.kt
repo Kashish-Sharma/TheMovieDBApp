@@ -9,7 +9,7 @@ import android.os.Parcelable
 /**
  * Created by Kashish on 31-07-2018.
  */
-class Movie{
+class Movie(): Parcelable {
 
     var voteCount: Int? = null
     var id: Int? = null
@@ -27,29 +27,53 @@ class Movie{
     var releaseDate: String? = null
     var contentType: Int? = null
 
-
-    constructor() {}
-
-    constructor(voteCount: Int?, id: Int?, video: Boolean?,
-                voteAverage: Float?, title: String, popularity: Float?,
-                posterPath: String, originalLanguage: String,
-                originalTitle: String, genreIds: List<Int>,
-                backdropPath: String, adult: Boolean?,
-                overview: String, releaseDate: String, contentType: Int) : super() {
-        this.voteCount = voteCount
-        this.id = id
-        this.video = video
-        this.voteAverage = voteAverage
-        this.title = title
-        this.popularity = popularity
-        this.posterPath = posterPath
-        this.originalLanguage = originalLanguage
-        this.originalTitle = originalTitle
-        this.genreIds = genreIds
-        this.backdropPath = backdropPath
-        this.adult = adult
-        this.overview = overview
-        this.releaseDate = releaseDate
-        this.contentType = contentType
+    constructor(parcel: Parcel) : this() {
+        voteCount = parcel.readValue(Int::class.java.classLoader) as? Int
+        id = parcel.readValue(Int::class.java.classLoader) as? Int
+        video = parcel.readValue(Boolean::class.java.classLoader) as? Boolean
+        voteAverage = parcel.readValue(Float::class.java.classLoader) as? Float
+        title = parcel.readString()
+        popularity = parcel.readValue(Float::class.java.classLoader) as? Float
+        posterPath = parcel.readString()
+        originalLanguage = parcel.readString()
+        originalTitle = parcel.readString()
+        backdropPath = parcel.readString()
+        adult = parcel.readValue(Boolean::class.java.classLoader) as? Boolean
+        overview = parcel.readString()
+        releaseDate = parcel.readString()
+        contentType = parcel.readValue(Int::class.java.classLoader) as? Int
     }
+
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeValue(voteCount)
+        parcel.writeValue(id)
+        parcel.writeValue(video)
+        parcel.writeValue(voteAverage)
+        parcel.writeString(title)
+        parcel.writeValue(popularity)
+        parcel.writeString(posterPath)
+        parcel.writeString(originalLanguage)
+        parcel.writeString(originalTitle)
+        parcel.writeString(backdropPath)
+        parcel.writeValue(adult)
+        parcel.writeString(overview)
+        parcel.writeString(releaseDate)
+        parcel.writeValue(contentType)
+    }
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    companion object CREATOR : Creator<Movie> {
+        override fun createFromParcel(parcel: Parcel): Movie {
+            return Movie(parcel)
+        }
+
+        override fun newArray(size: Int): Array<Movie?> {
+            return arrayOfNulls(size)
+        }
+    }
+
+
 }

@@ -35,6 +35,7 @@ class MovieViewHolder(itemView: View?, context:Context, movieList: List<Movie>) 
 
         itemView.setOnClickListener(View.OnClickListener {
             val detailIntent = Intent(context, DetailActivity::class.java)
+            detailIntent.putExtra("movie",movieList.get(adapterPosition))
             context.startActivity(detailIntent)
         })
 
