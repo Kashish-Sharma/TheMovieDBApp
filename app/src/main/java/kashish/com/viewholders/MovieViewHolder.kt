@@ -11,13 +11,13 @@ import kashish.com.R
  * Created by Kashish on 30-07-2018.
  */
 class MovieViewHolder(itemView: View?) : RecyclerView.ViewHolder(itemView) {
-    private lateinit var movieTitle: TextView
-    private lateinit var movieRating: TextView
-    private lateinit var movieType: TextView
-    private lateinit var moviePopularity: TextView
-    private lateinit var movieReleaseDate: TextView
-    private lateinit var moviePoster: ImageView
-    private lateinit var movieDetails: LinearLayout
+    var movieTitle: TextView
+    var movieRating: TextView
+    var movieType: TextView
+    var moviePopularity: TextView
+    var movieReleaseDate: TextView
+    var moviePoster: ImageView
+    var movieDetails: LinearLayout
 
     init{
         movieTitle = itemView!!.findViewById(R.id.single_item_movie_title)

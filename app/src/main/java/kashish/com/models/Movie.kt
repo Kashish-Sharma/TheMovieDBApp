@@ -9,7 +9,7 @@ import android.os.Parcelable
 /**
  * Created by Kashish on 31-07-2018.
  */
-class Result : Parcelable {
+class Movie : Parcelable {
 
 
     var voteCount: Int? = null
@@ -26,6 +26,7 @@ class Result : Parcelable {
     var adult: Boolean? = null
     var overview: String? = null
     var releaseDate: String? = null
+    var contentType: Int? = null
 
     /**
      * No args constructor for use in serialization
@@ -50,7 +51,12 @@ class Result : Parcelable {
      * @param video
      * @param popularity
      */
-    constructor(voteCount: Int?, id: Int?, video: Boolean?, voteAverage: Float?, title: String, popularity: Float?, posterPath: String, originalLanguage: String, originalTitle: String, genreIds: List<Int>, backdropPath: String, adult: Boolean?, overview: String, releaseDate: String) : super() {
+    constructor(voteCount: Int?, id: Int?, video: Boolean?,
+                voteAverage: Float?, title: String, popularity: Float?,
+                posterPath: String, originalLanguage: String,
+                originalTitle: String, genreIds: List<Int>,
+                backdropPath: String, adult: Boolean?,
+                overview: String, releaseDate: String, contentType: Int) : super() {
         this.voteCount = voteCount
         this.id = id
         this.video = video
@@ -65,6 +71,7 @@ class Result : Parcelable {
         this.adult = adult
         this.overview = overview
         this.releaseDate = releaseDate
+        this.contentType = contentType
     }
 
     protected constructor(`in`: Parcel) {
@@ -72,6 +79,11 @@ class Result : Parcelable {
             voteCount = null
         } else {
             voteCount = `in`.readInt()
+        }
+        if (`in`.readByte().toInt() == 0) {
+            contentType = null
+        } else {
+            contentType = `in`.readInt()
         }
         if (`in`.readByte().toInt() == 0) {
             id = null
@@ -139,16 +151,17 @@ class Result : Parcelable {
         parcel.writeByte((if (adult == null) 0 else if (adult as Boolean) 1 else 2).toByte())
         parcel.writeString(overview)
         parcel.writeString(releaseDate)
+        parcel.writeInt(this.contentType!!)
     }
 
     companion object {
 
-        val CREATOR: Creator<Result> = object : Creator<Result> {
-            override fun createFromParcel(`in`: Parcel): Result {
-                return Result(`in`)
+        val CREATOR: Creator<Movie> = object : Creator<Movie> {
+            override fun createFromParcel(`in`: Parcel): Movie {
+                return Movie(`in`)
             }
 
-            override fun newArray(size: Int): Array<Result?> {
+            override fun newArray(size: Int): Array<Movie?> {
                 return arrayOfNulls(size)
             }
         }

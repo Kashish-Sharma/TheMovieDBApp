@@ -10,18 +10,22 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import com.android.volley.Request
 import com.android.volley.Response
-import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.JsonObjectRequest
 
 import kashish.com.R
 import kashish.com.adapters.MovieAdapter
-import kashish.com.models.Result
+import kashish.com.models.Movie
 import kashish.com.singleton.VolleySingleton
+import kashish.com.utils.Constants.Companion.CONTENT_MOVIE
+import kashish.com.utils.Constants.Companion.CONTENT_PROGRESS
 import kashish.com.utils.Urls
 import org.json.JSONArray
 import org.json.JSONObject
+
+
 
 class UpcomingMoviesFragment : Fragment() {
 
@@ -36,7 +40,7 @@ class UpcomingMoviesFragment : Fragment() {
 
     lateinit var mMovieAdapter:MovieAdapter
 
-    var data:MutableList<Result> = mutableListOf()
+    var data:MutableList<Movie> = mutableListOf()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -59,10 +63,25 @@ class UpcomingMoviesFragment : Fragment() {
 
             val jsonArray:JSONArray = response.getJSONArray("results")
 
+            if (jsonArray.length() == 0){
+                //stop call to pagination in any case
+                doPagination = false;
+
+                //show msg no posts
+                if(pageNumber == 1)
+                    Toast.makeText(getContext(),"Something went wrong",Toast.LENGTH_SHORT).show()
+                else
+                {
+                    //to remove progress bar
+                    data.removeAt(data.size-1);
+                    mMovieAdapter.notifyItemRemoved(data.size-1);
+                }
+            }
+
             for (i in 0 until jsonArray.length()) {
                 val jresponse:JSONObject = jsonArray.getJSONObject(i)
 
-                val movie = Result()
+                val movie = Movie()
 
                 movie.voteCount = jresponse.getInt("vote_count")
                 movie.id = jresponse.getInt("id")
@@ -85,12 +104,12 @@ class UpcomingMoviesFragment : Fragment() {
                 movie.adult = jresponse.getBoolean("adult")
                 movie.overview = jresponse.getString("overview")
                 movie.releaseDate = jresponse.getString("release_date")
+                movie.contentType = CONTENT_MOVIE
 
-                Log.i(TAG,movie.title+"\n")
                 data.add(movie)
-                Log.i(TAG,data.size.toString()+"\n")
             }
 
+            addProgressBarInList()
             mMovieAdapter.notifyItemRangeInserted(data.size - jsonArray.length(),jsonArray.length())
 
             if (mSwipeRefreshLayout.isRefreshing())
@@ -145,6 +164,12 @@ class UpcomingMoviesFragment : Fragment() {
                 super.onScrollStateChanged(recyclerView, newState)
             }
         })
+    }
+
+    private fun addProgressBarInList() {
+        val progressBarContent = Movie()
+        progressBarContent.contentType = CONTENT_PROGRESS
+        data.add(progressBarContent)
     }
 }
 

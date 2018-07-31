@@ -35,6 +35,12 @@ class Constants {
         val BASE_URL = "http://api.themoviedb.org/3/"
         val API_KEY = "835f98717b3be44a92f647b5a7bd5510"
         val IMAGE_URL_BASE_PATH = "http://image.tmdb.org/t/p/w342//"
+
+
+
+        //CONTENT_TYPES
+        val CONTENT_MOVIE = 0
+        val CONTENT_PROGRESS = 777
     }
 
 }
