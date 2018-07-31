@@ -12,6 +12,7 @@ import kashish.com.models.Movie
 import kashish.com.utils.Constants.Companion.CONTENT_MOVIE
 import kashish.com.utils.Constants.Companion.getGenre
 import kashish.com.utils.DateUtils
+import kashish.com.utils.Helpers.buildImageUrl
 import kashish.com.utils.Urls.Companion.IMAGE_URL_BASE_PATH
 import kashish.com.viewholders.MovieViewHolder
 import kashish.com.viewholders.ProgressBarViewHolder
@@ -54,7 +55,6 @@ class MovieAdapter(private var movieList: List<Movie>) : Adapter<RecyclerView.Vi
                 val movieViewHolder = holder as MovieViewHolder
                 val movie: Movie = movieList.get(holder.adapterPosition)
                 var movieType = "Genre: "
-                val image_url = IMAGE_URL_BASE_PATH.plus(movie.posterPath)
 
                 movieViewHolder.movieTitle.setText(movie.title)
                 movieViewHolder.movieRating.rating = movie.voteAverage!!.div(2)
@@ -67,7 +67,7 @@ class MovieAdapter(private var movieList: List<Movie>) : Adapter<RecyclerView.Vi
                 }
 
                 movieViewHolder.itemView.single_item_movie_type.setText(movieType)
-                Glide.with(mContext).load(image_url).into(movieViewHolder.moviePoster)
+                Glide.with(mContext).load(buildImageUrl(movie.posterPath!!)).into(movieViewHolder.moviePoster)
             }
 
         }

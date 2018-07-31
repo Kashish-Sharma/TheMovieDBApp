@@ -11,6 +11,7 @@ import android.widget.TextView
 import kashish.com.R
 import kashish.com.models.Movie
 import kashish.com.ui.Activities.DetailActivity
+import kashish.com.utils.Helpers
 
 /**
  * Created by Kashish on 30-07-2018.

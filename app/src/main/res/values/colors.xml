@@ -9,4 +9,6 @@
     <color name="white">#FFF</color>
     <color name="gray">#eee</color>
 
+    <color name="touch_selector">#e0f2f1</color>
+
 </resources>
