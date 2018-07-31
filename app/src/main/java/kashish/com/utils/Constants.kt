@@ -32,9 +32,22 @@ class Constants {
             return genreMap.get(id)!!
         }
 
-        val BASE_URL = "http://api.themoviedb.org/3/"
-        val API_KEY = "835f98717b3be44a92f647b5a7bd5510"
-        val IMAGE_URL_BASE_PATH = "http://image.tmdb.org/t/p/w342//"
+        //upcoming movies json keys
+        val RESULTS = "results"
+        val VOTE_COUNT = "vote_count"
+        val ID = "id"
+        val VIDEO = "video"
+        val VOTE_AVERAGE = "vote_average"
+        val TITLE = "title"
+        val POPULARITY = "popularity"
+        val POSTER_PATH = "poster_path"
+        val ORIGINAL_LANGUAGE = "original_language"
+        val ORIGINAL_TITLE = "original_title"
+        val GENRE_IDS = "genre_ids"
+        val BACKDROP_PATH = "backdrop_path"
+        val ADULT = "adult"
+        val OVERVIEW = "overview"
+        val RELEASE_DATE = "release_date"
 
 
 

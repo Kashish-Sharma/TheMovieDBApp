@@ -40,6 +40,7 @@
             android:paddingTop="5dp">
 
             <TextView
+                android:fontFamily="@font/opensans_semibold"
                 android:id="@+id/single_item_movie_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -50,14 +51,12 @@
                 android:textColor="@color/black"
                 android:textSize="18sp" />
 
-            <TextView
+            <RatingBar
+                style="?android:attr/ratingBarStyleSmall"
+                android:rating="4"
                 android:id="@+id/single_item_movie_rating"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:maxLength="40"
-                android:singleLine="true"
-                android:textSize="12sp" />
+                android:layout_height="wrap_content"/>
 
             <TextView
                 android:id="@+id/single_item_movie_popularity"

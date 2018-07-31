@@ -23,6 +23,12 @@ class DateUtils{
          * Gets timestamp in millis and converts it to HH:mm (e.g. 16:44).
          */
 
+        fun isDateGreaterThanToday(date: String):Boolean{
+            val sdf = SimpleDateFormat("yyyy-MM-dd")
+            val strDate = sdf.parse(date)
+            return System.currentTimeMillis() > strDate.time
+        }
+
         fun getStringDate(date: String): String {
             //String date_ = date;
             val dateArray = date.split("-".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()

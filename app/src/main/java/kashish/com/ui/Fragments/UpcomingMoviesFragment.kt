@@ -19,8 +19,23 @@ import kashish.com.R
 import kashish.com.adapters.MovieAdapter
 import kashish.com.models.Movie
 import kashish.com.singleton.VolleySingleton
+import kashish.com.utils.Constants.Companion.ADULT
+import kashish.com.utils.Constants.Companion.BACKDROP_PATH
 import kashish.com.utils.Constants.Companion.CONTENT_MOVIE
 import kashish.com.utils.Constants.Companion.CONTENT_PROGRESS
+import kashish.com.utils.Constants.Companion.GENRE_IDS
+import kashish.com.utils.Constants.Companion.ID
+import kashish.com.utils.Constants.Companion.ORIGINAL_LANGUAGE
+import kashish.com.utils.Constants.Companion.ORIGINAL_TITLE
+import kashish.com.utils.Constants.Companion.OVERVIEW
+import kashish.com.utils.Constants.Companion.POPULARITY
+import kashish.com.utils.Constants.Companion.POSTER_PATH
+import kashish.com.utils.Constants.Companion.RELEASE_DATE
+import kashish.com.utils.Constants.Companion.RESULTS
+import kashish.com.utils.Constants.Companion.TITLE
+import kashish.com.utils.Constants.Companion.VIDEO
+import kashish.com.utils.Constants.Companion.VOTE_AVERAGE
+import kashish.com.utils.Constants.Companion.VOTE_COUNT
 import kashish.com.utils.Urls
 import org.json.JSONArray
 import org.json.JSONObject
@@ -61,7 +76,10 @@ class UpcomingMoviesFragment : Fragment() {
         val jsonObjectRequest = JsonObjectRequest(Request.Method.GET,
                 Urls.UPCOMING_MOVIES.plus(pageNumber.toString()),null, Response.Listener { response ->
 
-            val jsonArray:JSONArray = response.getJSONArray("results")
+
+            if (!data.isEmpty()) data.removeAt(data.size-1)
+
+            val jsonArray:JSONArray = response.getJSONArray(RESULTS)
 
             if (jsonArray.length() == 0){
                 //stop call to pagination in any case
@@ -83,27 +101,27 @@ class UpcomingMoviesFragment : Fragment() {
 
                 val movie = Movie()
 
-                movie.voteCount = jresponse.getInt("vote_count")
-                movie.id = jresponse.getInt("id")
-                movie.video = jresponse.getBoolean("video")
-                movie.voteAverage = jresponse.getDouble("vote_average").toFloat()
-                movie.title = jresponse.getString("title")
-                movie.popularity = jresponse.getDouble("popularity").toFloat()
-                movie.posterPath = jresponse.getString("poster_path")
-                movie.originalLanguage = jresponse.getString("original_language")
-                movie.originalTitle = jresponse.getString("original_title")
+                movie.voteCount = jresponse.getInt(VOTE_COUNT)
+                movie.id = jresponse.getInt(ID)
+                movie.video = jresponse.getBoolean(VIDEO)
+                movie.voteAverage = jresponse.getDouble(VOTE_AVERAGE).toFloat()
+                movie.title = jresponse.getString(TITLE)
+                movie.popularity = jresponse.getDouble(POPULARITY).toFloat()
+                movie.posterPath = jresponse.getString(POSTER_PATH)
+                movie.originalLanguage = jresponse.getString(ORIGINAL_LANGUAGE)
+                movie.originalTitle = jresponse.getString(ORIGINAL_TITLE)
 
-                val array:JSONArray = jresponse.getJSONArray("genre_ids")
+                val array:JSONArray = jresponse.getJSONArray(GENRE_IDS)
                 val genreList:MutableList<Int> = mutableListOf()
                 for (j in 0 until array.length()) {
                     genreList.add(array.getInt(j))
                 }
 
                 movie.genreIds = genreList
-                movie.backdropPath = jresponse.getString("backdrop_path")
-                movie.adult = jresponse.getBoolean("adult")
-                movie.overview = jresponse.getString("overview")
-                movie.releaseDate = jresponse.getString("release_date")
+                movie.backdropPath = jresponse.getString(BACKDROP_PATH)
+                movie.adult = jresponse.getBoolean(ADULT)
+                movie.overview = jresponse.getString(OVERVIEW)
+                movie.releaseDate = jresponse.getString(RELEASE_DATE)
                 movie.contentType = CONTENT_MOVIE
 
                 data.add(movie)
@@ -133,6 +151,9 @@ class UpcomingMoviesFragment : Fragment() {
         mMovieAdapter.notifyItemRangeRemoved(0, size)
     }
     private fun initRecyclerView() {
+
+        addProgressBarInList()
+
         mLinearLayoutManager = LinearLayoutManager(context)
         mRecyclerView.setLayoutManager(mLinearLayoutManager)
 
@@ -165,7 +186,6 @@ class UpcomingMoviesFragment : Fragment() {
             }
         })
     }
-
     private fun addProgressBarInList() {
         val progressBarContent = Movie()
         progressBarContent.contentType = CONTENT_PROGRESS

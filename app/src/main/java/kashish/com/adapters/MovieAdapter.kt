@@ -10,9 +10,9 @@ import com.bumptech.glide.Glide
 import kashish.com.R
 import kashish.com.models.Movie
 import kashish.com.utils.Constants.Companion.CONTENT_MOVIE
-import kashish.com.utils.Constants.Companion.IMAGE_URL_BASE_PATH
 import kashish.com.utils.Constants.Companion.getGenre
 import kashish.com.utils.DateUtils
+import kashish.com.utils.Urls.Companion.IMAGE_URL_BASE_PATH
 import kashish.com.viewholders.MovieViewHolder
 import kashish.com.viewholders.ProgressBarViewHolder
 import kotlinx.android.synthetic.main.movie_single_item.view.*
@@ -34,7 +34,7 @@ class MovieAdapter(private var movieList: List<Movie>) : Adapter<RecyclerView.Vi
             CONTENT_MOVIE -> {
                 view = LayoutInflater.from(parent.context)
                         .inflate(R.layout.movie_single_item, parent, false)
-                return MovieViewHolder(view)
+                return MovieViewHolder(view,mContext, movieList)
             }
 
             else -> {
@@ -57,7 +57,7 @@ class MovieAdapter(private var movieList: List<Movie>) : Adapter<RecyclerView.Vi
                 val image_url = IMAGE_URL_BASE_PATH.plus(movie.posterPath)
 
                 movieViewHolder.movieTitle.setText(movie.title)
-                movieViewHolder.movieRating.setText("Rating: ".plus(movie.voteAverage.toString()))
+                movieViewHolder.movieRating.rating = movie.voteAverage!!.div(2)
                 movieViewHolder.moviePopularity.setText("Popularity: ".plus(movie.popularity.toString()))
                 movieViewHolder.movieReleaseDate.setText("Release date: ".plus(DateUtils.getStringDate(movie.releaseDate!!)))
 
