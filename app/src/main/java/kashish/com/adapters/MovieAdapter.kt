@@ -1,12 +1,15 @@
 package kashish.com.adapters
 
 import android.content.Context
+import android.graphics.BlurMaskFilter
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.Adapter
 import android.view.ViewGroup
 import android.view.LayoutInflater
 import android.view.View
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import kashish.com.R
 import kashish.com.models.Movie
 import kashish.com.utils.Constants.Companion.CONTENT_MOVIE
@@ -67,7 +70,7 @@ class MovieAdapter(private var movieList: List<Movie>) : Adapter<RecyclerView.Vi
                 }
 
                 movieViewHolder.itemView.single_item_movie_type.setText(movieType)
-                Glide.with(mContext).load(buildImageUrl(movie.posterPath!!)).into(movieViewHolder.moviePoster)
+                Glide.with(mContext).load(buildImageUrl(movie.posterPath!!)).transition(withCrossFade()).into(movieViewHolder.moviePoster)
             }
 
         }
