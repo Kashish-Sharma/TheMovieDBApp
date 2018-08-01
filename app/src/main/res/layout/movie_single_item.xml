@@ -60,6 +60,7 @@
                 android:layout_height="wrap_content"/>
 
             <TextView
+                android:fontFamily="@font/open_sans_regular"
                 android:id="@+id/single_item_movie_popularity"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -69,6 +70,7 @@
                 android:textSize="12sp" />
 
             <TextView
+                android:fontFamily="@font/open_sans_regular"
                 android:id="@+id/single_item_movie_type"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -78,6 +80,7 @@
                 android:textSize="12sp" />
 
             <TextView
+                android:fontFamily="@font/open_sans_regular"
                 android:id="@+id/single_item_movie_release_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

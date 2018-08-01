@@ -36,7 +36,8 @@ class DateUtils{
             try {
                 val mDate = sdf.parse(date)
                 val timeInMilliseconds = mDate.time
-                return formatDate(timeInMilliseconds) + ", " + dateArray[0]
+                val dateString = formatDate(timeInMilliseconds).split(" ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+                return dateString[0].substring(0,3) + " " + dateString[1] + ", " + dateArray[0]
             } catch (e: ParseException) {
                 // TODO Auto-generated catch block
                 e.printStackTrace()

@@ -10,6 +10,7 @@ import kashish.com.adapters.MovieViewPagerAdapter
 import kashish.com.ui.Fragments.DiscoverMoviesFragment
 import kashish.com.ui.Fragments.TopRatedMoviesFragment
 import kashish.com.ui.Fragments.UpcomingMoviesFragment
+import kashish.com.utils.Helpers
 
 class MoviesActivity : AppCompatActivity() {
 

@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3cb371</color>
-    <color name="colorPrimaryDark">#2e8b57</color>
-    <color name="colorAccent">#ff5722</color>
+    <color name="colorPrimary">#000</color>
+    <color name="colorPrimaryDark">#000</color>
+    <color name="colorAccent">#3cb371</color>
 
-    <color name="background">#b2dfdb</color>
+    <color name="background">#EFF0EB</color>
     <color name="black">#000</color>
     <color name="white">#FFF</color>
     <color name="gray">#eee</color>
+
+    <color name="bg_dark">#E4E4E2</color>
 
     <color name="touch_selector">#e0f2f1</color>
 
