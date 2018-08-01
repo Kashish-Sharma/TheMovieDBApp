@@ -65,12 +65,13 @@ class MovieAdapter(private var movieList: List<Movie>) : Adapter<RecyclerView.Vi
                 movieViewHolder.movieReleaseDate.setText("Release date: ".plus(DateUtils.getStringDate(movie.releaseDate!!)))
 
                 for (i in movie.genreIds!!) {
-                    if (i == movie.genreIds!!.size-1) movieType += getGenre(i)
+                    if (i == movie.genreIds!!.last()) movieType += getGenre(i)
                     else movieType += getGenre(i) + ", "
                 }
 
                 movieViewHolder.itemView.single_item_movie_type.setText(movieType)
-                Glide.with(mContext).load(buildImageUrl(movie.posterPath!!)).transition(withCrossFade()).into(movieViewHolder.moviePoster)
+                Glide.with(mContext).load(buildImageUrl(movie.posterPath!!))
+                        .transition(withCrossFade()).into(movieViewHolder.moviePoster)
             }
 
         }

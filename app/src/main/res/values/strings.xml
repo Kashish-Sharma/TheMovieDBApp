@@ -7,4 +7,5 @@
     <string name="detail_backdrop_image">detail backdrop image</string>
     <string name="detail_movie_poster_image">detail movie poster image</string>
     <string name="activity_detail_poster_image">activity_detail_poster_image</string>
+    <string name="overview">OVERVIEW</string>
 </resources>

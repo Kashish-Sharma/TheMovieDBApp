@@ -7,16 +7,24 @@ import android.support.design.widget.CollapsingToolbarLayout
 import android.support.v4.widget.NestedScrollView
 import android.support.v7.app.ActionBar
 import android.support.v7.widget.Toolbar
+import android.util.Log
 import android.view.MenuItem
 import android.widget.ImageView
+import android.widget.RatingBar
 import android.widget.TextView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import kashish.com.R
 import kashish.com.models.Movie
+import kashish.com.utils.Constants
+import kashish.com.utils.Constants.Companion.getGenre
 import kashish.com.utils.DateUtils
 import kashish.com.utils.Helpers.buildBackdropImageUrl
 import kashish.com.utils.Helpers.buildImageUrl
 import kashish.com.utils.Helpers.setUpTransparentStatusBar
+import java.nio.file.Files.size
+
+
 
 
 class DetailActivity : AppCompatActivity() {
@@ -37,9 +45,17 @@ class DetailActivity : AppCompatActivity() {
 
     //Nested scroll view
     private lateinit var mNestedScrollView: NestedScrollView
+
+    //Ratings
     private lateinit var mAdult: TextView
     private lateinit var mVoteAvg: TextView
     private lateinit var mVotes: TextView
+
+    //Overview
+    private lateinit var mDetailOverView: TextView
+    private lateinit var mDetailGenre: TextView
+    private var movieGenre: String = ""
+    private lateinit var mDetailRatingBar: RatingBar
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,16 +65,21 @@ class DetailActivity : AppCompatActivity() {
         setContentView(R.layout.activity_detail)
 
         getMovie()
+        getGenre()
         initToolBar()
         setupCollapsingToolbar()
 
         initViews()
         setRatingsData()
+        setOverViewData()
 
     }
 
     private fun getMovie(){
         movie = intent.getParcelableExtra("movie")
+    }
+    private fun getGenre(){
+        movieGenre = intent.getStringExtra("genre")
     }
     private fun initToolBar(){
         mCollapsingToolbar = findViewById(R.id.activity_detail_collapsing_layout)
@@ -75,8 +96,10 @@ class DetailActivity : AppCompatActivity() {
         mActionBar.setDisplayHomeAsUpEnabled(true)
     }
     private fun setupCollapsingToolbar(){
-        Glide.with(this).load(buildBackdropImageUrl(movie.backdropPath!!)).into(mBackdropImageView)
-        Glide.with(this).load(buildImageUrl(movie.posterPath!!)).into(mToolbarMoviePoster)
+        Glide.with(this).load(buildBackdropImageUrl(movie.backdropPath!!))
+                .transition(DrawableTransitionOptions.withCrossFade()).into(mBackdropImageView)
+        Glide.with(this).load(buildImageUrl(movie.posterPath!!))
+                .transition(DrawableTransitionOptions.withCrossFade()).into(mToolbarMoviePoster)
         mToolbarMovieTitle.setText(movie.title)
         mToolbarMovieDate.setText(DateUtils.getStringDate(movie.releaseDate!!))
     }
@@ -96,6 +119,11 @@ class DetailActivity : AppCompatActivity() {
         mAdult = findViewById(R.id.activity_detail_adult)
         mVoteAvg = findViewById(R.id.activity_detail_vote_average)
         mVotes = findViewById(R.id.activity_detail_vote_count)
+
+        mDetailOverView = findViewById(R.id.activity_detail_overview)
+        mDetailGenre = findViewById(R.id.activity_detail_genre)
+        mDetailRatingBar = findViewById(R.id.activity_detail_rating_bar)
+        mDetailRatingBar.numStars = 5
     }
 
     private fun setRatingsData(){
@@ -104,11 +132,15 @@ class DetailActivity : AppCompatActivity() {
 
         mVoteAvg.setText("rating: "+movie.voteAverage.toString()+"/10")
 
-
-
-        if (movie.voteCount!! >= 1000) mVotes.setText("votes: "+("%.2f".format(movie.voteCount!!.toFloat().div(1000))).toString()+"k")
+        if (movie.voteCount!! >= 1000) mVotes.setText("votes: "+("%.2f".format(movie.voteCount!!.toFloat().div(1000)))+"k")
         else mVotes.setText("votes: "+movie.voteCount.toString())
 
+    }
+
+    private fun setOverViewData(){
+        mDetailOverView.setText(movie.overview)
+        mDetailGenre.setText(movieGenre)
+        mDetailRatingBar.rating = movie.voteAverage!!.div(2)
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {

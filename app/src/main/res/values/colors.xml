@@ -7,9 +7,13 @@
     <color name="background">#EFF0EB</color>
     <color name="black">#000</color>
     <color name="white">#FFF</color>
-    <color name="gray">#eee</color>
+    <color name="gray">#bdbdbd</color>
 
     <color name="bg_dark">#E4E4E2</color>
+
+    <color name="dark_gray">#757575</color>
+    <color name="dark_dark_gray">#424242</color>
+
 
     <color name="touch_selector">#e0f2f1</color>
 

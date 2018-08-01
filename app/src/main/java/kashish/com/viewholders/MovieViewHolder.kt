@@ -11,6 +11,7 @@ import android.widget.TextView
 import kashish.com.R
 import kashish.com.models.Movie
 import kashish.com.ui.Activities.DetailActivity
+import kashish.com.utils.Constants
 import kashish.com.utils.Helpers
 
 /**
@@ -35,8 +36,17 @@ class MovieViewHolder(itemView: View?, context:Context, movieList: List<Movie>) 
         movieDetails = itemView.findViewById(R.id.single_item_movie_details)
 
         itemView.setOnClickListener(View.OnClickListener {
+
+            val movie: Movie = movieList.get(adapterPosition)
+            var movieType = ""
+            for (i in movie.genreIds!!) {
+                if (i == movie.genreIds!!.last()) movieType += Constants.getGenre(i)
+                else movieType += Constants.getGenre(i) + ", "
+            }
+
             val detailIntent = Intent(context, DetailActivity::class.java)
-            detailIntent.putExtra("movie",movieList.get(adapterPosition))
+            detailIntent.putExtra("movie",movie)
+            detailIntent.putExtra("genre",movieType)
             context.startActivity(detailIntent)
         })
 
