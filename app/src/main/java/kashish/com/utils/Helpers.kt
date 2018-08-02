@@ -38,6 +38,9 @@ object Helpers {
         return MOVIE_DETAILS_BASE_URL + movieId + "?api_key=" + TMDB_API_KEY
     }
 
+    fun buildMovieReviewUrl(movieId: String, pageNumber: Int): String {
+        return MOVIE_DETAILS_BASE_URL + movieId + "/reviews?api_key=" + TMDB_API_KEY + "&language=en-US&page=" + pageNumber
+    }
 
     fun handleViewHideOnScroll(view: View, dy: Int, maxTranslation: Float) {
         val translationY = view.translationY

@@ -8,4 +8,7 @@
     <string name="detail_movie_poster_image">detail movie poster image</string>
     <string name="activity_detail_poster_image">activity_detail_poster_image</string>
     <string name="overview">OVERVIEW</string>
+    <string name="budget_k">budget: $---k</string>
+    <string name="runtime_mins">runtime: ---mins</string>
+    <string name="read_more">read more</string>
 </resources>
