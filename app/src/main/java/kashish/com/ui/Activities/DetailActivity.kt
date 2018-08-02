@@ -11,10 +11,8 @@ import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.view.MenuItem
-import android.widget.ImageView
-import android.widget.RatingBar
-import android.widget.TextView
-import android.widget.Toast
+import android.view.View
+import android.widget.*
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
@@ -37,6 +35,9 @@ import kashish.com.utils.Helpers.buildMovieReviewUrl
 import kashish.com.utils.Helpers.setUpTransparentStatusBar
 import org.json.JSONArray
 import org.json.JSONObject
+import android.support.design.widget.BottomSheetDialog
+
+
 
 
 class DetailActivity : AppCompatActivity() {
@@ -74,10 +75,11 @@ class DetailActivity : AppCompatActivity() {
     //Reviews
     private var pageNumber:Int = 1
     private var doPagination:Boolean = true
-    lateinit var mReviewAdapter: MovieReviewAdapter
+    lateinit var mReviewReviewAdapter: MovieReviewAdapter
     var data:MutableList<MovieReview> = mutableListOf()
-    private lateinit var mRecyclerView : RecyclerView
+    private lateinit var mReviewRecyclerView : RecyclerView
     private lateinit var mLinearLayoutManager : LinearLayoutManager
+    private lateinit var mReviewProgressBar : ProgressBar
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -92,7 +94,9 @@ class DetailActivity : AppCompatActivity() {
         setupCollapsingToolbar()
 
         initViews()
+        initRecyclerView()
         fetchMovieDetails()
+        fetchMovieReviews()
         setRatingsData()
         setOverViewData()
 
@@ -151,17 +155,17 @@ class DetailActivity : AppCompatActivity() {
         mRunTimeTextView = findViewById(R.id.activity_detail_movie_run_time)
         mBudgetTextView = findViewById(R.id.activity_detail_movie_budget)
 
-        mRecyclerView = findViewById(R.id.activity_detail_review_recycler_view)
+        mReviewRecyclerView = findViewById(R.id.activity_detail_review_recycler_view)
+        mReviewProgressBar = findViewById(R.id.activity_detail_review_progress_bar)
     }
     private fun initRecyclerView(){
-        addProgressBarInList()
         mLinearLayoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-        mRecyclerView.setLayoutManager(mLinearLayoutManager)
-        mReviewAdapter = MovieReviewAdapter(data)
-        mRecyclerView.setAdapter(mReviewAdapter)
+        mReviewRecyclerView.setLayoutManager(mLinearLayoutManager)
+        mReviewReviewAdapter = MovieReviewAdapter(data)
+        mReviewRecyclerView.setAdapter(mReviewReviewAdapter)
     }
     private fun setRatingsData(){
-        if (movie.adult!!) mAdult.setText("adult: false")
+        if (movie.adult!!) mAdult.setText("adult: true")
         else mAdult.setText("adult: false")
 
         mVoteAvg.setText("rating: "+movie.voteAverage.toString()+"/10")
@@ -190,11 +194,6 @@ class DetailActivity : AppCompatActivity() {
             return true
         }
         return super.onOptionsItemSelected(item)
-    }
-    private fun addProgressBarInList() {
-        val progressBarContent = MovieReview()
-        progressBarContent.contentType = Constants.CONTENT_PROGRESS
-        data.add(progressBarContent)
     }
     private fun fetchMovieDetails(){
 
@@ -230,28 +229,17 @@ class DetailActivity : AppCompatActivity() {
         val jsonObjectRequest = JsonObjectRequest(Request.Method.GET,
                 buildMovieReviewUrl(movie.id.toString(), pageNumber),null, Response.Listener { response ->
 
-
-            if (!data.isEmpty()) data.removeAt(data.size-1)
-
             val jsonArray: JSONArray = response.getJSONArray(RESULTS)
 
             if (jsonArray.length() == 0){
                 //stop call to pagination in any case
-                doPagination = false;
-
-                //show msg no posts
-                if(pageNumber == 1)
-                    Toast.makeText(this,"Something went wrong",Toast.LENGTH_SHORT).show()
-                else
-                {
-                    //to remove progress bar
-                    data.removeAt(data.size-1);
-                    mReviewAdapter.notifyItemRemoved(data.size-1);
-                }
+                doPagination = false
+                mReviewProgressBar.visibility = View.GONE
             }
 
             for (i in 0 until jsonArray.length()) {
                 val jresponse: JSONObject = jsonArray.getJSONObject(i)
+                Log.i("asasasas",jresponse.toString()+" is the jresponse")
 
                 val review = MovieReview()
 
@@ -264,9 +252,9 @@ class DetailActivity : AppCompatActivity() {
                 data.add(review)
             }
 
-            addProgressBarInList()
-            mReviewAdapter.notifyItemRangeInserted(data.size - jsonArray.length(),jsonArray.length())
+            mReviewReviewAdapter.notifyItemRangeInserted(data.size - jsonArray.length(),jsonArray.length())
 
+            mReviewProgressBar.visibility = View.GONE
 
         }, Response.ErrorListener { error ->
             Log.i(TAG,error.message)

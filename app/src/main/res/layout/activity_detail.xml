@@ -100,7 +100,8 @@
                 app:contentInsetLeft="0dp"
                 app:contentInsetStart="0dp"
                 app:layout_collapseMode="pin"
-                app:title=" "></android.support.v7.widget.Toolbar>
+                app:title=" ">
+            </android.support.v7.widget.Toolbar>
 
         </android.support.design.widget.CollapsingToolbarLayout>
 
@@ -108,6 +109,7 @@
 
 
     <android.support.v4.widget.NestedScrollView
+        android:layout_marginTop="16dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
@@ -179,7 +181,7 @@
                 android:gravity="bottom"
                 android:text="@string/overview"
                 android:textColor="@color/dark_gray"
-                android:textSize="12dp"
+                android:textSize="12sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/activity_detail_ratings_linear_layout"
@@ -191,6 +193,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp"
                 android:background="@color/white"
                 android:orientation="vertical"
                 android:showDividers="end"
@@ -288,14 +291,43 @@
                     android:background="@color/bg_dark" />
             </LinearLayout>
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/activity_detail_review_recycler_view"
+            <TextView
+                android:id="@+id/activity_detail_review_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/opensans_semibold"
+                android:gravity="bottom"
+                android:text="@string/reviews"
+                android:textColor="@color/dark_gray"
+                android:textSize="12sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/activity_detail_overview_linear_layout">
-            </android.support.v7.widget.RecyclerView>
+                app:layout_constraintTop_toBottomOf="@+id/activity_detail_overview_linear_layout" />
+
+            <RelativeLayout
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/activity_detail_review_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <android.support.v7.widget.RecyclerView
+                    android:layout_toStartOf="@+id/activity_detail_review_progress_bar"
+                    android:id="@+id/activity_detail_review_recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                </android.support.v7.widget.RecyclerView>
+                <ProgressBar
+                    android:indeterminate="true"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentEnd="true"
+                    android:id="@+id/activity_detail_review_progress_bar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </RelativeLayout>
+
+
 
 
         </android.support.constraint.ConstraintLayout>

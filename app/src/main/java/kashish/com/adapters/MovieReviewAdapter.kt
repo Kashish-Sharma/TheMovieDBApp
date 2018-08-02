@@ -2,6 +2,7 @@ package kashish.com.adapters
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,37 +24,23 @@ class MovieReviewAdapter(private var reviewList: List<MovieReview>) : RecyclerVi
         val view: View
         mContext = parent.context
 
-        when(viewType){
-            CONTENT_REVIEW -> {
-                view = LayoutInflater.from(parent.context)
-                        .inflate(R.layout.review_single_item, parent, false)
-                return ReviewViewHolder(view,mContext)
-            }
-
-            else -> {
-                view = LayoutInflater.from(parent.context)
-                        .inflate(R.layout.recycler_view_progress_loader, parent, false);
-                return ProgressBarViewHolder(view);
-            }
-
-        }
+        view = LayoutInflater.from(parent.context)
+                .inflate(R.layout.review_single_item, parent, false)
+        return ReviewViewHolder(view,mContext)
 
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
-        when(holder.itemViewType){
-            CONTENT_REVIEW -> {
+                val reviewViewHolder = holder as ReviewViewHolder
+                val review: MovieReview = reviewList.get(holder.adapterPosition)
 
-            }
+                reviewViewHolder.mReviewAuthor.setText(review.author)
+                reviewViewHolder.mReviewContent.setText(review.content)
 
-        }
+                reviewViewHolder.mReadMoreButton.setOnClickListener(View.OnClickListener {
 
-    }
-
-
-    override fun getItemViewType(position: Int): Int {
-        return reviewList.get(position).contentType
+                })
     }
 
     override fun getItemCount(): Int = reviewList.size

@@ -1,54 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView style="@style/CardView.Light"
+<android.support.v7.widget.CardView
+    android:layout_marginBottom="12dp"
+    android:layout_marginStart="12dp"
+    android:layout_marginEnd="12dp"
+    android:layout_marginTop="8dp"
+    style="@style/CardView.Light"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="300dp"
+    android:layout_width="200dp"
     android:layout_height="150dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/contentConstraintLayout"
+    <RelativeLayout
+        android:id="@+id/review_content_relative_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="invisible">
+        android:layout_height="match_parent">
 
         <TextView
-            android:id="@+id/authorNameTextView"
-            android:layout_width="0dp"
+            android:id="@+id/review_author_name"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:textColor="@android:color/white"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="12dp"
+            android:textColor="@color/dark_dark_gray"
             android:textSize="16sp"
-            android:textStyle="bold"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             tools:text="Frank Ochieng" />
 
         <TextView
-            android:id="@+id/contentTextView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:maxLines="4"
-            android:ellipsize="end"
-            android:textColor="@color/dark_dark_gray"
-            app:layout_constraintLeft_toLeftOf="@id/authorNameTextView"
-            app:layout_constraintRight_toRightOf="@id/authorNameTextView"
-            app:layout_constraintTop_toBottomOf="@id/authorNameTextView"
-            tools:text="@tools:sample/lorem/random" />
-
-        <Button
-            android:id="@+id/readMoreButton"
-            style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
+            android:gravity="start"
+            android:layout_below="@+id/review_author_name"
+            android:id="@+id/review_content"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:maxLines="4"
+            android:ellipsize="end"
+            android:fontFamily="@font/open_sans_regular"
+            android:textColor="@color/dark_gray"
+            app:layout_constraintLeft_toLeftOf="@id/review_author_name"
+            app:layout_constraintRight_toRightOf="@id/review_author_name"
+            app:layout_constraintTop_toBottomOf="@id/review_author_name"
+            tools:text="@tools:sample/lorem/random" />
+
+        <TextView
+            android:id="@+id/review_read_more"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/review_content"
+            android:layout_below="@+id/review_content"
+            android:layout_marginEnd="8dp"
+            android:gravity="center"
             android:text="@string/read_more"
             android:textAllCaps="false"
             android:textColor="@color/colorAccent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/contentTextView" />
+            app:layout_constraintTop_toBottomOf="@id/review_content" />
 
-    </android.support.constraint.ConstraintLayout>
+    </RelativeLayout>
 
 </android.support.v7.widget.CardView>
