@@ -48,6 +48,7 @@ class Constants {
         val ADULT = "adult"
         val OVERVIEW = "overview"
         val RELEASE_DATE = "release_date"
+        val TOTAL_PAGES = "total_pages"
 
 
 

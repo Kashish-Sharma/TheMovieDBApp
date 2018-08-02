@@ -33,21 +33,9 @@ class MovieAdapter(private var movieList: List<Movie>) : Adapter<RecyclerView.Vi
 
         val view: View
         mContext = parent.context
-
-        when(viewType){
-            CONTENT_MOVIE -> {
-                view = LayoutInflater.from(parent.context)
-                        .inflate(R.layout.movie_single_item, parent, false)
-                return MovieViewHolder(view,mContext, movieList)
-            }
-
-            else -> {
-                view = LayoutInflater.from(parent.context)
-                        .inflate(R.layout.recycler_view_progress_loader, parent, false);
-                return ProgressBarViewHolder(view);
-            }
-
-        }
+        view = LayoutInflater.from(parent.context)
+                .inflate(R.layout.movie_single_item, parent, false)
+        return MovieViewHolder(view,mContext, movieList)
 
     }
 
@@ -76,11 +64,6 @@ class MovieAdapter(private var movieList: List<Movie>) : Adapter<RecyclerView.Vi
 
         }
 
-    }
-
-
-    override fun getItemViewType(position: Int): Int {
-        return movieList.get(position).contentType!!
     }
 
     override fun getItemCount(): Int = movieList.size

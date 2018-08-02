@@ -8,6 +8,7 @@ import android.os.Build
 import android.view.MotionEvent
 import android.view.View
 import android.view.Window
+import kashish.com.utils.DateUtils.Companion.getDateFromEpoch
 import kashish.com.utils.Urls.Companion.MOVIE_DETAILS_BASE_URL
 import kashish.com.utils.Urls.Companion.TMDB_API_KEY
 import java.text.ParseException
@@ -17,6 +18,11 @@ import java.text.SimpleDateFormat
  * Created by Kashish on 01-08-2018.
  */
 object Helpers {
+
+    fun buildUpcomingMoviesUrl(pageNumber: Int, adult: String = "true"): String{
+        return "https://api.themoviedb.org/3/movie/upcoming?api_key="+ TMDB_API_KEY+
+                "&language=en-US"+"&page="+pageNumber+"&region=IN|US&with_release_type=2|3"
+    }
 
     fun buildImageUrl(path: String): String {
         return "http://image.tmdb.org/t/p/w342" + path

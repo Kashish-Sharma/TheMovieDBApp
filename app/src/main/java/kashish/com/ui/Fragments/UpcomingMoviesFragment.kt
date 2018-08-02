@@ -2,6 +2,7 @@ package kashish.com.ui.Fragments
 
 
 import android.os.Bundle
+import android.os.Handler
 import android.support.v4.app.Fragment
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.LinearLayoutManager
@@ -10,6 +11,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AbsListView
+import android.widget.ProgressBar
 import android.widget.Toast
 import com.android.volley.Request
 import com.android.volley.Response
@@ -33,10 +36,11 @@ import kashish.com.utils.Constants.Companion.POSTER_PATH
 import kashish.com.utils.Constants.Companion.RELEASE_DATE
 import kashish.com.utils.Constants.Companion.RESULTS
 import kashish.com.utils.Constants.Companion.TITLE
+import kashish.com.utils.Constants.Companion.TOTAL_PAGES
 import kashish.com.utils.Constants.Companion.VIDEO
 import kashish.com.utils.Constants.Companion.VOTE_AVERAGE
 import kashish.com.utils.Constants.Companion.VOTE_COUNT
-import kashish.com.utils.Urls
+import kashish.com.utils.Helpers.buildUpcomingMoviesUrl
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -49,18 +53,21 @@ class UpcomingMoviesFragment : Fragment() {
     private lateinit var mRecyclerView : RecyclerView
     private lateinit var mLinearLayoutManager : LinearLayoutManager
     private lateinit var mSwipeRefreshLayout : SwipeRefreshLayout
+    private lateinit var mProgressBar : ProgressBar
 
     private var pageNumber:Int = 1
     private var doPagination:Boolean = true
+    private var isScrolling:Boolean = false
+    private  var currentItem:Int = -1
+    private  var totalItem:Int = -1
+    private  var scrolledOutItem:Int = -1
 
     lateinit var mMovieAdapter:MovieAdapter
-
     var data:MutableList<Movie> = mutableListOf()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         mMainView =  inflater.inflate(R.layout.fragment_upcoming_movies, container, false)
-
 
         initViews()
         fetchData()
@@ -68,32 +75,23 @@ class UpcomingMoviesFragment : Fragment() {
         setSwipeRefreshLayoutListener()
         setRecyclerViewScrollListener()
 
-
         return mMainView
     }
 
     private fun fetchData(){
         val jsonObjectRequest = JsonObjectRequest(Request.Method.GET,
-                Urls.UPCOMING_MOVIES.plus(pageNumber.toString()),null, Response.Listener { response ->
-
-
-            if (!data.isEmpty()) data.removeAt(data.size-1)
+                buildUpcomingMoviesUrl(pageNumber),null, Response.Listener { response ->
 
             val jsonArray:JSONArray = response.getJSONArray(RESULTS)
 
             if (jsonArray.length() == 0){
                 //stop call to pagination in any case
-                doPagination = false;
+                doPagination = false
+                mProgressBar.visibility = View.GONE
 
                 //show msg no posts
                 if(pageNumber == 1)
                     Toast.makeText(getContext(),"Something went wrong",Toast.LENGTH_SHORT).show()
-                else
-                {
-                    //to remove progress bar
-                    data.removeAt(data.size-1);
-                    mMovieAdapter.notifyItemRemoved(data.size-1);
-                }
             }
 
             for (i in 0 until jsonArray.length()) {
@@ -101,34 +99,36 @@ class UpcomingMoviesFragment : Fragment() {
 
                 val movie = Movie()
 
-                movie.voteCount = jresponse.getInt(VOTE_COUNT)
-                movie.id = jresponse.getInt(ID)
-                movie.video = jresponse.getBoolean(VIDEO)
-                movie.voteAverage = jresponse.getDouble(VOTE_AVERAGE).toFloat()
-                movie.title = jresponse.getString(TITLE)
-                movie.popularity = jresponse.getDouble(POPULARITY).toFloat()
-                movie.posterPath = jresponse.getString(POSTER_PATH)
-                movie.originalLanguage = jresponse.getString(ORIGINAL_LANGUAGE)
-                movie.originalTitle = jresponse.getString(ORIGINAL_TITLE)
+                    movie.totalPages = response.getInt(TOTAL_PAGES)
+                    movie.voteCount = jresponse.getInt(VOTE_COUNT)
+                    movie.id = jresponse.getInt(ID)
+                    movie.video = jresponse.getBoolean(VIDEO)
+                    movie.voteAverage = jresponse.getDouble(VOTE_AVERAGE).toFloat()
+                    movie.title = jresponse.getString(TITLE)
+                    movie.popularity = jresponse.getDouble(POPULARITY).toFloat()
+                    movie.posterPath = jresponse.getString(POSTER_PATH)
+                    movie.originalLanguage = jresponse.getString(ORIGINAL_LANGUAGE)
+                    movie.originalTitle = jresponse.getString(ORIGINAL_TITLE)
 
-                val array:JSONArray = jresponse.getJSONArray(GENRE_IDS)
-                val genreList:MutableList<Int> = mutableListOf()
-                for (j in 0 until array.length()) {
-                    genreList.add(array.getInt(j))
-                }
+                    val array: JSONArray = jresponse.getJSONArray(GENRE_IDS)
+                    val genreList: MutableList<Int> = mutableListOf()
+                    for (j in 0 until array.length()) {
+                        genreList.add(array.getInt(j))
+                    }
 
-                movie.genreIds = genreList
-                movie.backdropPath = jresponse.getString(BACKDROP_PATH)
-                movie.adult = jresponse.getBoolean(ADULT)
-                movie.overview = jresponse.getString(OVERVIEW)
-                movie.releaseDate = jresponse.getString(RELEASE_DATE)
-                movie.contentType = CONTENT_MOVIE
+                    movie.genreIds = genreList
+                    movie.backdropPath = jresponse.getString(BACKDROP_PATH)
+                    movie.adult = jresponse.getBoolean(ADULT)
+                    movie.overview = jresponse.getString(OVERVIEW)
+                    movie.releaseDate = jresponse.getString(RELEASE_DATE)
+                    movie.contentType = CONTENT_MOVIE
 
-                data.add(movie)
+                    data.add(movie)
             }
 
-            addProgressBarInList()
-            mMovieAdapter.notifyItemRangeInserted(data.size - jsonArray.length(),jsonArray.length())
+                mMovieAdapter.notifyItemRangeInserted(data.size - jsonArray.length(),jsonArray.length())
+
+                mProgressBar.visibility = View.GONE
 
             if (mSwipeRefreshLayout.isRefreshing())
                 mSwipeRefreshLayout.setRefreshing(false)
@@ -139,10 +139,16 @@ class UpcomingMoviesFragment : Fragment() {
 
         VolleySingleton.getInstance(this.context!!).addToRequestQueue(jsonObjectRequest)
     }
-
+    private fun delayByfewSeconds(){
+        val handler = Handler()
+        handler.postDelayed(Runnable {
+            fetchData()
+        }, 2000)
+    }
     private fun initViews(){
         mRecyclerView = mMainView.findViewById(R.id.fragment_upcoming_movies_recycler_view)
         mSwipeRefreshLayout = mMainView.findViewById(R.id.fragment_upcoming_movies_swipe_refresh)
+        mProgressBar = mMainView.findViewById(R.id.fragment_upcoming_movies_progress_bar)
     }
     private fun clearList() {
         val size = data.size
@@ -151,8 +157,6 @@ class UpcomingMoviesFragment : Fragment() {
         mMovieAdapter.notifyItemRangeRemoved(0, size)
     }
     private fun initRecyclerView() {
-
-        addProgressBarInList()
 
         mLinearLayoutManager = LinearLayoutManager(context)
         mRecyclerView.setLayoutManager(mLinearLayoutManager)
@@ -174,22 +178,27 @@ class UpcomingMoviesFragment : Fragment() {
             override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
 
-                val reachedBottom = !recyclerView!!.canScrollVertically(1)
-                if (reachedBottom && doPagination) {
+                totalItem = mLinearLayoutManager.itemCount
+                currentItem = mLinearLayoutManager.childCount
+                scrolledOutItem = mLinearLayoutManager.findFirstVisibleItemPosition()
+
+                if (isScrolling && (currentItem + scrolledOutItem == totalItem) && doPagination) {
+                    isScrolling = false
                     pageNumber++
-                    fetchData()
+                    mProgressBar.visibility = View.VISIBLE
+                    delayByfewSeconds()
                 }
+
+
             }
 
             override fun onScrollStateChanged(recyclerView: RecyclerView?, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
+                if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL)
+                    isScrolling = true
             }
         })
     }
-    private fun addProgressBarInList() {
-        val progressBarContent = Movie()
-        progressBarContent.contentType = CONTENT_PROGRESS
-        data.add(progressBarContent)
-    }
+
 }
 

@@ -46,6 +46,11 @@ class DateUtils{
             return ""
         }
 
+        fun getDateFromEpoch(epoch: Long):String{
+            val sdf = SimpleDateFormat("yyyy-MM-dd")
+            return sdf.format(Date(epoch))
+        }
+
 
         fun formatTime(timeInMillis: Long): String {
             val dateFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
