@@ -27,10 +27,8 @@ import kashish.com.models.MovieDetail
 import kashish.com.models.MovieReview
 import kashish.com.singleton.VolleySingleton
 import kashish.com.utils.Constants
-import kashish.com.utils.Constants.Companion.CONTENT_PROGRESS
 import kashish.com.utils.Constants.Companion.CONTENT_REVIEW
 import kashish.com.utils.Constants.Companion.RESULTS
-import kashish.com.utils.Constants.Companion.getGenre
 import kashish.com.utils.DateUtils
 import kashish.com.utils.Helpers.buildBackdropImageUrl
 import kashish.com.utils.Helpers.buildImageUrl
@@ -39,9 +37,6 @@ import kashish.com.utils.Helpers.buildMovieReviewUrl
 import kashish.com.utils.Helpers.setUpTransparentStatusBar
 import org.json.JSONArray
 import org.json.JSONObject
-import java.nio.file.Files.size
-
-
 
 
 class DetailActivity : AppCompatActivity() {
@@ -124,8 +119,9 @@ class DetailActivity : AppCompatActivity() {
         mActionBar.setDisplayHomeAsUpEnabled(true)
     }
     private fun setupCollapsingToolbar(){
+
         Glide.with(this).load(buildBackdropImageUrl(movie.backdropPath!!))
-                .transition(DrawableTransitionOptions.withCrossFade()).into(mBackdropImageView)
+                    .transition(DrawableTransitionOptions.withCrossFade()).into(mBackdropImageView)
         Glide.with(this).load(buildImageUrl(movie.posterPath!!))
                 .transition(DrawableTransitionOptions.withCrossFade()).into(mToolbarMoviePoster)
         mToolbarMovieTitle.setText(movie.title)
@@ -208,15 +204,19 @@ class DetailActivity : AppCompatActivity() {
                 movieDetailUrl,null, Response.Listener { response ->
 
             val jsonObject: JSONObject = response
-            val movieDetail = MovieDetail()
+            val movieDetail = MovieDetail("", "", 0, 0, "", "", 0)
 
-            movieDetail.homePage = jsonObject.getString("homepage")
-            movieDetail.imdbId = jsonObject.getString("imdb_id")
-            movieDetail.budget = jsonObject.getInt("budget")
-            movieDetail.revenue = jsonObject.getInt("revenue")
-            movieDetail.runtime = jsonObject.getInt("runtime")
-            movieDetail.releaseStatus = jsonObject.getString("status")
-            movieDetail.tagLine = jsonObject.getString("tagline")
+            try {
+                movieDetail.homePage = jsonObject.getString("homepage")
+                movieDetail.imdbId = jsonObject.getString("imdb_id")
+                movieDetail.budget = jsonObject.getInt("budget")
+                movieDetail.revenue = jsonObject.getInt("revenue")
+                movieDetail.runtime =  jsonObject.getInt("runtime")
+                movieDetail.releaseStatus = jsonObject.getString("status")
+                movieDetail.tagLine = jsonObject.getString("tagline")
+            } catch (e:Exception){
+                Log.i(TAG,e.message)
+            }
 
             setRuntimeAndBudget(movieDetail.runtime, movieDetail.budget)
 
