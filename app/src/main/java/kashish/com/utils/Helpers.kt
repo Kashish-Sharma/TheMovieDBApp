@@ -8,6 +8,8 @@ import android.os.Build
 import android.view.MotionEvent
 import android.view.View
 import android.view.Window
+import kashish.com.utils.Urls.Companion.MOVIE_DETAILS_BASE_URL
+import kashish.com.utils.Urls.Companion.TMDB_API_KEY
 import java.text.ParseException
 import java.text.SimpleDateFormat
 
@@ -30,6 +32,10 @@ object Helpers {
 
     fun buildYoutubeURL(key: String): String {
         return "https://www.youtube.com/watch?v=" + key
+    }
+
+    fun buildMovieDetailUrl(movieId: String): String {
+        return MOVIE_DETAILS_BASE_URL + movieId + "?api_key=" + TMDB_API_KEY
     }
 
 

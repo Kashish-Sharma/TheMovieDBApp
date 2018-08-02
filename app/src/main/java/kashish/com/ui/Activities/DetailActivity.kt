@@ -12,16 +12,23 @@ import android.view.MenuItem
 import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
+import com.android.volley.Request
+import com.android.volley.Response
+import com.android.volley.toolbox.JsonObjectRequest
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import kashish.com.R
 import kashish.com.models.Movie
+import kashish.com.models.MovieDetail
+import kashish.com.singleton.VolleySingleton
 import kashish.com.utils.Constants
 import kashish.com.utils.Constants.Companion.getGenre
 import kashish.com.utils.DateUtils
 import kashish.com.utils.Helpers.buildBackdropImageUrl
 import kashish.com.utils.Helpers.buildImageUrl
+import kashish.com.utils.Helpers.buildMovieDetailUrl
 import kashish.com.utils.Helpers.setUpTransparentStatusBar
+import org.json.JSONObject
 import java.nio.file.Files.size
 
 
@@ -56,6 +63,8 @@ class DetailActivity : AppCompatActivity() {
     private lateinit var mDetailGenre: TextView
     private var movieGenre: String = ""
     private lateinit var mDetailRatingBar: RatingBar
+    private lateinit var mRunTimeTextView: TextView
+    private lateinit var mBudgetTextView: TextView
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -70,6 +79,7 @@ class DetailActivity : AppCompatActivity() {
         setupCollapsingToolbar()
 
         initViews()
+        fetchMovieDetails()
         setRatingsData()
         setOverViewData()
 
@@ -114,7 +124,6 @@ class DetailActivity : AppCompatActivity() {
             }
         })
     }
-
     private fun initViews(){
         mAdult = findViewById(R.id.activity_detail_adult)
         mVoteAvg = findViewById(R.id.activity_detail_vote_average)
@@ -124,8 +133,10 @@ class DetailActivity : AppCompatActivity() {
         mDetailGenre = findViewById(R.id.activity_detail_genre)
         mDetailRatingBar = findViewById(R.id.activity_detail_rating_bar)
         mDetailRatingBar.numStars = 5
-    }
 
+        mRunTimeTextView = findViewById(R.id.activity_detail_movie_run_time)
+        mBudgetTextView = findViewById(R.id.activity_detail_movie_budget)
+    }
     private fun setRatingsData(){
         if (movie.adult!!) mAdult.setText("adult: false")
         else mAdult.setText("adult: false")
@@ -136,13 +147,15 @@ class DetailActivity : AppCompatActivity() {
         else mVotes.setText("votes: "+movie.voteCount.toString())
 
     }
-
     private fun setOverViewData(){
         mDetailOverView.setText(movie.overview)
         mDetailGenre.setText(movieGenre)
         mDetailRatingBar.rating = movie.voteAverage!!.div(2)
     }
-
+    private fun setRuntimeAndBudget(runtime: Int, budget: Int){
+        mRunTimeTextView.setText("runtime: "+runtime+"mins")
+        mBudgetTextView.setText("budget: $"+(budget.div(1000))+"k")
+    }
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         val id = item!!.getItemId()
         if (id == android.R.id.home) {
@@ -151,5 +164,33 @@ class DetailActivity : AppCompatActivity() {
         }
         return super.onOptionsItemSelected(item)
     }
+
+    private fun fetchMovieDetails(){
+
+        val movieDetailUrl = buildMovieDetailUrl(movie.id.toString())
+
+        val jsonObjectRequest = JsonObjectRequest(Request.Method.GET,
+                movieDetailUrl,null, Response.Listener { response ->
+
+            val jsonObject: JSONObject = response
+            val movieDetail = MovieDetail()
+
+            movieDetail.homePage = jsonObject.getString("homepage")
+            movieDetail.imdbId = jsonObject.getString("imdb_id")
+            movieDetail.budget = jsonObject.getInt("budget")
+            movieDetail.revenue = jsonObject.getInt("revenue")
+            movieDetail.runtime = jsonObject.getInt("runtime")
+            movieDetail.releaseStatus = jsonObject.getString("status")
+            movieDetail.tagLine = jsonObject.getString("tagline")
+
+            setRuntimeAndBudget(movieDetail.runtime, movieDetail.budget)
+
+        }, Response.ErrorListener { error ->
+            Log.i(TAG,error.message)
+        })
+
+        VolleySingleton.getInstance(this).addToRequestQueue(jsonObjectRequest)
+    }
+
 
 }
