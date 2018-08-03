@@ -32,6 +32,7 @@ import kashish.com.utils.Helpers.setUpTransparentStatusBar
 import org.json.JSONArray
 import org.json.JSONObject
 import kashish.com.adapters.CastCrewAdapter
+import kashish.com.adapters.VideoAdapter
 import kashish.com.models.*
 import kashish.com.utils.Constants.Companion.CAST
 import kashish.com.utils.Constants.Companion.CREW
@@ -89,6 +90,13 @@ class DetailActivity : AppCompatActivity() {
     private lateinit var mCrewRecyclerView : RecyclerView
     private lateinit var mCrewProgressBar : ProgressBar
 
+    //Trailer
+    lateinit var mTrailerAdapter: VideoAdapter
+    var trailerData: MutableList<Video> = mutableListOf()
+    private lateinit var mTrailerRecyclerView : RecyclerView
+    private lateinit var mTrailerProgressBar : ProgressBar
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTheme(R.style.DetailTheme)
@@ -104,6 +112,7 @@ class DetailActivity : AppCompatActivity() {
         initReviewRecyclerView()
         initCastRecyclerView()
         initCrewRecyclerView()
+        initTrailerRecyclerView()
         fetchMovieDetails()
         fetchMovieReviews()
         fetchMovieCast()
@@ -173,6 +182,9 @@ class DetailActivity : AppCompatActivity() {
 
         mCrewRecyclerView = findViewById(R.id.activity_detail_crew_recycler_view)
         mCrewProgressBar = findViewById(R.id.activity_detail_crew_progress_bar)
+
+        mTrailerRecyclerView = findViewById(R.id.activity_detail_trailer_recycler_view)
+        mTrailerProgressBar = findViewById(R.id.activity_detail_trailer_progress_bar)
     }
     private fun initReviewRecyclerView(){
         mLinearLayoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
@@ -191,6 +203,12 @@ class DetailActivity : AppCompatActivity() {
         mCrewRecyclerView.setLayoutManager(mLinearLayoutManager)
         mCrewAdapter = CastCrewAdapter(crewData)
         mCrewRecyclerView.setAdapter(mCrewAdapter)
+    }
+    private fun initTrailerRecyclerView(){
+        mLinearLayoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        mTrailerRecyclerView.setLayoutManager(mLinearLayoutManager)
+        mTrailerAdapter = VideoAdapter(trailerData)
+        mTrailerRecyclerView.setAdapter(mTrailerAdapter)
     }
     private fun setRatingsData(){
         if (movie.adult!!) mAdult.setText("adult: true")
@@ -246,6 +264,33 @@ class DetailActivity : AppCompatActivity() {
             }
 
             setRuntimeAndBudget(movieDetail.runtime, movieDetail.budget)
+
+            val videosObject: JSONObject = jsonObject.getJSONObject("videos")
+            val videosArray: JSONArray = videosObject.getJSONArray("results")
+
+            if (videosArray.length() == 0){
+                //stop call to pagination in any case
+                mTrailerProgressBar.visibility = View.GONE
+            }
+
+            for (i in 0 until videosArray.length()) {
+                val jresponse: JSONObject = videosArray.getJSONObject(i)
+
+                val trailer = Video()
+
+                trailer.key = jresponse.getString("key")
+                trailer.id = jresponse.getString("id")
+                trailer.iso_3166 = jresponse.getString("iso_3166_1")
+                trailer.iso_639 = jresponse.getString("iso_639_1")
+                trailer.name = jresponse.getString("name")
+                trailer.site = jresponse.getString("site")
+                trailer.size = jresponse.getInt("size")
+                trailer.type = jresponse.getString("type")
+
+                trailerData.add(trailer)
+            }
+
+            mTrailerProgressBar.visibility = View.GONE
 
         }, Response.ErrorListener { error ->
             Log.i(TAG,error.message)
