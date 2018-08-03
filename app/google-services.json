@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "953194823147",
+    "firebase_url": "https://themoviedbapp-2fcea.firebaseio.com",
+    "project_id": "themoviedbapp-2fcea",
+    "storage_bucket": "themoviedbapp-2fcea.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:953194823147:android:7d04f23046df66c7",
+        "android_client_info": {
+          "package_name": "kashish.com"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "953194823147-rh9cplu1koinmd2o62vu0ib4kmeb1468.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "kashish.com",
+            "certificate_hash": "9a81b3218a0318d582b61ef70bcc78dddc013e06"
+          }
+        },
+        {
+          "client_id": "953194823147-2nvogu4q29cgs37od0et6jf9dq04ef57.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD-Dr308-5FmV53e80uFH0lrZI0c-GMpvw"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "953194823147-2nvogu4q29cgs37od0et6jf9dq04ef57.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
