@@ -39,7 +39,7 @@ class CrewAdapter(private var crewList: List<Crew>) : RecyclerView.Adapter<Recyc
 
         crewViewHolder.mCrewName.setText(crew.name)
         crewViewHolder.mCrewJob.setText(crew.job)
-        Glide.with(mContext).load(Helpers.buildProfileImageUrl(crew.profilePath!!))
+        Glide.with(mContext).load(Helpers.buildProfileImageUrl(crew.profilePath!!)).thumbnail(0.25f)
                 .transition(DrawableTransitionOptions.withCrossFade()).into(crewViewHolder.mCrewImage)
 
     }

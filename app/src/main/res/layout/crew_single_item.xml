@@ -15,20 +15,23 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
         <ImageView
-            android:scaleType="fitXY"
+            android:scaleType="centerCrop"
             android:layout_marginBottom="2dp"
             android:layout_gravity="center"
             android:id="@+id/activity_detail_movie_crew_image"
-            android:layout_width="80dp"
-            android:layout_height="120dp" />
+            android:layout_width="100dp"
+            android:layout_height="100dp" />
 
         <TextView
+            android:id="@+id/activity_detail_movie_crew_character"
+            android:textSize="12sp"
             android:padding="2dp"
             android:textColor="@color/dark_dark_gray"
             android:gravity="center"
             android:layout_gravity="center"
-            android:id="@+id/activity_detail_movie_crew_character"
-            android:layout_width="80dp"
+            android:layout_width="match_parent"
+            android:paddingStart="2dp"
+            android:paddingEnd="2dp"
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:maxLength="60"
@@ -36,18 +39,21 @@
             android:text="John Doe" />
 
         <TextView
+            android:id="@+id/activity_detail_movie_crew_name"
             android:padding="2dp"
             android:textSize="12sp"
             android:fontFamily="@font/open_sans_regular"
             android:textColor="@color/dark_gray"
             android:gravity="center"
             android:layout_gravity="center"
-            android:id="@+id/activity_detail_movie_crew_name"
-            android:layout_width="80dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:maxLength="60"
-            android:maxLines="2"
+            android:paddingStart="2dp"
+            android:paddingEnd="2dp"
+            android:paddingBottom="2dp"
+            android:maxLines="1"
             android:text="John Doe" />
     </LinearLayout>
 
