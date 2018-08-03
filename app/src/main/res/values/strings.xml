@@ -14,4 +14,6 @@
     <string name="review">REVIEW</string>
     <string name="reviews">REVIEWS</string>
     <string name="cast">CAST</string>
+    <string name="trailer_poster">trailer_poster</string>
+    <string name="play_image">play_image</string>
 </resources>
