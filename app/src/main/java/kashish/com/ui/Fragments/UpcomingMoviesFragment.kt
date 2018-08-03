@@ -200,5 +200,14 @@ class UpcomingMoviesFragment : Fragment() {
         })
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        pageNumber = 1
+        doPagination = true
+        clearList()
+        fetchData()
+
+    }
+
 }
 
