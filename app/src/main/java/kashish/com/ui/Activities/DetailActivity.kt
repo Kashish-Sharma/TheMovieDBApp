@@ -21,7 +21,6 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import kashish.com.R
 import kashish.com.adapters.MovieReviewAdapter
 import kashish.com.singleton.VolleySingleton
-import kashish.com.utils.Constants
 import kashish.com.utils.Constants.Companion.CONTENT_REVIEW
 import kashish.com.utils.Constants.Companion.RESULTS
 import kashish.com.utils.DateUtils
@@ -32,9 +31,7 @@ import kashish.com.utils.Helpers.buildMovieReviewUrl
 import kashish.com.utils.Helpers.setUpTransparentStatusBar
 import org.json.JSONArray
 import org.json.JSONObject
-import android.support.design.widget.BottomSheetDialog
 import kashish.com.adapters.CastCrewAdapter
-import kashish.com.adapters.CrewAdapter
 import kashish.com.models.*
 import kashish.com.utils.Constants.Companion.CAST
 import kashish.com.utils.Constants.Companion.CREW
@@ -87,8 +84,8 @@ class DetailActivity : AppCompatActivity() {
     private lateinit var mCastProgressBar : ProgressBar
 
     //Crew
-    lateinit var mCrewAdapter: CrewAdapter
-    var crewData: MutableList<Crew> = mutableListOf()
+    lateinit var mCrewAdapter: CastCrewAdapter
+    var crewData: MutableList<Cast> = mutableListOf()
     private lateinit var mCrewRecyclerView : RecyclerView
     private lateinit var mCrewProgressBar : ProgressBar
 
@@ -192,7 +189,7 @@ class DetailActivity : AppCompatActivity() {
     private fun initCrewRecyclerView(){
         mLinearLayoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         mCrewRecyclerView.setLayoutManager(mLinearLayoutManager)
-        mCrewAdapter = CrewAdapter(crewData)
+        mCrewAdapter = CastCrewAdapter(crewData)
         mCrewRecyclerView.setAdapter(mCrewAdapter)
     }
     private fun setRatingsData(){
@@ -339,11 +336,11 @@ class DetailActivity : AppCompatActivity() {
             for (i in 0 until jsonCrewArray.length()) {
                 val jCrewresponse: JSONObject = jsonCrewArray.getJSONObject(i)
 
-                val crew = Crew()
+                val crew = Cast()
 
 
-                    crew.job = jCrewresponse.getString("job")
-                    crew.department = jCrewresponse.getString("department")
+                    crew.character = jCrewresponse.getString("job")
+                    //crew.department = jCrewresponse.getString("department")
                     crew.creditId = jCrewresponse.getString("credit_id")
                     crew.id = jCrewresponse.getInt("id")
                     crew.name = jCrewresponse.getString("name")
