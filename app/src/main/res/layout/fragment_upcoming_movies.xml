@@ -8,22 +8,12 @@
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/fragment_upcoming_movies_swipe_refresh"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/fragment_upcoming_movies_progress_bar">
+        android:layout_height="match_parent">
         <android.support.v7.widget.RecyclerView
             android:id="@+id/fragment_upcoming_movies_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
         </android.support.v7.widget.RecyclerView>
     </android.support.v4.widget.SwipeRefreshLayout>
-
-    <ProgressBar
-        android:indeterminate="true"
-        android:visibility="gone"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/fragment_upcoming_movies_progress_bar" />
 
 </RelativeLayout>

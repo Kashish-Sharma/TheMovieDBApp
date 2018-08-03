@@ -53,7 +53,6 @@ class UpcomingMoviesFragment : Fragment() {
     private lateinit var mRecyclerView : RecyclerView
     private lateinit var mLinearLayoutManager : LinearLayoutManager
     private lateinit var mSwipeRefreshLayout : SwipeRefreshLayout
-    private lateinit var mProgressBar : ProgressBar
 
     private var pageNumber:Int = 1
     private var doPagination:Boolean = true
@@ -63,13 +62,14 @@ class UpcomingMoviesFragment : Fragment() {
     private  var scrolledOutItem:Int = -1
 
     lateinit var mMovieAdapter:MovieAdapter
-    var data:MutableList<Movie> = mutableListOf()
+    lateinit var data:MutableList<Movie>
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         mMainView =  inflater.inflate(R.layout.fragment_upcoming_movies, container, false)
 
         initViews()
+        initContentList()
         fetchData()
         initRecyclerView()
         setSwipeRefreshLayoutListener()
@@ -87,17 +87,23 @@ class UpcomingMoviesFragment : Fragment() {
             if (jsonArray.length() == 0){
                 //stop call to pagination in any case
                 doPagination = false
-                mProgressBar.visibility = View.GONE
 
                 //show msg no posts
                 if(pageNumber == 1)
                     Toast.makeText(getContext(),"Something went wrong",Toast.LENGTH_SHORT).show()
-            }
+                data.removeAt(data.size - 1)
+                mMovieAdapter.notifyItemRemoved(data.size-1)
 
-            for (i in 0 until jsonArray.length()) {
-                val jresponse:JSONObject = jsonArray.getJSONObject(i)
+            } else {
 
-                val movie = Movie()
+                //Data loaded, remove progress
+                    data.removeAt(data.size-1)
+
+
+                for (i in 0 until jsonArray.length()) {
+                    val jresponse: JSONObject = jsonArray.getJSONObject(i)
+
+                    val movie = Movie()
 
                     movie.totalPages = response.getInt(TOTAL_PAGES)
                     movie.voteCount = jresponse.getInt(VOTE_COUNT)
@@ -124,14 +130,15 @@ class UpcomingMoviesFragment : Fragment() {
                     movie.contentType = CONTENT_MOVIE
 
                     data.add(movie)
+                }
+
+                addProgressBarInList()
+
+                mMovieAdapter.notifyItemRangeInserted(data.size - jsonArray.length(), jsonArray.length())
+
+                if (mSwipeRefreshLayout.isRefreshing())
+                    mSwipeRefreshLayout.setRefreshing(false)
             }
-
-                mMovieAdapter.notifyItemRangeInserted(data.size - jsonArray.length(),jsonArray.length())
-
-                mProgressBar.visibility = View.GONE
-
-            if (mSwipeRefreshLayout.isRefreshing())
-                mSwipeRefreshLayout.setRefreshing(false)
 
         }, Response.ErrorListener { error ->
             Log.i(TAG,error.message)
@@ -148,13 +155,15 @@ class UpcomingMoviesFragment : Fragment() {
     private fun initViews(){
         mRecyclerView = mMainView.findViewById(R.id.fragment_upcoming_movies_recycler_view)
         mSwipeRefreshLayout = mMainView.findViewById(R.id.fragment_upcoming_movies_swipe_refresh)
-        mProgressBar = mMainView.findViewById(R.id.fragment_upcoming_movies_progress_bar)
     }
     private fun clearList() {
         val size = data.size
         data.clear()
-        data.clear()
         mMovieAdapter.notifyItemRangeRemoved(0, size)
+    }
+    private fun initContentList(){
+        data = mutableListOf()
+        addProgressBarInList()
     }
     private fun initRecyclerView() {
 
@@ -164,11 +173,13 @@ class UpcomingMoviesFragment : Fragment() {
         mMovieAdapter = MovieAdapter(data)
         mRecyclerView.setAdapter(mMovieAdapter)
     }
+
     private fun setSwipeRefreshLayoutListener() {
         mSwipeRefreshLayout.setOnRefreshListener {
             pageNumber = 1
             doPagination = true
             clearList()
+            addProgressBarInList()
             fetchData()
         }
     }
@@ -178,35 +189,27 @@ class UpcomingMoviesFragment : Fragment() {
             override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
 
-                totalItem = mLinearLayoutManager.itemCount
-                currentItem = mLinearLayoutManager.childCount
-                scrolledOutItem = mLinearLayoutManager.findFirstVisibleItemPosition()
-
-                if (isScrolling && (currentItem + scrolledOutItem == totalItem) && doPagination) {
-                    isScrolling = false
+                val reachedBottom = !recyclerView!!.canScrollVertically(1) && dy!=0
+                if (reachedBottom && doPagination) {
                     pageNumber++
-                    mProgressBar.visibility = View.VISIBLE
                     delayByfewSeconds()
                 }
-
-
             }
 
             override fun onScrollStateChanged(recyclerView: RecyclerView?, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
-                if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL)
-                    isScrolling = true
             }
         })
     }
 
+    private fun addProgressBarInList() {
+        val progressBarContent = Movie()
+        progressBarContent.contentType = CONTENT_PROGRESS
+        data.add(progressBarContent)
+    }
     override fun onDestroyView() {
         super.onDestroyView()
-        pageNumber = 1
-        doPagination = true
         clearList()
-        fetchData()
-
     }
 
 }
