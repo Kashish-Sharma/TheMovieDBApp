@@ -50,7 +50,6 @@ import org.json.JSONObject
  */
 class TopRatedMoviesFragment : Fragment() {
 
-
     private val TAG:String = "TopRatedMoviesFragment"
     private lateinit var mMainView : View
     private lateinit var mRecyclerView : RecyclerView
@@ -72,7 +71,7 @@ class TopRatedMoviesFragment : Fragment() {
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         mMainView = inflater.inflate(R.layout.fragment_top_rated_movies, container, false)
-
+        Log.i("asdfghjk","OnCreate");
         initViews()
         fetchData()
         initRecyclerView()
@@ -198,6 +197,16 @@ class TopRatedMoviesFragment : Fragment() {
         handler.postDelayed(Runnable {
             fetchData()
         }, 2000)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        Log.i("asdfghjk","OnDestroyView")
+        pageNumber = 1
+        doPagination = true
+        clearList()
+        fetchData()
+
     }
 
 }// Required empty public constructor
