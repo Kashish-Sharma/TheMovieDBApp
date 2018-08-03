@@ -13,10 +13,10 @@ import com.bumptech.glide.request.RequestOptions
 import kashish.com.R
 import kashish.com.models.Movie
 import kashish.com.utils.Constants.Companion.CONTENT_MOVIE
+import kashish.com.utils.Constants.Companion.CONTENT_PROGRESS
 import kashish.com.utils.Constants.Companion.getGenre
 import kashish.com.utils.DateUtils
 import kashish.com.utils.Helpers.buildImageUrl
-import kashish.com.utils.Urls.Companion.IMAGE_URL_BASE_PATH
 import kashish.com.viewholders.MovieViewHolder
 import kashish.com.viewholders.ProgressBarViewHolder
 import kotlinx.android.synthetic.main.movie_single_item.view.*
@@ -33,9 +33,19 @@ class MovieAdapter(private var movieList: List<Movie>) : Adapter<RecyclerView.Vi
 
         val view: View
         mContext = parent.context
-        view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.movie_single_item, parent, false)
-        return MovieViewHolder(view,mContext, movieList)
+        when(viewType){
+            CONTENT_MOVIE ->{
+                view = LayoutInflater.from(parent.context)
+                        .inflate(R.layout.movie_single_item, parent, false)
+                return MovieViewHolder(view,mContext, movieList)
+            }
+
+            else -> {
+                view = LayoutInflater.from(parent.context)
+                        .inflate(R.layout.recycler_view_progress_loader, parent, false)
+                return ProgressBarViewHolder(view)
+            }
+        }
 
     }
 
@@ -62,8 +72,16 @@ class MovieAdapter(private var movieList: List<Movie>) : Adapter<RecyclerView.Vi
                         .transition(withCrossFade()).into(movieViewHolder.moviePoster)
             }
 
+            CONTENT_PROGRESS ->{
+                // Nothing to bind here
+            }
+
         }
 
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return movieList.get(position).contentType!!
     }
 
     override fun getItemCount(): Int = movieList.size
