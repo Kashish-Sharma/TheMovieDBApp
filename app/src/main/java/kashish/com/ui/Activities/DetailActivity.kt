@@ -20,9 +20,6 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import kashish.com.R
 import kashish.com.adapters.MovieReviewAdapter
-import kashish.com.models.Movie
-import kashish.com.models.MovieDetail
-import kashish.com.models.MovieReview
 import kashish.com.singleton.VolleySingleton
 import kashish.com.utils.Constants
 import kashish.com.utils.Constants.Companion.CONTENT_REVIEW
@@ -37,8 +34,10 @@ import org.json.JSONArray
 import org.json.JSONObject
 import android.support.design.widget.BottomSheetDialog
 import kashish.com.adapters.CastCrewAdapter
-import kashish.com.models.Cast
+import kashish.com.adapters.CrewAdapter
+import kashish.com.models.*
 import kashish.com.utils.Constants.Companion.CAST
+import kashish.com.utils.Constants.Companion.CREW
 import kashish.com.utils.Helpers.buildMovieCastUrl
 
 
@@ -87,11 +86,17 @@ class DetailActivity : AppCompatActivity() {
     private lateinit var mCastRecyclerView : RecyclerView
     private lateinit var mCastProgressBar : ProgressBar
 
+    //Crew
+    lateinit var mCrewAdapter: CrewAdapter
+    var crewData: MutableList<Crew> = mutableListOf()
+    private lateinit var mCrewRecyclerView : RecyclerView
+    private lateinit var mCrewProgressBar : ProgressBar
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTheme(R.style.DetailTheme)
-        setUpTransparentStatusBar(window)
         setContentView(R.layout.activity_detail)
+        setUpTransparentStatusBar(window)
 
         getMovie()
         getGenre()
@@ -101,6 +106,7 @@ class DetailActivity : AppCompatActivity() {
         initViews()
         initReviewRecyclerView()
         initCastRecyclerView()
+        initCrewRecyclerView()
         fetchMovieDetails()
         fetchMovieReviews()
         fetchMovieCast()
@@ -167,6 +173,9 @@ class DetailActivity : AppCompatActivity() {
 
         mCastRecyclerView = findViewById(R.id.activity_detail_cast_recycler_view)
         mCastProgressBar = findViewById(R.id.activity_detail_cast_progress_bar)
+
+        mCrewRecyclerView = findViewById(R.id.activity_detail_crew_recycler_view)
+        mCrewProgressBar = findViewById(R.id.activity_detail_crew_progress_bar)
     }
     private fun initReviewRecyclerView(){
         mLinearLayoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
@@ -179,6 +188,12 @@ class DetailActivity : AppCompatActivity() {
         mCastRecyclerView.setLayoutManager(mLinearLayoutManager)
         mCastAdapter = CastCrewAdapter(castData)
         mCastRecyclerView.setAdapter(mCastAdapter)
+    }
+    private fun initCrewRecyclerView(){
+        mLinearLayoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        mCrewRecyclerView.setLayoutManager(mLinearLayoutManager)
+        mCrewAdapter = CrewAdapter(crewData)
+        mCrewRecyclerView.setAdapter(mCrewAdapter)
     }
     private fun setRatingsData(){
         if (movie.adult!!) mAdult.setText("adult: true")
@@ -272,6 +287,7 @@ class DetailActivity : AppCompatActivity() {
 
         }, Response.ErrorListener { error ->
             Log.i(TAG,error.message)
+            mReviewProgressBar.visibility = View.GONE
         })
 
         VolleySingleton.getInstance(this).addToRequestQueue(jsonObjectRequest)
@@ -280,6 +296,7 @@ class DetailActivity : AppCompatActivity() {
         val jsonObjectRequest = JsonObjectRequest(Request.Method.GET,
                 buildMovieCastUrl(movie.id.toString()),null, Response.Listener { response ->
 
+            //Getting cast
             val jsonArray: JSONArray = response.getJSONArray(CAST)
 
             if (jsonArray.length() == 0){
@@ -300,15 +317,51 @@ class DetailActivity : AppCompatActivity() {
                 cast.order = jresponse.getInt("order")
                 cast.profilePath = jresponse.getString("profile_path")
 
-                castData.add(cast)
+
+                if(cast.profilePath!=null)
+                    castData.add(cast)
+
             }
 
             mCastAdapter.notifyItemRangeInserted(castData.size - jsonArray.length(),jsonArray.length())
 
             mCastProgressBar.visibility = View.GONE
 
+
+            //Getting crew
+            val jsonCrewArray: JSONArray = response.getJSONArray(CREW)
+
+            if (jsonArray.length() == 0){
+                //stop call to pagination in any case
+                mCrewProgressBar.visibility = View.GONE
+            }
+
+            for (i in 0 until 2) {
+                val jCrewresponse: JSONObject = jsonCrewArray.getJSONObject(i)
+
+                val crew = Crew()
+
+
+                    crew.job = jCrewresponse.getString("job")
+                    crew.department = jCrewresponse.getString("department")
+                    crew.creditId = jCrewresponse.getString("credit_id")
+                    crew.id = jCrewresponse.getInt("id")
+                    crew.name = jCrewresponse.getString("name")
+                    crew.profilePath = jCrewresponse.getString("profile_path")
+
+                if (crew.profilePath!=null)
+                    crewData.add(crew)
+
+            }
+
+            mCrewAdapter.notifyItemRangeInserted(crewData.size - jsonArray.length()-1,jsonArray.length()-1)
+
+            mCrewProgressBar.visibility = View.GONE
+
         }, Response.ErrorListener { error ->
             Log.i(TAG,error.message)
+            mCrewProgressBar.visibility = View.GONE
+            mCastProgressBar.visibility = View.GONE
         })
 
         VolleySingleton.getInstance(this).addToRequestQueue(jsonObjectRequest)
