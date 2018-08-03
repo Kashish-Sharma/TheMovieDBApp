@@ -36,8 +36,10 @@ import kashish.com.utils.Helpers.setUpTransparentStatusBar
 import org.json.JSONArray
 import org.json.JSONObject
 import android.support.design.widget.BottomSheetDialog
-
-
+import kashish.com.adapters.CastCrewAdapter
+import kashish.com.models.Cast
+import kashish.com.utils.Constants.Companion.CAST
+import kashish.com.utils.Helpers.buildMovieCastUrl
 
 
 class DetailActivity : AppCompatActivity() {
@@ -73,14 +75,17 @@ class DetailActivity : AppCompatActivity() {
     private lateinit var mBudgetTextView: TextView
 
     //Reviews
-    private var pageNumber:Int = 1
-    private var doPagination:Boolean = true
     lateinit var mReviewReviewAdapter: MovieReviewAdapter
     var data:MutableList<MovieReview> = mutableListOf()
     private lateinit var mReviewRecyclerView : RecyclerView
     private lateinit var mLinearLayoutManager : LinearLayoutManager
     private lateinit var mReviewProgressBar : ProgressBar
 
+    //Cast
+    lateinit var mCastAdapter: CastCrewAdapter
+    var castData: MutableList<Cast> = mutableListOf()
+    private lateinit var mCastRecyclerView : RecyclerView
+    private lateinit var mCastProgressBar : ProgressBar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -94,9 +99,11 @@ class DetailActivity : AppCompatActivity() {
         setupCollapsingToolbar()
 
         initViews()
-        initRecyclerView()
+        initReviewRecyclerView()
+        initCastRecyclerView()
         fetchMovieDetails()
         fetchMovieReviews()
+        fetchMovieCast()
         setRatingsData()
         setOverViewData()
 
@@ -157,12 +164,21 @@ class DetailActivity : AppCompatActivity() {
 
         mReviewRecyclerView = findViewById(R.id.activity_detail_review_recycler_view)
         mReviewProgressBar = findViewById(R.id.activity_detail_review_progress_bar)
+
+        mCastRecyclerView = findViewById(R.id.activity_detail_cast_recycler_view)
+        mCastProgressBar = findViewById(R.id.activity_detail_cast_progress_bar)
     }
-    private fun initRecyclerView(){
+    private fun initReviewRecyclerView(){
         mLinearLayoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         mReviewRecyclerView.setLayoutManager(mLinearLayoutManager)
         mReviewReviewAdapter = MovieReviewAdapter(data)
         mReviewRecyclerView.setAdapter(mReviewReviewAdapter)
+    }
+    private fun initCastRecyclerView(){
+        mLinearLayoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        mCastRecyclerView.setLayoutManager(mLinearLayoutManager)
+        mCastAdapter = CastCrewAdapter(castData)
+        mCastRecyclerView.setAdapter(mCastAdapter)
     }
     private fun setRatingsData(){
         if (movie.adult!!) mAdult.setText("adult: true")
@@ -227,19 +243,17 @@ class DetailActivity : AppCompatActivity() {
     }
     private fun fetchMovieReviews(){
         val jsonObjectRequest = JsonObjectRequest(Request.Method.GET,
-                buildMovieReviewUrl(movie.id.toString(), pageNumber),null, Response.Listener { response ->
+                buildMovieReviewUrl(movie.id.toString(), 1),null, Response.Listener { response ->
 
             val jsonArray: JSONArray = response.getJSONArray(RESULTS)
 
             if (jsonArray.length() == 0){
                 //stop call to pagination in any case
-                doPagination = false
                 mReviewProgressBar.visibility = View.GONE
             }
 
             for (i in 0 until jsonArray.length()) {
                 val jresponse: JSONObject = jsonArray.getJSONObject(i)
-                Log.i("asasasas",jresponse.toString()+" is the jresponse")
 
                 val review = MovieReview()
 
@@ -255,6 +269,43 @@ class DetailActivity : AppCompatActivity() {
             mReviewReviewAdapter.notifyItemRangeInserted(data.size - jsonArray.length(),jsonArray.length())
 
             mReviewProgressBar.visibility = View.GONE
+
+        }, Response.ErrorListener { error ->
+            Log.i(TAG,error.message)
+        })
+
+        VolleySingleton.getInstance(this).addToRequestQueue(jsonObjectRequest)
+    }
+    private fun fetchMovieCast(){
+        val jsonObjectRequest = JsonObjectRequest(Request.Method.GET,
+                buildMovieCastUrl(movie.id.toString()),null, Response.Listener { response ->
+
+            val jsonArray: JSONArray = response.getJSONArray(CAST)
+
+            if (jsonArray.length() == 0){
+                //stop call to pagination in any case
+                mCastProgressBar.visibility = View.GONE
+            }
+
+            for (i in 0 until jsonArray.length()) {
+                val jresponse: JSONObject = jsonArray.getJSONObject(i)
+
+                val cast = Cast()
+
+                cast.castId = jresponse.getInt("cast_id")
+                cast.character = jresponse.getString("character")
+                cast.creditId = jresponse.getString("credit_id")
+                cast.id = jresponse.getInt("id")
+                cast.name = jresponse.getString("name")
+                cast.order = jresponse.getInt("order")
+                cast.profilePath = jresponse.getString("profile_path")
+
+                castData.add(cast)
+            }
+
+            mCastAdapter.notifyItemRangeInserted(castData.size - jsonArray.length(),jsonArray.length())
+
+            mCastProgressBar.visibility = View.GONE
 
         }, Response.ErrorListener { error ->
             Log.i(TAG,error.message)

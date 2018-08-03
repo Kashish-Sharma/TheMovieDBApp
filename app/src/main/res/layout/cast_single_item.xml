@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    style="@style/CardView.Light"
+    app:cardCornerRadius="5dp"
+    app:cardUseCompatPadding="true"
+    android:layout_margin="4dp"
+    android:theme="@style/CardView.Light"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:scaleType="fitXY"
+            android:layout_marginBottom="2dp"
+            android:layout_gravity="center"
+            android:id="@+id/activity_detail_movie_cast_image"
+            android:layout_width="80dp"
+            android:layout_height="120dp" />
+
+        <TextView
+            android:padding="2dp"
+            android:textColor="@color/dark_dark_gray"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:id="@+id/activity_detail_movie_cast_character"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLength="60"
+            android:maxLines="2"
+            android:text="John Doe" />
+
+        <TextView
+            android:padding="2dp"
+            android:textSize="12sp"
+            android:fontFamily="@font/open_sans_regular"
+            android:textColor="@color/dark_gray"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:id="@+id/activity_detail_movie_cast_name"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLength="60"
+            android:maxLines="2"
+            android:text="John Doe" />
+    </LinearLayout>
+
+</android.support.v7.widget.CardView>

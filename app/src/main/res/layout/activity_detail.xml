@@ -307,6 +307,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/activity_detail_overview_linear_layout" />
 
             <RelativeLayout
+                android:id="@+id/activity_detail_review_relative_layout"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/activity_detail_review_text"
@@ -327,8 +328,41 @@
                     android:layout_height="wrap_content" />
             </RelativeLayout>
 
+            <TextView
+                android:id="@+id/activity_detail_cast_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/opensans_semibold"
+                android:gravity="bottom"
+                android:text="@string/cast"
+                android:textColor="@color/dark_gray"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/activity_detail_review_relative_layout" />
 
-
+            <RelativeLayout
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/activity_detail_cast_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <android.support.v7.widget.RecyclerView
+                    android:layout_toStartOf="@+id/activity_detail_cast_progress_bar"
+                    android:id="@+id/activity_detail_cast_recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                </android.support.v7.widget.RecyclerView>
+                <ProgressBar
+                    android:indeterminate="true"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentEnd="true"
+                    android:id="@+id/activity_detail_cast_progress_bar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </RelativeLayout>
 
         </android.support.constraint.ConstraintLayout>
 

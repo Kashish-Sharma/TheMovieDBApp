@@ -50,6 +50,10 @@ class Constants {
         val RELEASE_DATE = "release_date"
         val TOTAL_PAGES = "total_pages"
 
+        //cast
+        val CAST = "cast"
+        val CREW = "crew"
+
 
 
         //CONTENT_TYPES

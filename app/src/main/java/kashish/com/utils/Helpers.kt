@@ -24,6 +24,14 @@ object Helpers {
                 "&language=en-US"+"&page="+pageNumber+"&region=IN|US&with_release_type=2|3"
     }
 
+    fun buildMovieCastUrl(movieId: String): String{
+        return "https://api.themoviedb.org/3/movie/"+movieId+"/credits?api_key="+ TMDB_API_KEY
+    }
+
+    fun buildProfileImageUrl(path: String): String {
+        return "http://image.tmdb.org/t/p/w185" + path
+    }
+
     fun buildImageUrl(path: String): String {
         return "http://image.tmdb.org/t/p/w342" + path
     }
