@@ -336,7 +336,7 @@ class DetailActivity : AppCompatActivity() {
                 mCrewProgressBar.visibility = View.GONE
             }
 
-            for (i in 0 until 2) {
+            for (i in 0 until jsonCrewArray.length()) {
                 val jCrewresponse: JSONObject = jsonCrewArray.getJSONObject(i)
 
                 val crew = Crew()
