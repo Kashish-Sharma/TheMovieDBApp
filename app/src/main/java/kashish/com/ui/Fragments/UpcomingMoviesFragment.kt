@@ -56,10 +56,12 @@ class UpcomingMoviesFragment : Fragment() {
 
     private var pageNumber:Int = 1
     private var doPagination:Boolean = true
-    private var isScrolling:Boolean = false
-    private  var currentItem:Int = -1
-    private  var totalItem:Int = -1
-    private  var scrolledOutItem:Int = -1
+//    private var isScrolling:Boolean = false
+//    private  var currentItem:Int = -1
+//    private  var totalItem:Int = -1
+//    private  var scrolledOutItem:Int = -1
+    private var isLoading: Boolean = false
+
 
     lateinit var mMovieAdapter:MovieAdapter
     lateinit var data:MutableList<Movie>
@@ -136,6 +138,8 @@ class UpcomingMoviesFragment : Fragment() {
 
                 mMovieAdapter.notifyItemRangeInserted(data.size - jsonArray.length(), jsonArray.length())
 
+                isLoading = false
+
                 if (mSwipeRefreshLayout.isRefreshing())
                     mSwipeRefreshLayout.setRefreshing(false)
             }
@@ -190,8 +194,9 @@ class UpcomingMoviesFragment : Fragment() {
                 super.onScrolled(recyclerView, dx, dy)
 
                 val reachedBottom = !recyclerView!!.canScrollVertically(1) && dy!=0
-                if (reachedBottom && doPagination) {
+                if (reachedBottom && doPagination && !isLoading) {
                     pageNumber++
+                    isLoading = true
                     delayByfewSeconds()
                 }
             }

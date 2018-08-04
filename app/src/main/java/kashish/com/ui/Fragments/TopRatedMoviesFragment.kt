@@ -1,6 +1,7 @@
 package kashish.com.ui.Fragments
 
 
+import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.support.v4.app.Fragment
@@ -59,10 +60,11 @@ class TopRatedMoviesFragment : Fragment() {
 
     private var pageNumber:Int = 1
     private var doPagination:Boolean = true
-    private var isScrolling:Boolean = false
-    private  var currentItem:Int = -1
-    private  var totalItem:Int = -1
-    private  var scrolledOutItem:Int = -1
+//    private var isScrolling:Boolean = false
+//    private  var currentItem:Int = -1
+//    private  var totalItem:Int = -1
+//    private  var scrolledOutItem:Int = -1
+    private var isLoading: Boolean = false
 
     lateinit var mMovieAdapter: MovieAdapter
     lateinit var data:MutableList<Movie>
@@ -119,8 +121,9 @@ class TopRatedMoviesFragment : Fragment() {
                 super.onScrolled(recyclerView, dx, dy)
 
                 val reachedBottom = !recyclerView!!.canScrollVertically(1) && dy!=0
-                if (reachedBottom && doPagination) {
+                if (reachedBottom && doPagination && !isLoading) {
                     pageNumber++
+                    isLoading = true
                     delayByfewSeconds()
                 }
 
@@ -190,6 +193,8 @@ class TopRatedMoviesFragment : Fragment() {
 
                 mMovieAdapter.notifyItemRangeInserted(data.size - jsonArray.length(), jsonArray.length())
 
+                isLoading = false
+
                 if (mSwipeRefreshLayout.isRefreshing())
                     mSwipeRefreshLayout.setRefreshing(false)
             }
@@ -206,12 +211,11 @@ class TopRatedMoviesFragment : Fragment() {
             fetchData()
         }, 2000)
     }
-
     override fun onDestroyView() {
         super.onDestroyView()
+        Log.i("asdfghjkl","OnDestroyView")
         clearList()
     }
-
     private fun addProgressBarInList() {
         val progressBarContent = Movie()
         progressBarContent.contentType = CONTENT_PROGRESS
