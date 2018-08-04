@@ -42,6 +42,8 @@ import kashish.com.utils.Constants.Companion.TOTAL_PAGES
 import kashish.com.utils.Constants.Companion.VIDEO
 import kashish.com.utils.Constants.Companion.VOTE_AVERAGE
 import kashish.com.utils.Constants.Companion.VOTE_COUNT
+import kashish.com.utils.GridAutoFitLayoutManager
+import kashish.com.utils.Helpers.buildTopRatedMoviesUrl
 import kashish.com.utils.Urls
 import org.json.JSONArray
 import org.json.JSONObject
@@ -55,7 +57,7 @@ class TopRatedMoviesFragment : Fragment() {
     private val TAG:String = "TopRatedMoviesFragment"
     private lateinit var mMainView : View
     private lateinit var mRecyclerView : RecyclerView
-    private lateinit var mLinearLayoutManager : LinearLayoutManager
+    private lateinit var mLinearLayoutManager : GridAutoFitLayoutManager
     private lateinit var mSwipeRefreshLayout : SwipeRefreshLayout
 
     private var pageNumber:Int = 1
@@ -95,7 +97,7 @@ class TopRatedMoviesFragment : Fragment() {
     }
     private fun initRecyclerView() {
 
-        mLinearLayoutManager = LinearLayoutManager(context)
+        mLinearLayoutManager = GridAutoFitLayoutManager(context!!,220)
         mRecyclerView.setLayoutManager(mLinearLayoutManager)
 
         mMovieAdapter = MovieAdapter(data)
@@ -137,7 +139,7 @@ class TopRatedMoviesFragment : Fragment() {
     private fun fetchData(){
 
         val jsonObjectRequest = JsonObjectRequest(Request.Method.GET,
-                Urls.TOP_RATED_MOVIES.plus(pageNumber.toString()),null, Response.Listener { response ->
+                buildTopRatedMoviesUrl(pageNumber),null, Response.Listener { response ->
 
             val jsonArray: JSONArray = response.getJSONArray(RESULTS)
 

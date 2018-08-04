@@ -1,5 +1,6 @@
 package kashish.com.ui.Activities
 
+import android.content.res.Configuration
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.design.widget.AppBarLayout
@@ -408,6 +409,5 @@ class DetailActivity : AppCompatActivity() {
 
         VolleySingleton.getInstance(this).addToRequestQueue(jsonObjectRequest)
     }
-
 
 }

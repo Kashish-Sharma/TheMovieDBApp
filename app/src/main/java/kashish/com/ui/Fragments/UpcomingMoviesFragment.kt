@@ -40,6 +40,7 @@ import kashish.com.utils.Constants.Companion.TOTAL_PAGES
 import kashish.com.utils.Constants.Companion.VIDEO
 import kashish.com.utils.Constants.Companion.VOTE_AVERAGE
 import kashish.com.utils.Constants.Companion.VOTE_COUNT
+import kashish.com.utils.GridAutoFitLayoutManager
 import kashish.com.utils.Helpers.buildUpcomingMoviesUrl
 import org.json.JSONArray
 import org.json.JSONObject
@@ -51,7 +52,7 @@ class UpcomingMoviesFragment : Fragment() {
     private val TAG:String = "UpcomingMoviesFragment"
     private lateinit var mMainView : View
     private lateinit var mRecyclerView : RecyclerView
-    private lateinit var mLinearLayoutManager : LinearLayoutManager
+    private lateinit var mLinearLayoutManager : GridAutoFitLayoutManager
     private lateinit var mSwipeRefreshLayout : SwipeRefreshLayout
 
     private var pageNumber:Int = 1
@@ -171,7 +172,7 @@ class UpcomingMoviesFragment : Fragment() {
     }
     private fun initRecyclerView() {
 
-        mLinearLayoutManager = LinearLayoutManager(context)
+        mLinearLayoutManager = GridAutoFitLayoutManager(context!!,220)
         mRecyclerView.setLayoutManager(mLinearLayoutManager)
 
         mMovieAdapter = MovieAdapter(data)

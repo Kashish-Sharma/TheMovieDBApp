@@ -12,13 +12,16 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import kashish.com.R
 import kashish.com.models.Movie
+import kashish.com.utils.Constants.Companion.CONTENT_DISCOVER
 import kashish.com.utils.Constants.Companion.CONTENT_MOVIE
 import kashish.com.utils.Constants.Companion.CONTENT_PROGRESS
 import kashish.com.utils.Constants.Companion.getGenre
 import kashish.com.utils.DateUtils
 import kashish.com.utils.Helpers.buildImageUrl
+import kashish.com.viewholders.DiscoverViewHolder
 import kashish.com.viewholders.MovieViewHolder
 import kashish.com.viewholders.ProgressBarViewHolder
+import kotlinx.android.synthetic.main.discover_single_item.view.*
 import kotlinx.android.synthetic.main.movie_single_item.view.*
 
 
@@ -38,6 +41,12 @@ class MovieAdapter(private var movieList: List<Movie>) : Adapter<RecyclerView.Vi
                 view = LayoutInflater.from(parent.context)
                         .inflate(R.layout.movie_single_item, parent, false)
                 return MovieViewHolder(view,mContext, movieList)
+            }
+
+            CONTENT_DISCOVER ->{
+                view = LayoutInflater.from(parent.context)
+                        .inflate(R.layout.discover_single_item, parent, false)
+                return DiscoverViewHolder(view,mContext, movieList)
             }
 
             else -> {
@@ -68,6 +77,25 @@ class MovieAdapter(private var movieList: List<Movie>) : Adapter<RecyclerView.Vi
                 }
 
                 movieViewHolder.itemView.single_item_movie_type.setText(movieType)
+                Glide.with(mContext).load(buildImageUrl(movie.posterPath!!))
+                        .transition(withCrossFade()).into(movieViewHolder.moviePoster)
+            }
+
+            CONTENT_DISCOVER -> {
+                val movieViewHolder = holder as DiscoverViewHolder
+                val movie: Movie = movieList.get(holder.adapterPosition)
+                var movieType = "Genre: "
+
+                movieViewHolder.movieTitle.setText(movie.title)
+                movieViewHolder.movieRating.rating = movie.voteAverage!!.div(2)
+                movieViewHolder.movieReleaseDate.setText("Release date: ".plus(DateUtils.getStringDate(movie.releaseDate!!)))
+
+                for (i in movie.genreIds!!) {
+                    if (i == movie.genreIds!!.last()) movieType += getGenre(i)
+                    else movieType += getGenre(i) + ", "
+                }
+
+                movieViewHolder.itemView.discover_single_item_movie_type.setText(movieType)
                 Glide.with(mContext).load(buildImageUrl(movie.posterPath!!))
                         .transition(withCrossFade()).into(movieViewHolder.moviePoster)
             }
