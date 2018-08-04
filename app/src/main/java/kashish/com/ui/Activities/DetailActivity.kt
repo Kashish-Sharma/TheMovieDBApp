@@ -4,12 +4,14 @@ import android.content.res.Configuration
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.design.widget.AppBarLayout
+import android.support.design.widget.BottomSheetDialog
 import android.support.design.widget.CollapsingToolbarLayout
 import android.support.v4.widget.NestedScrollView
 import android.support.v7.app.ActionBar
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
+import android.text.method.ScrollingMovementMethod
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
@@ -34,13 +36,14 @@ import org.json.JSONArray
 import org.json.JSONObject
 import kashish.com.adapters.CastCrewAdapter
 import kashish.com.adapters.VideoAdapter
+import kashish.com.interfaces.OnReviewReadMoreClickListener
 import kashish.com.models.*
 import kashish.com.utils.Constants.Companion.CAST
 import kashish.com.utils.Constants.Companion.CREW
 import kashish.com.utils.Helpers.buildMovieCastUrl
 
 
-class DetailActivity : AppCompatActivity() {
+class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener {
 
     private val TAG: String = DetailActivity::class.java.simpleName
     private var movie: Movie = Movie()
@@ -78,6 +81,10 @@ class DetailActivity : AppCompatActivity() {
     private lateinit var mReviewRecyclerView : RecyclerView
     private lateinit var mLinearLayoutManager : LinearLayoutManager
     private lateinit var mReviewProgressBar : ProgressBar
+    private lateinit var mReviewReadMoreBottomSheet : BottomSheetDialog
+    private lateinit var mReviewReadMoreAuthor : TextView
+    private lateinit var mReviewReadMoreContent : TextView
+
 
     //Cast
     lateinit var mCastAdapter: CastCrewAdapter
@@ -190,7 +197,7 @@ class DetailActivity : AppCompatActivity() {
     private fun initReviewRecyclerView(){
         mLinearLayoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         mReviewRecyclerView.setLayoutManager(mLinearLayoutManager)
-        mReviewReviewAdapter = MovieReviewAdapter(data)
+        mReviewReviewAdapter = MovieReviewAdapter(data,this)
         mReviewRecyclerView.setAdapter(mReviewReviewAdapter)
     }
     private fun initCastRecyclerView(){
@@ -408,6 +415,27 @@ class DetailActivity : AppCompatActivity() {
         })
 
         VolleySingleton.getInstance(this).addToRequestQueue(jsonObjectRequest)
+    }
+
+    //Showing bottom sheet onClick review read more
+    private fun showReviewReadMoreBottomSheet(review: MovieReview){
+        val view = layoutInflater.inflate(R.layout.review_read_more_bottom_sheet_layout, null)
+        mReviewReadMoreBottomSheet = BottomSheetDialog(this)
+        mReviewReadMoreBottomSheet.setContentView(view)
+
+        mReviewReadMoreAuthor = mReviewReadMoreBottomSheet.findViewById(R.id.review_read_more_author)!!
+        mReviewReadMoreContent = mReviewReadMoreBottomSheet.findViewById(R.id.review_read_more_content)!!
+        mReviewReadMoreContent.movementMethod = ScrollingMovementMethod()
+
+        mReviewReadMoreAuthor.setText(review.author)
+        mReviewReadMoreContent.setText(review.content)
+
+        mReviewReadMoreBottomSheet.setCancelable(false)
+        mReviewReadMoreBottomSheet.setCanceledOnTouchOutside(true)
+        mReviewReadMoreBottomSheet.show()
+    }
+    override fun onReviewReadMoreClickListener(review: MovieReview) {
+        showReviewReadMoreBottomSheet(review)
     }
 
 }

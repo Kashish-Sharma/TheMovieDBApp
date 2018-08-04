@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import kashish.com.R
+import kashish.com.interfaces.OnReviewReadMoreClickListener
 import kashish.com.models.MovieReview
 import kashish.com.utils.Constants.Companion.CONTENT_REVIEW
 import kashish.com.viewholders.ProgressBarViewHolder
@@ -15,9 +16,16 @@ import kashish.com.viewholders.ReviewViewHolder
 /**
  * Created by Kashish on 02-08-2018.
  */
-class MovieReviewAdapter(private var reviewList: List<MovieReview>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class MovieReviewAdapter(reviewList: List<MovieReview>,listener: OnReviewReadMoreClickListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private lateinit var mContext: Context
+    private lateinit var mListener: OnReviewReadMoreClickListener
+    private lateinit var reviewList: List<MovieReview>
+
+    init {
+        this.mListener = listener
+        this.reviewList = reviewList
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
 
@@ -26,7 +34,7 @@ class MovieReviewAdapter(private var reviewList: List<MovieReview>) : RecyclerVi
 
         view = LayoutInflater.from(parent.context)
                 .inflate(R.layout.review_single_item, parent, false)
-        return ReviewViewHolder(view,mContext)
+        return ReviewViewHolder(view,mContext,reviewList,mListener)
 
     }
 
