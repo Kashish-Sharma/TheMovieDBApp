@@ -13,6 +13,15 @@ import kashish.com.utils.Urls.Companion.MOVIE_DETAILS_BASE_URL
 import kashish.com.utils.Urls.Companion.TMDB_API_KEY
 import java.text.ParseException
 import java.text.SimpleDateFormat
+import android.R.id.edit
+import android.content.SharedPreferences
+import android.content.Context.MODE_PRIVATE
+import android.app.Activity
+import android.content.Context
+import android.content.Context.MODE_PRIVATE
+import kashish.com.utils.DateUtils.Companion.getYear
+import java.util.*
+
 
 /**
  * Created by Kashish on 01-08-2018.
@@ -21,7 +30,12 @@ object Helpers {
 
     fun buildUpcomingMoviesUrl(pageNumber: Int, adult: String = "true"): String{
         return "https://api.themoviedb.org/3/movie/upcoming?api_key="+ TMDB_API_KEY+
-                "&language=en-US"+"&page="+pageNumber+"&region=IN|US&with_release_type=2|3"
+                "&language=en-US"+"&page="+pageNumber+"&region="+ getDefaultCountryCode() +"&with_release_type=2|3"
+    }
+
+    fun buildTopRatedMoviesUrl(pageNumber: Int, adult: String = "true"): String{
+        return Urls.BASE_URL +"movie/top_rated?api_key="+TMDB_API_KEY+
+                "&language=en-US&page="+pageNumber
     }
 
     fun buildMovieCastUrl(movieId: String): String{
@@ -56,6 +70,33 @@ object Helpers {
         return MOVIE_DETAILS_BASE_URL + movieId + "/reviews?api_key=" + TMDB_API_KEY + "&language=en-US&page=" + pageNumber
     }
 
+    fun buildDiscoverMovieUrl(pageNumber: Int,
+                              sortBy: String = "release_date.asc",
+                              adult: String = "false",
+                              isPrimaryReleaseYearIncluded:Boolean = false,
+                              primaryReleaseYear:String = getYear(System.currentTimeMillis()),
+                              getReleaseDateLess:Boolean = false,
+                              getReleaseDateGreater:Boolean = true,
+                              releaseDateLessThan:String = getDateFromEpoch(System.currentTimeMillis()),
+                              releaseDateGreaterThan:String = getDateFromEpoch(System.currentTimeMillis()-31536000000)
+            ): String{
+        var url:String = "https://api.themoviedb.org/3/discover/movie?api_key=" + TMDB_API_KEY +
+                "&language=en-US&page=" + pageNumber+
+                "&region=US|IN&sort_by="+ sortBy +"&include_adult="+ adult +"&include_video=true"
+
+        if (isPrimaryReleaseYearIncluded){
+            url+="&primary_release_year="+primaryReleaseYear
+        }
+
+        if (getReleaseDateGreater){
+            url+="&release_date.gte="+releaseDateGreaterThan
+        } else if (getReleaseDateLess) {
+            url+="&release_date.lte="+releaseDateLessThan
+        }
+
+        return url
+    }
+
 
     fun handleViewHideOnScroll(view: View, dy: Int, maxTranslation: Float) {
         val translationY = view.translationY
@@ -83,6 +124,14 @@ object Helpers {
             window.statusBarColor = Color.TRANSPARENT
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or  View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
         }
+    }
+
+
+    fun getDefaultLanguageCode():String{
+        return Locale.getDefault().language
+    }
+    fun getDefaultCountryCode():String{
+        return Locale.getDefault().country
     }
 
 }

@@ -72,6 +72,11 @@ class DateUtils{
             return Integer.valueOf(dateFormat.format(timeInMillis))!!
         }
 
+        fun getYear(timeInMillis: Long): String {
+            val dateFormat = SimpleDateFormat("YYYY", Locale.getDefault())
+            return dateFormat.format(timeInMillis)!!
+        }
+
         /**
          * If the given time is of a different date, display the date.
          * If it is of the same date, display the time.
