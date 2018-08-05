@@ -35,7 +35,7 @@ class VideoAdapter(private var videoList: List<Video>) : RecyclerView.Adapter<Re
         val videoViewHolder = holder as VideoViewHolder
         val video: Video = videoList.get(holder.adapterPosition)
 
-        Glide.with(mContext).load(buildYouTubeThumbnailURL(video.key!!)).thumbnail(0.25f)
+        Glide.with(mContext).load(buildYouTubeThumbnailURL(video.key!!)).thumbnail(0.05f)
                 .transition(withCrossFade()).into(videoViewHolder.mVideoImage)
 
     }

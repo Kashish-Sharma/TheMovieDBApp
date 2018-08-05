@@ -96,7 +96,7 @@ class MovieAdapter(private var movieList: List<Movie>) : Adapter<RecyclerView.Vi
                 }
 
                 movieViewHolder.itemView.discover_single_item_movie_type.setText(movieType)
-                Glide.with(mContext).load(buildImageUrl(movie.posterPath!!))
+                Glide.with(mContext).load(buildImageUrl(movie.posterPath!!)).thumbnail(0.05f)
                         .transition(withCrossFade()).into(movieViewHolder.moviePoster)
             }
 
