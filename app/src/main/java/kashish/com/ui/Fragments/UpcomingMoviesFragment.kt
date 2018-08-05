@@ -1,18 +1,17 @@
 package kashish.com.ui.Fragments
 
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.os.Handler
 import android.support.v4.app.Fragment
 import android.support.v4.widget.SwipeRefreshLayout
-import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AbsListView
-import android.widget.ProgressBar
 import android.widget.Toast
 import com.android.volley.Request
 import com.android.volley.Response
@@ -40,7 +39,6 @@ import kashish.com.utils.Constants.Companion.TOTAL_PAGES
 import kashish.com.utils.Constants.Companion.VIDEO
 import kashish.com.utils.Constants.Companion.VOTE_AVERAGE
 import kashish.com.utils.Constants.Companion.VOTE_COUNT
-import kashish.com.utils.GridAutoFitLayoutManager
 import kashish.com.utils.Helpers.buildUpcomingMoviesUrl
 import org.json.JSONArray
 import org.json.JSONObject
@@ -50,9 +48,10 @@ import org.json.JSONObject
 class UpcomingMoviesFragment : Fragment() {
 
     private val TAG:String = "UpcomingMoviesFragment"
+    private val GRID_COLUMNS_PORTRAIT = 1
+    private val GRID_COLUMNS_LANDSCAPE = 2
     private lateinit var mMainView : View
     private lateinit var mRecyclerView : RecyclerView
-    private lateinit var mLinearLayoutManager : GridAutoFitLayoutManager
     private lateinit var mSwipeRefreshLayout : SwipeRefreshLayout
 
     private var pageNumber:Int = 1
@@ -171,10 +170,7 @@ class UpcomingMoviesFragment : Fragment() {
         addProgressBarInList()
     }
     private fun initRecyclerView() {
-
-        mLinearLayoutManager = GridAutoFitLayoutManager(context!!,220)
-        mRecyclerView.setLayoutManager(mLinearLayoutManager)
-
+        configureRecyclerAdapter(resources.configuration.orientation)
         mMovieAdapter = MovieAdapter(data)
         mRecyclerView.setAdapter(mMovieAdapter)
     }
@@ -216,6 +212,16 @@ class UpcomingMoviesFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         clearList()
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration?) {
+        super.onConfigurationChanged(newConfig)
+        configureRecyclerAdapter(newConfig!!.orientation)
+    }
+
+    private fun configureRecyclerAdapter(orientation: Int) {
+        val isPortrait = orientation == Configuration.ORIENTATION_PORTRAIT
+        mRecyclerView.setLayoutManager(GridLayoutManager(context, if (isPortrait) GRID_COLUMNS_PORTRAIT else GRID_COLUMNS_LANDSCAPE))
     }
 
 }
