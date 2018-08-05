@@ -1,6 +1,5 @@
 package kashish.com.ui.Activities
 
-import android.content.res.Configuration
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.design.widget.AppBarLayout
@@ -8,8 +7,7 @@ import android.support.design.widget.BottomSheetDialog
 import android.support.design.widget.CollapsingToolbarLayout
 import android.support.v4.widget.NestedScrollView
 import android.support.v7.app.ActionBar
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.*
 import android.support.v7.widget.Toolbar
 import android.text.method.ScrollingMovementMethod
 import android.util.Log
@@ -47,6 +45,10 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener {
 
     private val TAG: String = DetailActivity::class.java.simpleName
     private var movie: Movie = Movie()
+    private lateinit var mReviewSnapHelper: SnapHelper
+    private lateinit var mCastSnapHelper: SnapHelper
+    private lateinit var mCrewSnapHelper: SnapHelper
+    private lateinit var mTrailerSnapHelper: SnapHelper
 
     //Collapsing Toolbar
     private lateinit var mCollapsingToolbar: CollapsingToolbarLayout
@@ -170,6 +172,11 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener {
         })
     }
     private fun initViews(){
+        mReviewSnapHelper = LinearSnapHelper()
+        mCastSnapHelper = LinearSnapHelper()
+        mCrewSnapHelper = LinearSnapHelper()
+        mTrailerSnapHelper = LinearSnapHelper()
+
         mAdult = findViewById(R.id.activity_detail_adult)
         mVoteAvg = findViewById(R.id.activity_detail_vote_average)
         mVotes = findViewById(R.id.activity_detail_vote_count)
@@ -199,24 +206,28 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener {
         mReviewRecyclerView.setLayoutManager(mLinearLayoutManager)
         mReviewReviewAdapter = MovieReviewAdapter(data,this)
         mReviewRecyclerView.setAdapter(mReviewReviewAdapter)
+        mReviewSnapHelper.attachToRecyclerView(mReviewRecyclerView)
     }
     private fun initCastRecyclerView(){
         mLinearLayoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         mCastRecyclerView.setLayoutManager(mLinearLayoutManager)
         mCastAdapter = CastCrewAdapter(castData)
         mCastRecyclerView.setAdapter(mCastAdapter)
+        mCastSnapHelper.attachToRecyclerView(mCastRecyclerView)
     }
     private fun initCrewRecyclerView(){
         mLinearLayoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         mCrewRecyclerView.setLayoutManager(mLinearLayoutManager)
         mCrewAdapter = CastCrewAdapter(crewData)
         mCrewRecyclerView.setAdapter(mCrewAdapter)
+        mCrewSnapHelper.attachToRecyclerView(mCrewRecyclerView)
     }
     private fun initTrailerRecyclerView(){
         mLinearLayoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         mTrailerRecyclerView.setLayoutManager(mLinearLayoutManager)
         mTrailerAdapter = VideoAdapter(trailerData)
         mTrailerRecyclerView.setAdapter(mTrailerAdapter)
+        mTrailerSnapHelper.attachToRecyclerView(mTrailerRecyclerView)
     }
     private fun setRatingsData(){
         if (movie.adult!!) mAdult.setText("adult: true")

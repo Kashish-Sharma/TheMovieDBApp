@@ -19,6 +19,7 @@ import android.content.Context.MODE_PRIVATE
 import android.app.Activity
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
+import android.view.WindowManager
 import kashish.com.utils.DateUtils.Companion.getYear
 import java.util.*
 
@@ -122,7 +123,7 @@ object Helpers {
     fun setUpTransparentStatusBar(window: Window) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             window.statusBarColor = Color.TRANSPARENT
-            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or  View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+            window.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
         }
     }
 
