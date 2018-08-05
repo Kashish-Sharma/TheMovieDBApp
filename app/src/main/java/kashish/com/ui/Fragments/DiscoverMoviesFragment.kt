@@ -1,12 +1,12 @@
 package kashish.com.ui.Fragments
 
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.os.Handler
 import android.support.v4.app.Fragment
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
@@ -22,7 +22,6 @@ import kashish.com.adapters.MovieAdapter
 import kashish.com.models.Movie
 import kashish.com.singleton.VolleySingleton
 import kashish.com.utils.Constants
-import kashish.com.utils.GridAutoFitLayoutManager
 import kashish.com.utils.Helpers
 import org.json.JSONArray
 import org.json.JSONObject
@@ -34,9 +33,10 @@ import org.json.JSONObject
 class DiscoverMoviesFragment : Fragment() {
 
     private val TAG:String = "TopRatedMoviesFragment"
+    private val GRID_COLUMNS_PORTRAIT = 2
+    private val GRID_COLUMNS_LANDSCAPE = 3
     private lateinit var mMainView : View
     private lateinit var mRecyclerView : RecyclerView
-    private lateinit var mGridLayoutManager : GridAutoFitLayoutManager
     private lateinit var mSwipeRefreshLayout : SwipeRefreshLayout
 
     private var pageNumber:Int = 1
@@ -60,7 +60,6 @@ class DiscoverMoviesFragment : Fragment() {
 
         return mMainView
     }
-
     private fun initViews(){
         mRecyclerView = mMainView.findViewById(R.id.fragment_discover_movies_recycler_view)
         mSwipeRefreshLayout = mMainView.findViewById(R.id.fragment_discover_movies_swipe_refresh)
@@ -71,10 +70,7 @@ class DiscoverMoviesFragment : Fragment() {
         mMovieAdapter.notifyItemRangeRemoved(0, size)
     }
     private fun initRecyclerView() {
-
-        mGridLayoutManager = GridAutoFitLayoutManager(context!!,180)
-        mRecyclerView.setLayoutManager(mGridLayoutManager)
-
+        configureRecyclerAdapter(resources.configuration.orientation)
         mMovieAdapter = MovieAdapter(data)
         mRecyclerView.setAdapter(mMovieAdapter)
     }
@@ -111,7 +107,6 @@ class DiscoverMoviesFragment : Fragment() {
             }
         })
     }
-
     private fun delayByfewSeconds(){
         val handler = Handler()
         handler.postDelayed(Runnable {
@@ -128,7 +123,6 @@ class DiscoverMoviesFragment : Fragment() {
         progressBarContent.contentType = Constants.CONTENT_PROGRESS
         data.add(progressBarContent)
     }
-
     private fun fetchData(){
 
         val jsonObjectRequest = JsonObjectRequest(Request.Method.GET,
@@ -199,6 +193,16 @@ class DiscoverMoviesFragment : Fragment() {
         })
 
         VolleySingleton.getInstance(this.context!!).addToRequestQueue(jsonObjectRequest)
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration?) {
+        super.onConfigurationChanged(newConfig)
+        configureRecyclerAdapter(newConfig!!.orientation)
+    }
+
+    private fun configureRecyclerAdapter(orientation: Int) {
+        val isPortrait = orientation == Configuration.ORIENTATION_PORTRAIT
+        mRecyclerView.setLayoutManager(GridLayoutManager(context, if (isPortrait) GRID_COLUMNS_PORTRAIT else GRID_COLUMNS_LANDSCAPE))
     }
 
 }// Required empty public constructor
