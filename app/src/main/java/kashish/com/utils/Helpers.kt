@@ -29,14 +29,24 @@ import java.util.*
  */
 object Helpers {
 
-    fun buildUpcomingMoviesUrl(pageNumber: Int, adult: String = "true"): String{
+    fun buildUpcomingMoviesUrl(pageNumber: Int, adult: String = "false"): String{
         return "https://api.themoviedb.org/3/movie/upcoming?api_key="+ TMDB_API_KEY+
-                "&language=en-US"+"&page="+pageNumber+"&region="+ getDefaultCountryCode() +"&with_release_type=2|3"
+                "&language=en-US"+"&page="+pageNumber+"&region=US|IN|UK"+"&with_release_type=2|3"
     }
 
-    fun buildTopRatedMoviesUrl(pageNumber: Int, adult: String = "true"): String{
+    fun buildTopRatedMoviesUrl(pageNumber: Int, adult: String = "false"): String{
         return Urls.BASE_URL +"movie/top_rated?api_key="+TMDB_API_KEY+
                 "&language=en-US&page="+pageNumber
+    }
+
+    fun buildNowShowingMoviesUrl(pageNumber: Int, adult: String = "false"): String{
+        return Urls.BASE_URL +"movie/now_playing?api_key="+TMDB_API_KEY+
+                "&language=en-US&page="+pageNumber+"&region=US|IN|UK"
+    }
+
+    fun buildPopularMoviesUrl(pageNumber: Int, adult: String = "false"): String{
+        return Urls.BASE_URL +"movie/popular?api_key="+TMDB_API_KEY+
+                "&language=en-US&page="+pageNumber+"&region=US|IN|UK"
     }
 
     fun buildMovieCastUrl(movieId: String): String{

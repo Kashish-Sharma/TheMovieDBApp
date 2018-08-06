@@ -72,7 +72,6 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener {
     //Overview
     private lateinit var mDetailOverView: TextView
     private lateinit var mDetailGenre: TextView
-    private var movieGenre: String = ""
     private lateinit var mDetailRatingBar: RatingBar
     private lateinit var mRunTimeTextView: TextView
     private lateinit var mBudgetTextView: TextView
@@ -114,7 +113,6 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener {
         setUpTransparentStatusBar(window)
 
         getMovie()
-        getGenre()
         initToolBar()
         setupCollapsingToolbar()
 
@@ -133,9 +131,6 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener {
 
     private fun getMovie(){
         movie = intent.getParcelableExtra("movie")
-    }
-    private fun getGenre(){
-        movieGenre = intent.getStringExtra("genre")
     }
     private fun initToolBar(){
         mCollapsingToolbar = findViewById(R.id.activity_detail_collapsing_layout)
@@ -241,7 +236,7 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener {
     }
     private fun setOverViewData(){
         mDetailOverView.setText(movie.overview)
-        mDetailGenre.setText(movieGenre)
+        mDetailGenre.setText(movie.genreString)
         mDetailRatingBar.rating = movie.voteAverage!!.div(2)
     }
     private fun setRuntimeAndBudget(runtime: Int, budget: Int){

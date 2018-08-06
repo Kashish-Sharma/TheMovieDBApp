@@ -1,6 +1,7 @@
 package kashish.com.ui.Fragments
 
 
+import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.os.Handler
@@ -12,6 +13,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AbsListView
 import android.widget.Toast
 import com.android.volley.Request
 import com.android.volley.Response
@@ -19,8 +21,10 @@ import com.android.volley.toolbox.JsonObjectRequest
 
 import kashish.com.R
 import kashish.com.adapters.MovieAdapter
+import kashish.com.interfaces.OnMovieClickListener
 import kashish.com.models.Movie
 import kashish.com.singleton.VolleySingleton
+import kashish.com.ui.Activities.DetailActivity
 import kashish.com.utils.Constants
 import kashish.com.utils.Helpers
 import org.json.JSONArray
@@ -30,7 +34,7 @@ import org.json.JSONObject
 /**
  * A simple [Fragment] subclass.
  */
-class DiscoverMoviesFragment : Fragment() {
+class DiscoverMoviesFragment : Fragment(), OnMovieClickListener {
 
     private val TAG:String = "TopRatedMoviesFragment"
     private val GRID_COLUMNS_PORTRAIT = 2
@@ -38,10 +42,16 @@ class DiscoverMoviesFragment : Fragment() {
     private lateinit var mMainView : View
     private lateinit var mRecyclerView : RecyclerView
     private lateinit var mSwipeRefreshLayout : SwipeRefreshLayout
+    private lateinit var mGridLayoutManager : GridLayoutManager
+
 
     private var pageNumber:Int = 1
     private var doPagination:Boolean = true
     private var isLoading: Boolean = false
+    private var isScrolling:Boolean = false
+    private  var currentItem:Int = -1
+    private  var totalItem:Int = -1
+    private  var scrolledOutItem:Int = -1
 
     lateinit var mMovieAdapter: MovieAdapter
     lateinit var data:MutableList<Movie>
@@ -71,8 +81,9 @@ class DiscoverMoviesFragment : Fragment() {
     }
     private fun initRecyclerView() {
         configureRecyclerAdapter(resources.configuration.orientation)
-        mMovieAdapter = MovieAdapter(data)
+        mMovieAdapter = MovieAdapter(data,this)
         mRecyclerView.setAdapter(mMovieAdapter)
+        mRecyclerView.setHasFixedSize(true)
     }
     private fun setSwipeRefreshLayoutListener() {
         mSwipeRefreshLayout.setOnRefreshListener {
@@ -93,9 +104,20 @@ class DiscoverMoviesFragment : Fragment() {
             override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
 
-                val reachedBottom = !recyclerView!!.canScrollVertically(1) && dy!=0
-                if (reachedBottom && doPagination && !isLoading) {
+//                val reachedBottom = !recyclerView!!.canScrollVertically(1) && dy!=0
+//                if (reachedBottom && doPagination && !isLoading) {
+//                    pageNumber++
+//                    isLoading = true
+//                    delayByfewSeconds()
+//                }
+
+                currentItem = mGridLayoutManager.childCount
+                totalItem = mGridLayoutManager.itemCount
+                scrolledOutItem = mGridLayoutManager.findFirstVisibleItemPosition()
+
+                if (isScrolling && doPagination && !isLoading && (currentItem+scrolledOutItem == totalItem)){
                     pageNumber++
+                    isScrolling = false
                     isLoading = true
                     delayByfewSeconds()
                 }
@@ -103,7 +125,8 @@ class DiscoverMoviesFragment : Fragment() {
             }
             override fun onScrollStateChanged(recyclerView: RecyclerView?, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
-
+                if(newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL)
+                    isScrolling = true
             }
         })
     }
@@ -163,12 +186,13 @@ class DiscoverMoviesFragment : Fragment() {
                     movie.originalTitle = jresponse.getString(Constants.ORIGINAL_TITLE)
 
                     val array: JSONArray = jresponse.getJSONArray(Constants.GENRE_IDS)
-                    val genreList: MutableList<Int> = mutableListOf()
+                    //val genreList: MutableList<Int> = mutableListOf()
                     for (j in 0 until array.length()) {
-                        genreList.add(array.getInt(j))
+                        //genreList.add(array.getInt(j))
+                        movie.genreString += Constants.getGenre(array.getInt(j)) + ", "
                     }
 
-                    movie.genreIds = genreList
+                    //movie.genreIds = genreList
                     movie.backdropPath = jresponse.getString(Constants.BACKDROP_PATH)
                     movie.adult = jresponse.getBoolean(Constants.ADULT)
                     movie.overview = jresponse.getString(Constants.OVERVIEW)
@@ -189,7 +213,7 @@ class DiscoverMoviesFragment : Fragment() {
             }
 
         }, Response.ErrorListener { error ->
-            Log.i(TAG,error.message)
+            Log.i(TAG,error.message+" is the error message")
         })
 
         VolleySingleton.getInstance(this.context!!).addToRequestQueue(jsonObjectRequest)
@@ -202,7 +226,15 @@ class DiscoverMoviesFragment : Fragment() {
 
     private fun configureRecyclerAdapter(orientation: Int) {
         val isPortrait = orientation == Configuration.ORIENTATION_PORTRAIT
-        mRecyclerView.setLayoutManager(GridLayoutManager(context, if (isPortrait) GRID_COLUMNS_PORTRAIT else GRID_COLUMNS_LANDSCAPE))
+        mGridLayoutManager = GridLayoutManager(context, if (isPortrait) GRID_COLUMNS_PORTRAIT else GRID_COLUMNS_LANDSCAPE)
+        mRecyclerView.setLayoutManager(mGridLayoutManager)
+    }
+
+    override fun onMovieClickListener(movie: Movie) {
+
+        val detailIntent = Intent(context, DetailActivity::class.java)
+        detailIntent.putExtra("movie",movie)
+        context!!.startActivity(detailIntent)
     }
 
 }// Required empty public constructor

@@ -11,6 +11,7 @@ import android.view.View
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import kashish.com.R
+import kashish.com.interfaces.OnMovieClickListener
 import kashish.com.models.Movie
 import kashish.com.utils.Constants.Companion.CONTENT_DISCOVER
 import kashish.com.utils.Constants.Companion.CONTENT_MOVIE
@@ -28,9 +29,16 @@ import kotlinx.android.synthetic.main.movie_single_item.view.*
 /**
  * Created by Kashish on 30-07-2018.
  */
-class MovieAdapter(private var movieList: List<Movie>) : Adapter<RecyclerView.ViewHolder>() {
+class MovieAdapter(movieList: List<Movie>,listener: OnMovieClickListener) : Adapter<RecyclerView.ViewHolder>() {
 
     private lateinit var mContext: Context
+    private var mListener: OnMovieClickListener
+    private var movieList: List<Movie>
+
+    init {
+        this.movieList = movieList
+        this.mListener = listener
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
 
@@ -40,7 +48,7 @@ class MovieAdapter(private var movieList: List<Movie>) : Adapter<RecyclerView.Vi
             CONTENT_MOVIE ->{
                 view = LayoutInflater.from(parent.context)
                         .inflate(R.layout.movie_single_item, parent, false)
-                return MovieViewHolder(view,mContext, movieList)
+                return MovieViewHolder(view,mContext, movieList,mListener)
             }
 
             CONTENT_DISCOVER ->{
@@ -71,13 +79,13 @@ class MovieAdapter(private var movieList: List<Movie>) : Adapter<RecyclerView.Vi
                 movieViewHolder.moviePopularity.setText("Popularity: ".plus(movie.popularity.toString()))
                 movieViewHolder.movieReleaseDate.setText("Release date: ".plus(DateUtils.getStringDate(movie.releaseDate!!)))
 
-                for (i in movie.genreIds!!) {
-                    if (i == movie.genreIds!!.last()) movieType += getGenre(i)
-                    else movieType += getGenre(i) + ", "
-                }
+//                for (i in movie.genreIds!!) {
+//                    if (i == movie.genreIds!!.last()) movieType += getGenre(i)
+//                    else movieType += getGenre(i) + ", "
+//                }
 
-                movieViewHolder.itemView.single_item_movie_type.setText(movieType)
-                Glide.with(mContext).load(buildImageUrl(movie.posterPath!!))
+                movieViewHolder.itemView.single_item_movie_type.setText("Genre: "+movie.genreString)
+                Glide.with(mContext).load(buildImageUrl(movie.posterPath!!)).thumbnail(0.05f)
                         .transition(withCrossFade()).into(movieViewHolder.moviePoster)
             }
 
@@ -90,12 +98,12 @@ class MovieAdapter(private var movieList: List<Movie>) : Adapter<RecyclerView.Vi
                 movieViewHolder.movieRating.rating = movie.voteAverage!!.div(2)
                 movieViewHolder.movieReleaseDate.setText("Release date: ".plus(DateUtils.getStringDate(movie.releaseDate!!)))
 
-                for (i in movie.genreIds!!) {
-                    if (i == movie.genreIds!!.last()) movieType += getGenre(i)
-                    else movieType += getGenre(i) + ", "
-                }
+//                for (i in movie.genreIds!!) {
+//                    if (i == movie.genreIds!!.last()) movieType += getGenre(i)
+//                    else movieType += getGenre(i) + ", "
+//                }
 
-                movieViewHolder.itemView.discover_single_item_movie_type.setText(movieType)
+                movieViewHolder.itemView.discover_single_item_movie_type.setText("Genre: "+movie.genreString)
                 Glide.with(mContext).load(buildImageUrl(movie.posterPath!!)).thumbnail(0.05f)
                         .transition(withCrossFade()).into(movieViewHolder.moviePoster)
             }
