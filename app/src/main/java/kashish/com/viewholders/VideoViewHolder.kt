@@ -9,23 +9,29 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import kashish.com.R
+import kashish.com.interfaces.OnVideoClickListener
 import kashish.com.models.Video
 import kashish.com.utils.Helpers
 
 /**
  * Created by Kashish on 04-08-2018.
  */
-class VideoViewHolder(itemView: View?, context: Context, videoList: List<Video>): RecyclerView.ViewHolder(itemView) {
+class VideoViewHolder(itemView: View?,
+                      val context: Context,
+                      val videoList: List<Video>,
+                      val listener: OnVideoClickListener): RecyclerView.ViewHolder(itemView), View.OnClickListener {
+
     var mVideoImage: ImageView
     init{
         mVideoImage = itemView!!.findViewById(R.id.activity_detail_trailer_poster_image)
-
-        itemView.setOnClickListener(View.OnClickListener {
-            val video = videoList.get(adapterPosition)
-            val intent = Intent(Intent.ACTION_VIEW)
-            intent.data = Uri.parse(Helpers.buildYoutubeURL(video.key!!))
-            context.startActivity(Intent.createChooser(intent, "View Trailer:"))
-        })
-
+        itemView.setOnClickListener(this)
     }
+
+    override fun onClick(p0: View?) {
+        val position:Int = adapterPosition
+        if (position!=RecyclerView.NO_POSITION){
+            listener.onVideoClickListener(videoList.get(position))
+        }
+    }
+
 }

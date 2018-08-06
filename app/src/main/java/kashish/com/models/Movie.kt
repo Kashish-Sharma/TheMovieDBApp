@@ -27,7 +27,7 @@ class Movie(): Parcelable {
     var releaseDate: String? = null
     var contentType: Int? = null
     var totalPages: Int? = null
-    var genreString: String? = null
+    var genreString: String? = ""
 
     constructor(parcel: Parcel) : this() {
         voteCount = parcel.readValue(Int::class.java.classLoader) as? Int

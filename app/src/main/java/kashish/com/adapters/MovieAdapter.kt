@@ -54,7 +54,7 @@ class MovieAdapter(movieList: List<Movie>,listener: OnMovieClickListener) : Adap
             CONTENT_DISCOVER ->{
                 view = LayoutInflater.from(parent.context)
                         .inflate(R.layout.discover_single_item, parent, false)
-                return DiscoverViewHolder(view,mContext, movieList)
+                return DiscoverViewHolder(view,mContext, movieList,mListener)
             }
 
             else -> {

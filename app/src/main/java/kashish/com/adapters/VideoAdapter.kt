@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import kashish.com.R
+import kashish.com.interfaces.OnVideoClickListener
 import kashish.com.models.Video
 import kashish.com.utils.Helpers.buildYouTubeThumbnailURL
 import kashish.com.viewholders.VideoViewHolder
@@ -15,9 +16,14 @@ import kashish.com.viewholders.VideoViewHolder
 /**
  * Created by Kashish on 04-08-2018.
  */
-class VideoAdapter(private var videoList: List<Video>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class VideoAdapter(private var videoList: List<Video>,listener: OnVideoClickListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private lateinit var mContext: Context
+    private lateinit var mListener: OnVideoClickListener
+
+    init {
+        this.mListener = listener
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
 
@@ -26,7 +32,7 @@ class VideoAdapter(private var videoList: List<Video>) : RecyclerView.Adapter<Re
 
         view = LayoutInflater.from(parent.context)
                 .inflate(R.layout.trailer_single_item, parent, false)
-        return VideoViewHolder(view,mContext, videoList)
+        return VideoViewHolder(view,mContext, videoList,mListener)
 
     }
 
