@@ -33,8 +33,7 @@ class ReviewViewHolder(itemView: View?, context: Context,
     override fun onClick(p0: View?) {
         val position: Int = adapterPosition
         if (position!=RecyclerView.NO_POSITION){
-            listener.onReviewReadMoreClickListener(reviewList.get(position))
+                listener.onReviewReadMoreClickListener(reviewList.get(position))
+            }
         }
-    }
-
 }

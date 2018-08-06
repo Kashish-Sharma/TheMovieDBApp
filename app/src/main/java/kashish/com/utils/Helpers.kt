@@ -44,13 +44,18 @@ object Helpers {
                 "&language=en-US&page="+pageNumber+"&region=US|IN|UK"
     }
 
+    fun buildRecommendedMoviesUrl(pageNumber: Int, movieId: String): String{
+        return Urls.BASE_URL + "movie/"+movieId+"/recommendations?" +
+                "api_key="+ TMDB_API_KEY+"&language=en-US&page="+pageNumber
+    }
+
     fun buildPopularMoviesUrl(pageNumber: Int, adult: String = "false"): String{
         return Urls.BASE_URL +"movie/popular?api_key="+TMDB_API_KEY+
                 "&language=en-US&page="+pageNumber+"&region=US|IN|UK"
     }
 
     fun buildMovieCastUrl(movieId: String): String{
-        return "https://api.themoviedb.org/3/movie/"+movieId+"/credits?api_key="+ TMDB_API_KEY
+        return Urls.BASE_URL +"movie/"+movieId+"/credits?api_key="+ TMDB_API_KEY
     }
 
     fun buildProfileImageUrl(path: String): String {
@@ -78,7 +83,8 @@ object Helpers {
     }
 
     fun buildMovieReviewUrl(movieId: String, pageNumber: Int): String {
-        return MOVIE_DETAILS_BASE_URL + movieId + "/reviews?api_key=" + TMDB_API_KEY + "&language=en-US&page=" + pageNumber
+        return MOVIE_DETAILS_BASE_URL + movieId + "/reviews?api_key=" + TMDB_API_KEY +
+                "&language=en-US&page="+ pageNumber + "&append_to_response=recommendations"
     }
 
     fun buildDiscoverMovieUrl(pageNumber: Int,

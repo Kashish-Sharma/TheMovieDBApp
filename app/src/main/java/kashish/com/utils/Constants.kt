@@ -60,6 +60,7 @@ class Constants {
         val CONTENT_MOVIE = 0
         val CONTENT_REVIEW = 1
         val CONTENT_DISCOVER = 2
+        val CONTENT_SIMILAR = 3
         val CONTENT_PROGRESS = 777
 
         //Shared preferences
