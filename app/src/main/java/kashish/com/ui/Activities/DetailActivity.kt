@@ -1,5 +1,7 @@
 package kashish.com.ui.Activities
 
+import android.content.Intent
+import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.design.widget.AppBarLayout
@@ -35,13 +37,15 @@ import org.json.JSONObject
 import kashish.com.adapters.CastCrewAdapter
 import kashish.com.adapters.VideoAdapter
 import kashish.com.interfaces.OnReviewReadMoreClickListener
+import kashish.com.interfaces.OnVideoClickListener
 import kashish.com.models.*
 import kashish.com.utils.Constants.Companion.CAST
 import kashish.com.utils.Constants.Companion.CREW
+import kashish.com.utils.Helpers
 import kashish.com.utils.Helpers.buildMovieCastUrl
 
 
-class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener {
+class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVideoClickListener {
 
     private val TAG: String = DetailActivity::class.java.simpleName
     private var movie: Movie = Movie()
@@ -220,7 +224,7 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener {
     private fun initTrailerRecyclerView(){
         mLinearLayoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         mTrailerRecyclerView.setLayoutManager(mLinearLayoutManager)
-        mTrailerAdapter = VideoAdapter(trailerData)
+        mTrailerAdapter = VideoAdapter(trailerData,this)
         mTrailerRecyclerView.setAdapter(mTrailerAdapter)
         mTrailerSnapHelper.attachToRecyclerView(mTrailerRecyclerView)
     }
@@ -430,5 +434,9 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener {
     override fun onReviewReadMoreClickListener(review: MovieReview) {
         showReviewReadMoreBottomSheet(review)
     }
-
+    override fun onVideoClickListener(video: Video) {
+        val intent = Intent(Intent.ACTION_VIEW)
+        intent.data = Uri.parse(Helpers.buildYoutubeURL(video.key!!))
+        startActivity(Intent.createChooser(intent, "View Trailer:"))
+    }
 }

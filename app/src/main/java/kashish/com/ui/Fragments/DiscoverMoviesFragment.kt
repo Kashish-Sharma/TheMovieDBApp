@@ -231,7 +231,6 @@ class DiscoverMoviesFragment : Fragment(), OnMovieClickListener {
     }
 
     override fun onMovieClickListener(movie: Movie) {
-
         val detailIntent = Intent(context, DetailActivity::class.java)
         detailIntent.putExtra("movie",movie)
         context!!.startActivity(detailIntent)

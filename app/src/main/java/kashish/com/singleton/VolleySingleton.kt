@@ -10,54 +10,33 @@ import com.android.volley.toolbox.ImageLoader
 import com.android.volley.toolbox.Volley
 
 
-class VolleySingleton private constructor(context: Context) {
-    private var mRequestQueue: RequestQueue? = null
-    val imageLoader: ImageLoader
-
-    val requestQueue: RequestQueue
-        get() {
-            if (mRequestQueue == null) {
-                mRequestQueue = Volley.newRequestQueue(mCtx.applicationContext)
-            }
-            return this.mRequestQueue!!
-        }
-
-    init {
-        mCtx = context
-        mRequestQueue = requestQueue
-        imageLoader = ImageLoader(mRequestQueue,
+class VolleySingleton constructor(context: Context) {
+    companion object {
+        @Volatile
+        private var INSTANCE: VolleySingleton? = null
+        fun getInstance(context: Context) =
+                INSTANCE ?: synchronized(this) {
+                    INSTANCE ?: VolleySingleton(context)
+                }
+    }
+    val imageLoader: ImageLoader by lazy {
+        ImageLoader(requestQueue,
                 object : ImageLoader.ImageCache {
                     private val cache = LruCache<String, Bitmap>(20)
-
                     override fun getBitmap(url: String): Bitmap {
                         return cache.get(url)
                     }
-
                     override fun putBitmap(url: String, bitmap: Bitmap) {
                         cache.put(url, bitmap)
                     }
                 })
     }
-
+    val requestQueue: RequestQueue by lazy {
+        // applicationContext is key, it keeps you from leaking the
+        // Activity or BroadcastReceiver if someone passes one in.
+        Volley.newRequestQueue(context.applicationContext)
+    }
     fun <T> addToRequestQueue(req: Request<T>) {
         requestQueue.add(req)
     }
-
-    companion object {
-
-        private var mInstance: VolleySingleton? = null
-        private lateinit var mCtx: Context
-
-        @Synchronized
-        fun getInstance(context: Context): VolleySingleton {
-            if (mInstance == null) {
-                 mInstance = VolleySingleton(context)
-            }
-            return mInstance as VolleySingleton
-
-
-
-        }
-    }
-
 }
