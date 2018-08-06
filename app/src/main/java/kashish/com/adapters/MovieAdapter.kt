@@ -1,7 +1,6 @@
 package kashish.com.adapters
 
 import android.content.Context
-import android.graphics.BlurMaskFilter
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.Adapter
@@ -9,14 +8,12 @@ import android.view.ViewGroup
 import android.view.LayoutInflater
 import android.view.View
 import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
 import kashish.com.R
 import kashish.com.interfaces.OnMovieClickListener
 import kashish.com.models.Movie
 import kashish.com.utils.Constants.Companion.CONTENT_DISCOVER
 import kashish.com.utils.Constants.Companion.CONTENT_MOVIE
 import kashish.com.utils.Constants.Companion.CONTENT_PROGRESS
-import kashish.com.utils.Constants.Companion.getGenre
 import kashish.com.utils.DateUtils
 import kashish.com.utils.Helpers.buildImageUrl
 import kashish.com.viewholders.DiscoverViewHolder
@@ -50,7 +47,6 @@ class MovieAdapter(movieList: List<Movie>,listener: OnMovieClickListener) : Adap
                         .inflate(R.layout.movie_single_item, parent, false)
                 return MovieViewHolder(view,mContext, movieList,mListener)
             }
-
             CONTENT_DISCOVER ->{
                 view = LayoutInflater.from(parent.context)
                         .inflate(R.layout.discover_single_item, parent, false)

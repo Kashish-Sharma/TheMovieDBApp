@@ -35,14 +35,18 @@ import kashish.com.utils.Helpers.setUpTransparentStatusBar
 import org.json.JSONArray
 import org.json.JSONObject
 import kashish.com.adapters.CastCrewAdapter
+import kashish.com.adapters.MovieAdapter
 import kashish.com.adapters.VideoAdapter
+import kashish.com.interfaces.OnMovieClickListener
 import kashish.com.interfaces.OnReviewReadMoreClickListener
 import kashish.com.interfaces.OnVideoClickListener
 import kashish.com.models.*
+import kashish.com.utils.Constants
 import kashish.com.utils.Constants.Companion.CAST
 import kashish.com.utils.Constants.Companion.CREW
 import kashish.com.utils.Helpers
 import kashish.com.utils.Helpers.buildMovieCastUrl
+import kashish.com.utils.Helpers.buildRecommendedMoviesUrl
 
 
 class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVideoClickListener {
@@ -90,7 +94,6 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
     private lateinit var mReviewReadMoreAuthor : TextView
     private lateinit var mReviewReadMoreContent : TextView
 
-
     //Cast
     lateinit var mCastAdapter: CastCrewAdapter
     var castData: MutableList<Cast> = mutableListOf()
@@ -109,6 +112,8 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
     private lateinit var mTrailerRecyclerView : RecyclerView
     private lateinit var mTrailerProgressBar : ProgressBar
 
+
+    private lateinit var mSimilarMoviesBtn: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -199,6 +204,13 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
 
         mTrailerRecyclerView = findViewById(R.id.activity_detail_trailer_recycler_view)
         mTrailerProgressBar = findViewById(R.id.activity_detail_trailer_progress_bar)
+
+        mSimilarMoviesBtn = findViewById(R.id.activity_similar_movie_text)
+        mSimilarMoviesBtn.setOnClickListener(View.OnClickListener {
+            val similarIntent = Intent(this, SimilarMoviesActivity::class.java)
+            similarIntent.putExtra("movie",movie)
+            startActivity(similarIntent)
+        })
     }
     private fun initReviewRecyclerView(){
         mLinearLayoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
@@ -228,6 +240,7 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
         mTrailerRecyclerView.setAdapter(mTrailerAdapter)
         mTrailerSnapHelper.attachToRecyclerView(mTrailerRecyclerView)
     }
+
     private fun setRatingsData(){
         if (movie.adult!!) mAdult.setText("adult: true")
         else mAdult.setText("adult: false")
@@ -439,4 +452,5 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
         intent.data = Uri.parse(Helpers.buildYoutubeURL(video.key!!))
         startActivity(Intent.createChooser(intent, "View Trailer:"))
     }
+
 }
