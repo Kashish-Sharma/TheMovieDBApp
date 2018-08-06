@@ -124,7 +124,7 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener {
         initCrewRecyclerView()
         initTrailerRecyclerView()
         fetchMovieDetails()
-        //fetchMovieReviews()
+        fetchMovieReviews()
         fetchMovieCast()
         setRatingsData()
         setOverViewData()
@@ -305,76 +305,7 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener {
             }
             mTrailerAdapter.notifyItemRangeInserted(trailerData.size - videosArray.length(),videosArray.length())
             mTrailerProgressBar.visibility = View.GONE
-
-
-//            //Getting cast
-//            val creditsObject: JSONObject = response.getJSONObject("credits")
-//            val castArray: JSONArray = creditsObject.getJSONArray("cast")
-//            if (castArray.length() == 0){
-//                //stop call to pagination in any case
-//                mCastProgressBar.visibility = View.GONE
-//            }
-//            for (i in 0 until castArray.length()) {
-//                val jresponse: JSONObject = castArray.getJSONObject(i)
-//                val cast = Cast()
-//                cast.castId = jresponse.getInt("cast_id")
-//                cast.character = jresponse.getString("character")
-//                cast.creditId = jresponse.getString("credit_id")
-//                cast.id = jresponse.getInt("id")
-//                cast.name = jresponse.getString("name")
-//                cast.order = jresponse.getInt("order")
-//                cast.profilePath = jresponse.getString("profile_path")
-//                if(cast.profilePath!=null)
-//                    castData.add(cast)
-//            }
-//            mCastAdapter.notifyItemRangeInserted(castData.size - castArray.length(),castArray.length())
-//            mCastProgressBar.visibility = View.GONE
-//
-//            //Getting crew
-//            val crewArray: JSONArray = creditsObject.getJSONArray("crew")
-//            if (crewArray.length() == 0){
-//                //stop call to pagination in any case
-//                mCrewProgressBar.visibility = View.GONE
-//            }
-//            for (i in 0 until crewArray.length()) {
-//                val jCrewresponse: JSONObject = crewArray.getJSONObject(i)
-//                val crew = Cast()
-//                crew.character = jCrewresponse.getString("job")
-//                //crew.department = jCrewresponse.getString("department")
-//                crew.creditId = jCrewresponse.getString("credit_id")
-//                crew.id = jCrewresponse.getInt("id")
-//                crew.name = jCrewresponse.getString("name")
-//                crew.profilePath = jCrewresponse.getString("profile_path")
-//                if (crew.profilePath!=null)
-//                    crewData.add(crew)
-//            }
-//            mCrewAdapter.notifyItemRangeInserted(crewData.size - crewArray.length()-1,crewArray.length()-1)
-//            mCrewProgressBar.visibility = View.GONE
-
-            //Getting reviews
-            val reviewObject: JSONObject = response.getJSONObject("reviews")
-            val reviewArray: JSONArray = reviewObject.getJSONArray(RESULTS)
-            if (reviewArray.length() == 0){
-                //stop call to pagination in any case
-                mReviewProgressBar.visibility = View.GONE
-            }
-
-            for (i in 0 until reviewArray.length()) {
-                val jresponse: JSONObject = reviewArray.getJSONObject(i)
-
-                val review = MovieReview()
-
-                review.author = jresponse.getString("author")
-                review.content = jresponse.getString("content")
-                review.contentType = CONTENT_REVIEW
-                review.id = jresponse.getString("id")
-                review.url = jresponse.getString("url")
-
-                data.add(review)
-            }
-
-            mReviewReviewAdapter.notifyItemRangeInserted(data.size - reviewArray.length(),reviewArray.length())
-            mReviewProgressBar.visibility = View.GONE
+            
 
         }, Response.ErrorListener { error ->
             Log.i(TAG,error.message)
