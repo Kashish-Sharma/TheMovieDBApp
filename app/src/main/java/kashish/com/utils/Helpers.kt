@@ -64,7 +64,7 @@ object Helpers {
     }
 
     fun buildMovieDetailUrl(movieId: String): String {
-        return MOVIE_DETAILS_BASE_URL + movieId + "?api_key=" + TMDB_API_KEY + "&append_to_response=videos,reviews"
+        return MOVIE_DETAILS_BASE_URL + movieId + "?api_key=" + TMDB_API_KEY + "&append_to_response=videos"
     }
 
     fun buildMovieReviewUrl(movieId: String, pageNumber: Int): String {

@@ -53,6 +53,7 @@ class UpcomingMoviesFragment : Fragment() {
     private lateinit var mMainView : View
     private lateinit var mRecyclerView : RecyclerView
     private lateinit var mSwipeRefreshLayout : SwipeRefreshLayout
+    
 
     private var pageNumber:Int = 1
     private var doPagination:Boolean = true
