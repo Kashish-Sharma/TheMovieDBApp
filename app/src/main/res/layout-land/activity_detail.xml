@@ -118,6 +118,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
+            <View
+                app:layout_constraintBottom_toTopOf="@+id/activity_detail_ratings_linear_layout"
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="@color/bg_dark" />
 
             <LinearLayout
                 android:id="@+id/activity_detail_ratings_linear_layout"
@@ -168,6 +173,11 @@
                     android:textColor="@color/dark_dark_gray" />
 
             </LinearLayout>
+            <View
+                app:layout_constraintTop_toBottomOf="@+id/activity_detail_ratings_linear_layout"
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="@color/bg_dark" />
 
             <TextView
                 android:id="@+id/activity_detail_overview_text"
@@ -307,12 +317,18 @@
                 app:layout_constraintTop_toBottomOf="@+id/activity_detail_overview_linear_layout" />
 
             <RelativeLayout
+                android:background="@color/white"
                 android:id="@+id/activity_detail_review_relative_layout"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/activity_detail_review_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+                <View
+                    android:layout_above="@+id/activity_detail_review_recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:background="@color/bg_dark" />
                 <android.support.v7.widget.RecyclerView
                     android:layout_toStartOf="@+id/activity_detail_review_progress_bar"
                     android:id="@+id/activity_detail_review_recycler_view"
@@ -326,6 +342,11 @@
                     android:id="@+id/activity_detail_review_progress_bar"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
+                <View
+                    android:layout_below="@+id/activity_detail_review_recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:background="@color/bg_dark" />
             </RelativeLayout>
 
             <TextView
@@ -344,12 +365,18 @@
                 app:layout_constraintTop_toBottomOf="@+id/activity_detail_review_relative_layout" />
 
             <RelativeLayout
+                android:background="@color/white"
                 android:id="@+id/activity_detail_cast_relative_layout"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/activity_detail_cast_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+                <View
+                    android:layout_above="@+id/activity_detail_cast_recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:background="@color/bg_dark" />
                 <android.support.v7.widget.RecyclerView
                     android:layout_toStartOf="@+id/activity_detail_cast_progress_bar"
                     android:id="@+id/activity_detail_cast_recycler_view"
@@ -363,6 +390,12 @@
                     android:id="@+id/activity_detail_cast_progress_bar"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
+                <View
+                    android:layout_below="@+id/activity_detail_cast_recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:background="@color/bg_dark" />
+
             </RelativeLayout>
 
             <TextView
@@ -381,12 +414,20 @@
                 app:layout_constraintTop_toBottomOf="@+id/activity_detail_cast_relative_layout" />
 
             <RelativeLayout
+                android:background="@color/white"
                 android:id="@+id/activity_detail_crew_relative_layout"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/activity_detail_crew_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+
+                <View
+                    android:layout_above="@+id/activity_detail_crew_recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:background="@color/bg_dark" />
+
                 <android.support.v7.widget.RecyclerView
                     android:layout_toStartOf="@+id/activity_detail_crew_progress_bar"
                     android:id="@+id/activity_detail_crew_recycler_view"
@@ -400,6 +441,13 @@
                     android:id="@+id/activity_detail_crew_progress_bar"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
+
+                <View
+                    android:layout_below="@+id/activity_detail_crew_recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:background="@color/bg_dark" />
+
             </RelativeLayout>
 
             <TextView
@@ -418,11 +466,19 @@
                 app:layout_constraintTop_toBottomOf="@+id/activity_detail_crew_relative_layout" />
 
             <RelativeLayout
+                android:background="@color/white"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/activity_detail_trailer_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+
+                <View
+                    android:layout_above="@+id/activity_detail_trailer_recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:background="@color/bg_dark" />
+
                 <android.support.v7.widget.RecyclerView
                     android:layout_toStartOf="@+id/activity_detail_trailer_progress_bar"
                     android:id="@+id/activity_detail_trailer_recycler_view"
@@ -436,6 +492,13 @@
                     android:id="@+id/activity_detail_trailer_progress_bar"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
+
+                <View
+                    android:layout_above="@+id/activity_detail_trailer_recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:background="@color/bg_dark" />
+
             </RelativeLayout>
 
         </android.support.constraint.ConstraintLayout>
