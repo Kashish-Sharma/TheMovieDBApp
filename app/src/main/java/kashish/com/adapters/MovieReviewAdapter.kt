@@ -19,8 +19,8 @@ import kashish.com.viewholders.ReviewViewHolder
 class MovieReviewAdapter(reviewList: List<MovieReview>,listener: OnReviewReadMoreClickListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private lateinit var mContext: Context
-    private lateinit var mListener: OnReviewReadMoreClickListener
-    private lateinit var reviewList: List<MovieReview>
+    private var mListener: OnReviewReadMoreClickListener
+    private var reviewList: List<MovieReview>
 
     init {
         this.mListener = listener

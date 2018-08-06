@@ -1,21 +1,13 @@
 package kashish.com.ui.Activities
 
-import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.view.ViewPager
 import android.support.design.widget.TabLayout
 import android.support.v7.widget.Toolbar
-import android.util.Log
-import android.view.Menu
-import android.view.MenuItem
 import kashish.com.R
 import kashish.com.adapters.MovieViewPagerAdapter
-import kashish.com.ui.Fragments.DiscoverMoviesFragment
-import kashish.com.ui.Fragments.TopRatedMoviesFragment
-import kashish.com.ui.Fragments.UpcomingMoviesFragment
-import kashish.com.utils.Helpers.getDefaultCountryCode
-import kashish.com.utils.Helpers.getDefaultLanguageCode
+import kashish.com.ui.Fragments.*
 
 class MoviesActivity : AppCompatActivity() {
 
@@ -24,10 +16,12 @@ class MoviesActivity : AppCompatActivity() {
     private lateinit var mToolBar : Toolbar
 
     //Fragments
-    internal lateinit var mUpcomingMoviesFragment : UpcomingMoviesFragment
-    internal lateinit var mTopRatedMoviesFragment : TopRatedMoviesFragment
-    internal lateinit var mDiscoverMoviesFragment : DiscoverMoviesFragment
-    internal lateinit var mMovieViewPagerAdapter : MovieViewPagerAdapter
+    internal lateinit var mUpcomingMoviesFragment   : UpcomingMoviesFragment
+    internal lateinit var mTopRatedMoviesFragment   : TopRatedMoviesFragment
+    internal lateinit var mDiscoverMoviesFragment   : DiscoverMoviesFragment
+    internal lateinit var mPopularMoviesFragment    : PopularMoviesFragment
+    internal lateinit var mNowShowingMoviesFragment : NowShowingMoviesFragment
+    internal lateinit var mMovieViewPagerAdapter    : MovieViewPagerAdapter
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,13 +52,17 @@ class MoviesActivity : AppCompatActivity() {
         mUpcomingMoviesFragment = UpcomingMoviesFragment()
         mTopRatedMoviesFragment = TopRatedMoviesFragment()
         mDiscoverMoviesFragment = DiscoverMoviesFragment()
+        mPopularMoviesFragment = PopularMoviesFragment()
+        mNowShowingMoviesFragment = NowShowingMoviesFragment()
 
+        mMovieViewPagerAdapter.addFragment(mNowShowingMoviesFragment,"Now Showing")
         mMovieViewPagerAdapter.addFragment(mUpcomingMoviesFragment, "Upcoming")
+        mMovieViewPagerAdapter.addFragment(mPopularMoviesFragment, "Popular")
         mMovieViewPagerAdapter.addFragment(mTopRatedMoviesFragment, "Top Rated")
         mMovieViewPagerAdapter.addFragment(mDiscoverMoviesFragment, "Discover")
         mViewPager.adapter = mMovieViewPagerAdapter
 
-        mViewPager.offscreenPageLimit = 3
+        mViewPager.offscreenPageLimit = 5
     }
     private fun setupTabLayout(){
         mTabLayout.setupWithViewPager(mViewPager)

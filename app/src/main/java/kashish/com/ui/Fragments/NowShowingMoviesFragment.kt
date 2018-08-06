@@ -26,24 +26,7 @@ import kashish.com.models.Movie
 import kashish.com.singleton.VolleySingleton
 import kashish.com.ui.Activities.DetailActivity
 import kashish.com.utils.Constants
-import kashish.com.utils.Constants.Companion.ADULT
-import kashish.com.utils.Constants.Companion.BACKDROP_PATH
-import kashish.com.utils.Constants.Companion.CONTENT_MOVIE
-import kashish.com.utils.Constants.Companion.CONTENT_PROGRESS
-import kashish.com.utils.Constants.Companion.GENRE_IDS
-import kashish.com.utils.Constants.Companion.ID
-import kashish.com.utils.Constants.Companion.ORIGINAL_LANGUAGE
-import kashish.com.utils.Constants.Companion.ORIGINAL_TITLE
-import kashish.com.utils.Constants.Companion.OVERVIEW
-import kashish.com.utils.Constants.Companion.POPULARITY
-import kashish.com.utils.Constants.Companion.POSTER_PATH
-import kashish.com.utils.Constants.Companion.RELEASE_DATE
-import kashish.com.utils.Constants.Companion.RESULTS
-import kashish.com.utils.Constants.Companion.TITLE
-import kashish.com.utils.Constants.Companion.VIDEO
-import kashish.com.utils.Constants.Companion.VOTE_AVERAGE
-import kashish.com.utils.Constants.Companion.VOTE_COUNT
-import kashish.com.utils.Helpers.buildTopRatedMoviesUrl
+import kashish.com.utils.Helpers
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -51,9 +34,9 @@ import org.json.JSONObject
 /**
  * A simple [Fragment] subclass.
  */
-class TopRatedMoviesFragment : Fragment(), OnMovieClickListener {
+class NowShowingMoviesFragment : Fragment(), OnMovieClickListener {
 
-    private val TAG:String = "TopRatedMoviesFragment"
+    private val TAG:String = "NowShowinMoviesFragment"
     private val GRID_COLUMNS_PORTRAIT = 1
     private val GRID_COLUMNS_LANDSCAPE = 2
     private lateinit var mMainView : View
@@ -76,7 +59,7 @@ class TopRatedMoviesFragment : Fragment(), OnMovieClickListener {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        mMainView = inflater.inflate(R.layout.fragment_top_rated_movies, container, false)
+        mMainView = inflater.inflate(R.layout.fragment_now_showing, container, false)
 
         initViews()
         initContentList()
@@ -89,8 +72,8 @@ class TopRatedMoviesFragment : Fragment(), OnMovieClickListener {
     }
 
     private fun initViews(){
-        mRecyclerView = mMainView.findViewById(R.id.fragment_top_rated_movies_recycler_view)
-        mSwipeRefreshLayout = mMainView.findViewById(R.id.fragment_top_rated_movies_swipe_refresh)
+        mRecyclerView = mMainView.findViewById(R.id.fragment_now_showing_movies_recycler_view)
+        mSwipeRefreshLayout = mMainView.findViewById(R.id.fragment_now_showing_movies_swipe_refresh)
     }
     private fun clearList() {
         val size = data.size
@@ -152,9 +135,9 @@ class TopRatedMoviesFragment : Fragment(), OnMovieClickListener {
     private fun fetchData(){
 
         val jsonObjectRequest = JsonObjectRequest(Request.Method.GET,
-                buildTopRatedMoviesUrl(pageNumber),null, Response.Listener { response ->
+                Helpers.buildNowShowingMoviesUrl(pageNumber),null, Response.Listener { response ->
 
-            val jsonArray: JSONArray = response.getJSONArray(RESULTS)
+            val jsonArray: JSONArray = response.getJSONArray(Constants.RESULTS)
 
             if (jsonArray.length() == 0){
                 //stop call to pagination in any case
@@ -162,14 +145,14 @@ class TopRatedMoviesFragment : Fragment(), OnMovieClickListener {
 
                 //show msg no posts
                 if(pageNumber == 1)
-                    Toast.makeText(getContext(),"Something went wrong",Toast.LENGTH_SHORT).show()
+                    Toast.makeText(getContext(),"Something went wrong", Toast.LENGTH_SHORT).show()
                 data.removeAt(data.size - 1)
                 mMovieAdapter.notifyItemRemoved(data.size-1)
 
             } else {
 
                 //Data loaded, remove progress
-                    data.removeAt(data.size-1)
+                data.removeAt(data.size-1)
 
 
                 for (i in 0 until jsonArray.length()) {
@@ -178,17 +161,17 @@ class TopRatedMoviesFragment : Fragment(), OnMovieClickListener {
                     val movie = Movie()
 
                     movie.totalPages = response.getInt(Constants.TOTAL_PAGES)
-                    movie.voteCount = jresponse.getInt(VOTE_COUNT)
-                    movie.id = jresponse.getInt(ID)
-                    movie.video = jresponse.getBoolean(VIDEO)
-                    movie.voteAverage = jresponse.getDouble(VOTE_AVERAGE).toFloat()
-                    movie.title = jresponse.getString(TITLE)
-                    movie.popularity = jresponse.getDouble(POPULARITY).toFloat()
-                    movie.posterPath = jresponse.getString(POSTER_PATH)
-                    movie.originalLanguage = jresponse.getString(ORIGINAL_LANGUAGE)
-                    movie.originalTitle = jresponse.getString(ORIGINAL_TITLE)
+                    movie.voteCount = jresponse.getInt(Constants.VOTE_COUNT)
+                    movie.id = jresponse.getInt(Constants.ID)
+                    movie.video = jresponse.getBoolean(Constants.VIDEO)
+                    movie.voteAverage = jresponse.getDouble(Constants.VOTE_AVERAGE).toFloat()
+                    movie.title = jresponse.getString(Constants.TITLE)
+                    movie.popularity = jresponse.getDouble(Constants.POPULARITY).toFloat()
+                    movie.posterPath = jresponse.getString(Constants.POSTER_PATH)
+                    movie.originalLanguage = jresponse.getString(Constants.ORIGINAL_LANGUAGE)
+                    movie.originalTitle = jresponse.getString(Constants.ORIGINAL_TITLE)
 
-                    val array: JSONArray = jresponse.getJSONArray(GENRE_IDS)
+                    val array: JSONArray = jresponse.getJSONArray(Constants.GENRE_IDS)
                     //val genreList: MutableList<Int> = mutableListOf()
                     for (j in 0 until array.length()) {
                         //genreList.add(array.getInt(j))
@@ -196,11 +179,11 @@ class TopRatedMoviesFragment : Fragment(), OnMovieClickListener {
                     }
 
                     //movie.genreIds = genreList
-                    movie.backdropPath = jresponse.getString(BACKDROP_PATH)
-                    movie.adult = jresponse.getBoolean(ADULT)
-                    movie.overview = jresponse.getString(OVERVIEW)
-                    movie.releaseDate = jresponse.getString(RELEASE_DATE)
-                    movie.contentType = CONTENT_MOVIE
+                    movie.backdropPath = jresponse.getString(Constants.BACKDROP_PATH)
+                    movie.adult = jresponse.getBoolean(Constants.ADULT)
+                    movie.overview = jresponse.getString(Constants.OVERVIEW)
+                    movie.releaseDate = jresponse.getString(Constants.RELEASE_DATE)
+                    movie.contentType = Constants.CONTENT_MOVIE
 
                     data.add(movie)
                 }
@@ -234,7 +217,7 @@ class TopRatedMoviesFragment : Fragment(), OnMovieClickListener {
     }
     private fun addProgressBarInList() {
         val progressBarContent = Movie()
-        progressBarContent.contentType = CONTENT_PROGRESS
+        progressBarContent.contentType = Constants.CONTENT_PROGRESS
         data.add(progressBarContent)
     }
 

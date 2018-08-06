@@ -27,6 +27,7 @@ class Movie(): Parcelable {
     var releaseDate: String? = null
     var contentType: Int? = null
     var totalPages: Int? = null
+    var genreString: String? = null
 
     constructor(parcel: Parcel) : this() {
         voteCount = parcel.readValue(Int::class.java.classLoader) as? Int
@@ -44,6 +45,7 @@ class Movie(): Parcelable {
         releaseDate = parcel.readString()
         contentType = parcel.readValue(Int::class.java.classLoader) as? Int
         totalPages = parcel.readValue(Int::class.java.classLoader) as? Int
+        genreString = parcel.readString()
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -62,6 +64,7 @@ class Movie(): Parcelable {
         parcel.writeString(releaseDate)
         parcel.writeValue(contentType)
         parcel.writeValue(totalPages)
+        parcel.writeString(genreString)
     }
 
     override fun describeContents(): Int {
@@ -77,5 +80,6 @@ class Movie(): Parcelable {
             return arrayOfNulls(size)
         }
     }
+
 
 }

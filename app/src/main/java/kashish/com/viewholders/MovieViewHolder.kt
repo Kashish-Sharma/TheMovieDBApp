@@ -9,6 +9,7 @@ import android.widget.LinearLayout
 import android.widget.RatingBar
 import android.widget.TextView
 import kashish.com.R
+import kashish.com.interfaces.OnMovieClickListener
 import kashish.com.models.Movie
 import kashish.com.ui.Activities.DetailActivity
 import kashish.com.utils.Constants
@@ -17,7 +18,11 @@ import kashish.com.utils.Helpers
 /**
  * Created by Kashish on 30-07-2018.
  */
-class MovieViewHolder(itemView: View?, context:Context, movieList: List<Movie>) : RecyclerView.ViewHolder(itemView) {
+class MovieViewHolder(itemView: View?,
+                      val context:Context,
+                      val movieList: List<Movie>,
+                      val listener: OnMovieClickListener) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
+
     var movieTitle: TextView
     var movieRating: RatingBar
     var movieType: TextView
@@ -35,21 +40,15 @@ class MovieViewHolder(itemView: View?, context:Context, movieList: List<Movie>) 
         moviePoster = itemView.findViewById(R.id.single_item_movie_image)
         movieDetails = itemView.findViewById(R.id.single_item_movie_details)
 
-        itemView.setOnClickListener(View.OnClickListener {
+        itemView.setOnClickListener(this)
 
-            val movie: Movie = movieList.get(adapterPosition)
-            var movieType = ""
-            for (i in movie.genreIds!!) {
-                if (i == movie.genreIds!!.last()) movieType += Constants.getGenre(i)
-                else movieType += Constants.getGenre(i) + ", "
-            }
+    }
 
-            val detailIntent = Intent(context, DetailActivity::class.java)
-            detailIntent.putExtra("movie",movie)
-            detailIntent.putExtra("genre",movieType)
-            context.startActivity(detailIntent)
-        })
-
+    override fun onClick(p0: View?) {
+        val position:Int = adapterPosition
+        if (position!=RecyclerView.NO_POSITION){
+            listener.onMovieClickListener(movieList.get(position))
+        }
     }
 
 }
