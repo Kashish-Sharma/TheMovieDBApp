@@ -39,8 +39,10 @@ class CastCrewAdapter(private var castList: List<Cast>) : RecyclerView.Adapter<R
 
         castViewHolder.mCastName.setText(cast.name)
         castViewHolder.mCastCharacter.setText(cast.character)
-        Glide.with(mContext).load(buildProfileImageUrl(cast.profilePath!!)).thumbnail(0.05f)
-                .transition(withCrossFade()).into(castViewHolder.mCastImage)
+        Glide.with(mContext).load(buildProfileImageUrl(cast.profilePath!!))
+                .thumbnail(0.05f)
+                .transition(withCrossFade())
+                .into(castViewHolder.mCastImage)
 
     }
 
