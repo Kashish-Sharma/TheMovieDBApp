@@ -14,7 +14,7 @@
     <color name="dark_gray">#757575</color>
     <color name="dark_dark_gray">#424242</color>
 
-
+    <color name="off_white">#fffff0</color>
     <color name="touch_selector">#e0f2f1</color>
 
 </resources>

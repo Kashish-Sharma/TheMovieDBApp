@@ -1,14 +1,17 @@
 package kashish.com.ui.Activities
 
+import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.support.v4.widget.SwipeRefreshLayout
+import android.support.v7.app.ActionBar
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.view.View
 import android.widget.AbsListView
@@ -26,6 +29,10 @@ import kashish.com.utils.Constants
 import kashish.com.utils.Helpers
 import org.json.JSONArray
 import org.json.JSONObject
+import android.view.LayoutInflater
+import android.view.MenuItem
+import android.widget.TextView
+
 
 class SimilarMoviesActivity : AppCompatActivity(), OnMovieClickListener {
 
@@ -48,12 +55,19 @@ class SimilarMoviesActivity : AppCompatActivity(), OnMovieClickListener {
     private  var scrolledOutItem:Int = -1
     private var isLoading: Boolean = false
 
+    //Toolbar
+    private lateinit var mToolbar: Toolbar
+    private lateinit var mToolbarTitle:TextView
+    private lateinit var mToolbarSubtitle:TextView
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_similar_movies)
 
         getMovie()
         initViews()
+        setToolbar()
         initContentList()
         initSimilarRecyclerView()
         delayByfewSeconds()
@@ -63,6 +77,9 @@ class SimilarMoviesActivity : AppCompatActivity(), OnMovieClickListener {
     }
 
     private fun initViews(){
+        mToolbar = findViewById(R.id.activity_similar_toolbar)
+        mToolbarSubtitle = mToolbar.findViewById(R.id.similar_toolbar_subtitle)
+        mToolbarTitle = mToolbar.findViewById(R.id.similar_toolbar_title)
         mSimilarRecyclerView = findViewById(R.id.activity_similar_recycler_view)
         mSimilarSwipeToRefresh = findViewById(R.id.activity_similar_swipe_to_refresh)
     }
@@ -86,8 +103,8 @@ class SimilarMoviesActivity : AppCompatActivity(), OnMovieClickListener {
                 doPagination = false
 
                 //show msg no posts
-                if(pageNumber == 1)
-                    Toast.makeText(this,"Something went wrong", Toast.LENGTH_SHORT).show()
+                //if(pageNumber == 1)
+                    //Toast.makeText(this,"Something went wrong", Toast.LENGTH_SHORT).show()
                 similarData.removeAt(similarData.size - 1)
                 mSimilarAdapter.notifyItemRemoved(similarData.size-1)
 
@@ -214,6 +231,23 @@ class SimilarMoviesActivity : AppCompatActivity(), OnMovieClickListener {
         val size = similarData.size
         similarData.clear()
         mSimilarAdapter.notifyItemRangeRemoved(0, size)
+    }
+
+    private fun setToolbar(){
+        mToolbarTitle.setText(movie.title)
+        mToolbarSubtitle.setText("Similar movies")
+        setSupportActionBar(mToolbar)
+        supportActionBar!!.setDisplayShowTitleEnabled(false)
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        val id = item!!.getItemId()
+        if (id == android.R.id.home) {
+            onBackPressed()
+            return true
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onConfigurationChanged(newConfig: Configuration?) {
