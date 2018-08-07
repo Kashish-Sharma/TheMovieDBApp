@@ -122,30 +122,19 @@ class TopRatedMoviesFragment : Fragment(), OnMovieClickListener {
             override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
 
-//                val reachedBottom = !recyclerView!!.canScrollVertically(1) && dy!=0
-//                if (reachedBottom && doPagination && !isLoading) {
-//                    pageNumber++
-//                    isLoading = true
-//                    delayByfewSeconds()
-//                }
-
-                currentItem = mGridLayoutManager.childCount
-                totalItem = mGridLayoutManager.itemCount
-                scrolledOutItem = mGridLayoutManager.findFirstVisibleItemPosition()
-
-                if (isScrolling && doPagination && !isLoading && (currentItem+scrolledOutItem == totalItem)){
+                val reachedBottom = !recyclerView!!.canScrollVertically(1) && dy!=0
+                if (reachedBottom && doPagination && !isLoading) {
+                    addProgressBarInList()
+                    mMovieAdapter.notifyItemInserted(data.size-1)
                     pageNumber++
-                    isScrolling = false
                     isLoading = true
                     delayByfewSeconds()
                 }
 
-
             }
             override fun onScrollStateChanged(recyclerView: RecyclerView?, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
-                if(newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL)
-                    isScrolling = true
+
             }
         })
     }
@@ -170,7 +159,7 @@ class TopRatedMoviesFragment : Fragment(), OnMovieClickListener {
 
                 //Data loaded, remove progress
                     data.removeAt(data.size-1)
-
+                    mMovieAdapter.notifyItemRemoved(data.size-1)
 
                 for (i in 0 until jsonArray.length()) {
                     val jresponse: JSONObject = jsonArray.getJSONObject(i)
@@ -205,7 +194,7 @@ class TopRatedMoviesFragment : Fragment(), OnMovieClickListener {
                     data.add(movie)
                 }
 
-                addProgressBarInList()
+                //addProgressBarInList()
 
                 mMovieAdapter.notifyItemRangeInserted(data.size - jsonArray.length(), jsonArray.length())
 

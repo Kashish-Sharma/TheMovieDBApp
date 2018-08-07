@@ -95,6 +95,7 @@ class SimilarMoviesActivity : AppCompatActivity(), OnMovieClickListener {
 
                 //Data loaded, remove progress
                 similarData.removeAt(similarData.size-1)
+                mSimilarAdapter.notifyItemRemoved(similarData.size-1)
 
 
                 for (i in 0 until jsonArray.length()) {
@@ -130,7 +131,7 @@ class SimilarMoviesActivity : AppCompatActivity(), OnMovieClickListener {
                     similarData.add(movie)
                 }
 
-                addProgressBarInList()
+                //addProgressBarInList()
 
                 mSimilarAdapter.notifyItemRangeInserted(similarData.size - jsonArray.length(), jsonArray.length())
 
@@ -177,16 +178,25 @@ class SimilarMoviesActivity : AppCompatActivity(), OnMovieClickListener {
             override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
 
-                currentItem = mGridLayoutManager.childCount
-                totalItem = mGridLayoutManager.itemCount
-                scrolledOutItem = mGridLayoutManager.findFirstVisibleItemPosition()
-
-                if (isScrolling && doPagination && !isLoading && (currentItem+scrolledOutItem == totalItem)){
+                val reachedBottom = !recyclerView!!.canScrollVertically(1) && dy!=0
+                if (reachedBottom && doPagination && !isLoading) {
+                    addProgressBarInList()
+                    mSimilarAdapter.notifyItemInserted(similarData.size-1)
                     pageNumber++
-                    isScrolling = false
                     isLoading = true
                     delayByfewSeconds()
                 }
+
+//                currentItem = mGridLayoutManager.childCount
+//                totalItem = mGridLayoutManager.itemCount
+//                scrolledOutItem = mGridLayoutManager.findFirstVisibleItemPosition()
+//
+//                if (isScrolling && doPagination && !isLoading && (currentItem+scrolledOutItem == totalItem)){
+//                    pageNumber++
+//                    isScrolling = false
+//                    isLoading = true
+//                    delayByfewSeconds()
+//                }
 
 
             }
