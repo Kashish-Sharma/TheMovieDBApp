@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout
-    android:background="@color/white"
+    android:background="@drawable/bg_ripple"
     android:paddingStart="12dp"
     android:paddingTop="2dp"
     android:paddingEnd="12dp"

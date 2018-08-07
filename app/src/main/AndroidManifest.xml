@@ -11,15 +11,18 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.Activities.MoviesActivity">
+        <activity android:name=".ui.Activities.MoviesActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.Activities.DetailActivity" />
-        <activity android:name=".ui.Activities.SimilarMoviesActivity"></activity>
+        <activity android:name=".ui.Activities.DetailActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ui.Activities.SimilarMoviesActivity"
+            android:screenOrientation="portrait"></activity>
     </application>
 
 </manifest>

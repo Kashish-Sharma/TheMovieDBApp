@@ -87,6 +87,14 @@ object Helpers {
                 "&language=en-US&page="+ pageNumber + "&append_to_response=recommendations"
     }
 
+    fun buildImdbUrl(id: String):String{
+        return "https://www.imdb.com/title/"+id+"/"
+    }
+
+    fun buildWikiUrl(name: String):String{
+        return "https://en.wikipedia.org/wiki/"+name
+    }
+
     fun buildDiscoverMovieUrl(pageNumber: Int,
                               sortBy: String = "release_date.asc",
                               adult: String = "false",
