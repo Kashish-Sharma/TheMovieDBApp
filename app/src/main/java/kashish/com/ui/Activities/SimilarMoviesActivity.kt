@@ -125,7 +125,7 @@ class SimilarMoviesActivity : AppCompatActivity(), OnMovieClickListener {
                     movie.adult = jresponse.getBoolean(Constants.ADULT)
                     movie.overview = jresponse.getString(Constants.OVERVIEW)
                     movie.releaseDate = jresponse.getString(Constants.RELEASE_DATE)
-                    movie.contentType = Constants.CONTENT_MOVIE
+                    movie.contentType = Constants.CONTENT_SIMILAR
 
                     similarData.add(movie)
                 }

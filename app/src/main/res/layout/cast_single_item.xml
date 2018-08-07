@@ -14,8 +14,8 @@
             android:layout_marginBottom="2dp"
             android:layout_gravity="center"
             android:id="@+id/activity_detail_movie_cast_image"
-            android:layout_width="100dp"
-            android:layout_height="100dp" />
+            android:layout_width="80dp"
+            android:layout_height="80dp" />
 
         <TextView
             android:id="@+id/activity_detail_movie_cast_character"
@@ -35,7 +35,6 @@
 
         <TextView
             android:id="@+id/activity_detail_movie_cast_name"
-            android:padding="2dp"
             android:textSize="12sp"
             android:fontFamily="@font/open_sans_regular"
             android:textColor="@color/dark_gray"

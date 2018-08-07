@@ -186,7 +186,7 @@
                 android:layout_marginBottom="8dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="16dp"
                 android:fontFamily="@font/opensans_semibold"
                 android:gravity="bottom"
                 android:text="@string/overview"
@@ -305,8 +305,10 @@
                 android:id="@+id/activity_detail_review_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="16dp"
                 android:fontFamily="@font/opensans_semibold"
                 android:gravity="bottom"
                 android:text="@string/reviews"
@@ -317,6 +319,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/activity_detail_overview_linear_layout" />
 
             <RelativeLayout
+                android:layout_marginTop="4dp"
                 android:background="@color/white"
                 android:id="@+id/activity_detail_review_relative_layout"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -353,8 +356,10 @@
                 android:id="@+id/activity_detail_cast_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="16dp"
                 android:fontFamily="@font/opensans_semibold"
                 android:gravity="bottom"
                 android:text="@string/cast"
@@ -365,6 +370,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/activity_detail_review_relative_layout" />
 
             <RelativeLayout
+                android:layout_marginTop="4dp"
                 android:background="@color/white"
                 android:id="@+id/activity_detail_cast_relative_layout"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -402,8 +408,10 @@
                 android:id="@+id/activity_detail_crew_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="16dp"
                 android:fontFamily="@font/opensans_semibold"
                 android:gravity="bottom"
                 android:text="CREW"
@@ -414,6 +422,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/activity_detail_cast_relative_layout" />
 
             <RelativeLayout
+                android:layout_marginTop="4dp"
                 android:background="@color/white"
                 android:id="@+id/activity_detail_crew_relative_layout"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -454,8 +463,10 @@
                 android:id="@+id/activity_detail_trailer_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="16dp"
                 android:fontFamily="@font/opensans_semibold"
                 android:gravity="bottom"
                 android:text="@string/trailers"
@@ -466,6 +477,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/activity_detail_crew_relative_layout" />
 
             <RelativeLayout
+                android:layout_marginTop="4dp"
                 android:id="@+id/activity_detail_trailer_relative_layout"
                 android:background="@color/white"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -499,8 +511,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
                     android:background="@color/bg_dark" />
-
             </RelativeLayout>
+
 
             <View
                 android:id="@+id/activity_similar_movie_view"
@@ -511,6 +523,7 @@
                 android:layout_height="0.5dp"
                 android:background="@color/bg_dark"/>
             <TextView
+                android:drawableEnd="@drawable/right_arrow"
                 android:background="@color/white"
                 android:id="@+id/activity_similar_movie_text"
                 android:layout_width="match_parent"
@@ -522,7 +535,7 @@
                 android:fontFamily="@font/open_sans_regular"
                 android:gravity="bottom"
                 android:text="See similar movies"
-                android:textColor="@color/colorAccent"
+                android:textColor="@color/dark_dark_gray"
                 android:textSize="16sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
