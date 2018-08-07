@@ -14,9 +14,11 @@ import kashish.com.models.Movie
 import kashish.com.utils.Constants.Companion.CONTENT_DISCOVER
 import kashish.com.utils.Constants.Companion.CONTENT_MOVIE
 import kashish.com.utils.Constants.Companion.CONTENT_PROGRESS
+import kashish.com.utils.Constants.Companion.CONTENT_SIMILAR
 import kashish.com.utils.DateUtils
 import kashish.com.utils.Helpers.buildImageUrl
 import kashish.com.viewholders.DiscoverViewHolder
+import kashish.com.viewholders.MoreViewHolder
 import kashish.com.viewholders.MovieViewHolder
 import kashish.com.viewholders.ProgressBarViewHolder
 import kotlinx.android.synthetic.main.discover_single_item.view.*
@@ -51,6 +53,12 @@ class MovieAdapter(movieList: List<Movie>,listener: OnMovieClickListener) : Adap
                 view = LayoutInflater.from(parent.context)
                         .inflate(R.layout.discover_single_item, parent, false)
                 return DiscoverViewHolder(view,mContext, movieList,mListener)
+            }
+
+            CONTENT_SIMILAR ->{
+                view = LayoutInflater.from(parent.context)
+                        .inflate(R.layout.more_single_item, parent, false)
+                return MoreViewHolder(view,mContext, movieList,mListener)
             }
 
             else -> {
@@ -102,6 +110,17 @@ class MovieAdapter(movieList: List<Movie>,listener: OnMovieClickListener) : Adap
                 movieViewHolder.itemView.discover_single_item_movie_type.setText("Genre: "+movie.genreString)
                 Glide.with(mContext).load(buildImageUrl(movie.posterPath!!)).thumbnail(0.05f)
                         .transition(withCrossFade()).into(movieViewHolder.moviePoster)
+            }
+
+            CONTENT_SIMILAR ->{
+                val moreViewHolder = holder as MoreViewHolder
+                val movie: Movie = movieList.get(holder.adapterPosition)
+
+                moreViewHolder.moreTitle.setText(movie.title)
+                moreViewHolder.moreSubtitle.setText(movie.genreString)
+                Glide.with(mContext).load(buildImageUrl(movie.posterPath!!)).thumbnail(0.05f)
+                        .transition(withCrossFade()).into(moreViewHolder.morePoster)
+
             }
 
             CONTENT_PROGRESS ->{
