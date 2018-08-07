@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView
+    android:background="@drawable/bg_ripple"
     style="@style/CardView.Light"
     app:cardUseCompatPadding="true"
     app:cardCornerRadius="2dp"

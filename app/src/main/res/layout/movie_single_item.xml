@@ -26,18 +26,17 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <LinearLayout
-            android:background="@drawable/list_item_selector"
+            android:background="@drawable/bg_ripple"
             android:id="@+id/single_item_movie_details"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_alignParentEnd="true"
-            android:layout_marginEnd="12dp"
-            android:layout_marginStart="120dp"
+            android:layout_marginStart="100dp"
             android:orientation="vertical"
             android:padding="5dp"
             android:paddingBottom="5dp"
             android:paddingEnd="4dp"
-            android:paddingStart="8dp"
+            android:paddingStart="24dp"
             android:paddingTop="5dp">
 
             <TextView
