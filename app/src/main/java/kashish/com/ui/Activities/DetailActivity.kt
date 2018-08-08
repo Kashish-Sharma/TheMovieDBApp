@@ -135,11 +135,13 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
         initCastRecyclerView()
         initCrewRecyclerView()
         initTrailerRecyclerView()
+
         fetchMovieDetails()
         fetchMovieReviews()
         fetchMovieCast()
         setRatingsData()
         setOverViewData()
+        setOnClickListenersOnWikiImdnb()
 
     }
 
@@ -218,43 +220,7 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
         })
 
         mWikipediaBtn = findViewById(R.id.activity_detail_wikipedia_btn)
-        mWikipediaBtn.setOnClickListener(View.OnClickListener {
-
-            val dateArray = movie.title!!.split(" ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-            var processedTitle:String = ""
-            for (i in 0 until dateArray.size){
-                if (i == dateArray.size-1){
-                    processedTitle+=dateArray[i].capitalize()
-                } else{
-                    processedTitle+=dateArray[i].capitalize()+"_"
-                }
-            }
-
-            val wikiIntent: Intent = Intent(Intent.ACTION_VIEW,Uri.parse(buildWikiUrl(processedTitle)))
-
-            val title = "Select a browser"
-            // Create intent to show the chooser dialog
-            val chooser = Intent.createChooser(wikiIntent, title)
-
-            // Verify the original intent will resolve to at least one activity
-            if (wikiIntent.resolveActivity(packageManager) != null) {
-                startActivity(chooser)
-            }
-
-        })
-
         mImdbBtn = findViewById(R.id.activity_detail_imdb_btn)
-        mImdbBtn.setOnClickListener(View.OnClickListener {
-            val imdbIntent: Intent = Intent(Intent.ACTION_VIEW,Uri.parse(buildImdbUrl(movieDetail.imdbId!!)))
-            val title = "Select a browser"
-            // Create intent to show the chooser dialog
-            val chooser = Intent.createChooser(imdbIntent, title)
-
-            // Verify the original intent will resolve to at least one activity
-            if (imdbIntent.resolveActivity(packageManager) != null) {
-                startActivity(chooser)
-            }
-        })
     }
     private fun initReviewRecyclerView(){
         mLinearLayoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
@@ -363,10 +329,8 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
             
 
         }, Response.ErrorListener { error ->
-            Log.i(TAG,error.message)
+            Log.i(TAG,error.message+" is the volley error")
             mReviewProgressBar.visibility = View.GONE
-//            mCastProgressBar.visibility = View.GONE
-//            mCrewProgressBar.visibility = View.GONE
             mTrailerProgressBar.visibility = View.GONE
         })
 
@@ -400,7 +364,7 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
             mReviewProgressBar.visibility = View.GONE
 
         }, Response.ErrorListener { error ->
-            Log.i(TAG,error.message)
+            Log.i(TAG,error.message+" is the volley error")
             mReviewProgressBar.visibility = View.GONE
         })
 
@@ -463,12 +427,50 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
             mCrewProgressBar.visibility = View.GONE
 
         }, Response.ErrorListener { error ->
-            Log.i(TAG,error.message)
+            Log.i(TAG,error.message+" is the volley error")
             mCrewProgressBar.visibility = View.GONE
             mCastProgressBar.visibility = View.GONE
         })
 
         VolleySingleton.getInstance(this).addToRequestQueue(jsonObjectRequest)
+    }
+    private fun setOnClickListenersOnWikiImdnb(){
+        mWikipediaBtn.setOnClickListener(View.OnClickListener {
+
+            val dateArray = movie.title!!.split(" ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+            var processedTitle:String = ""
+            for (i in 0 until dateArray.size){
+                if (i == dateArray.size-1){
+                    processedTitle+=dateArray[i].capitalize()
+                } else{
+                    processedTitle+=dateArray[i].capitalize()+"_"
+                }
+            }
+
+            val wikiIntent: Intent = Intent(Intent.ACTION_VIEW,Uri.parse(buildWikiUrl(processedTitle)))
+
+            val title = "Select a browser"
+            // Create intent to show the chooser dialog
+            val chooser = Intent.createChooser(wikiIntent, title)
+
+            // Verify the original intent will resolve to at least one activity
+            if (wikiIntent.resolveActivity(packageManager) != null) {
+                startActivity(chooser)
+            }
+
+        })
+        mImdbBtn.setOnClickListener(View.OnClickListener {
+                val imdbIntent: Intent = Intent(Intent.ACTION_VIEW,Uri.parse(buildImdbUrl(movieDetail.imdbId)))
+                val title = "Select a browser"
+                // Create intent to show the chooser dialog
+                val chooser = Intent.createChooser(imdbIntent, title)
+
+                // Verify the original intent will resolve to at least one activity
+                if (imdbIntent.resolveActivity(packageManager) != null) {
+                    startActivity(chooser)
+                }
+            })
+
     }
     //Showing bottom sheet onClick review read more
     private fun showReviewReadMoreBottomSheet(review: MovieReview){

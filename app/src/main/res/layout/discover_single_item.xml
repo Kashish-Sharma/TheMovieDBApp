@@ -9,7 +9,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <android.support.v7.widget.CardView
-        android:background="@drawable/bg_ripple"
         android:id="@+id/single_item_discover_movie_card_view"
         app:cardUseCompatPadding="true"
         app:cardCornerRadius="2dp"
@@ -17,8 +16,7 @@
         android:layout_width="180dp"
         android:layout_height="wrap_content">
         <LinearLayout
-            android:background="@drawable/list_item_selector"
-            android:layout_marginBottom="4dp"
+            android:background="@drawable/bg_ripple"
             android:id="@+id/single_item_discover_movie_linear_layout"
             android:orientation="vertical"
             android:layout_width="match_parent"
@@ -67,6 +65,7 @@
                 android:textSize="12sp" />
 
             <TextView
+                android:layout_marginBottom="4dp"
                 android:fontFamily="@font/open_sans_regular"
                 android:id="@+id/discover_single_item_movie_release_date"
                 android:layout_width="wrap_content"
