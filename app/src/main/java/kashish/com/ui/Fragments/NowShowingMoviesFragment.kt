@@ -114,18 +114,6 @@ class NowShowingMoviesFragment : Fragment(), OnMovieClickListener {
                     delayByfewSeconds()
                 }
 
-//                currentItem = mGridLayoutManager.childCount
-//                totalItem = mGridLayoutManager.itemCount
-//                scrolledOutItem = mGridLayoutManager.findFirstVisibleItemPosition()
-//
-//                if (isScrolling && doPagination && !isLoading && (currentItem+scrolledOutItem == totalItem)){
-//                    pageNumber++
-//                    isScrolling = false
-//                    isLoading = true
-//                    delayByfewSeconds()
-//                }
-
-
             }
             override fun onScrollStateChanged(recyclerView: RecyclerView?, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)

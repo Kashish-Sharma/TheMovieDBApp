@@ -64,9 +64,6 @@ class UpcomingMoviesFragment : Fragment(), OnMovieClickListener {
     private var pageNumber:Int = 1
     private var doPagination:Boolean = true
     private var isScrolling:Boolean = false
-    private  var currentItem:Int = -1
-    private  var totalItem:Int = -1
-    private  var scrolledOutItem:Int = -1
     private var isLoading: Boolean = false
 
 
@@ -207,18 +204,6 @@ class UpcomingMoviesFragment : Fragment(), OnMovieClickListener {
                     isLoading = true
                     delayByfewSeconds()
                 }
-
-
-//                currentItem = mGridLayoutManager.childCount
-//                totalItem = mGridLayoutManager.itemCount
-//                scrolledOutItem = mGridLayoutManager.findFirstVisibleItemPosition()
-//
-//                if (isScrolling && doPagination && !isLoading && (currentItem+scrolledOutItem == totalItem)){
-//                    pageNumber++
-//                    isScrolling = false
-//                    isLoading = true
-//                    delayByfewSeconds()
-//                }
 
             }
 
