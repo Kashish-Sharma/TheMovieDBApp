@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <CheckBoxPreference
+        android:textAppearance="@font/open_sans_regular"
+        android:defaultValue="@bool/pref_cache_data_default_value"
+        android:key="@string/pref_cache_data_key"
+        android:summaryOff="@string/pref_cache_data_summary_off"
+        android:summaryOn="@string/pref_cache_data_summary_on"
+        android:title="@string/pref_cache_data"/>
+
+</PreferenceScreen>

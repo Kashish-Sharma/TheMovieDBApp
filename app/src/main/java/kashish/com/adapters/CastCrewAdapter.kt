@@ -1,11 +1,14 @@
 package kashish.com.adapters
 
 import android.content.Context
+import android.content.SharedPreferences
+import android.preference.PreferenceManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import kashish.com.R
 import kashish.com.models.Cast
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
@@ -17,7 +20,7 @@ import kashish.com.viewholders.CastCrewViewHolder
 /**
  * Created by Kashish on 03-08-2018.
  */
-class CastCrewAdapter(private var castList: List<Cast>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class CastCrewAdapter(private var castList: List<Cast>, private val mSharedPreferences: SharedPreferences) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private lateinit var mContext: Context
 
@@ -39,10 +42,19 @@ class CastCrewAdapter(private var castList: List<Cast>) : RecyclerView.Adapter<R
 
         castViewHolder.mCastName.setText(cast.name)
         castViewHolder.mCastCharacter.setText(cast.character)
-        Glide.with(mContext).load(buildProfileImageUrl(cast.profilePath!!))
-                .thumbnail(0.05f)
-                .transition(withCrossFade())
-                .into(castViewHolder.mCastImage)
+
+        if (mSharedPreferences.getBoolean(mContext.getString(R.string.pref_cache_data_key),true)){
+            Glide.with(mContext).load(buildProfileImageUrl(cast.profilePath!!))
+                    .thumbnail(0.05f)
+                    .transition(withCrossFade())
+                    .into(castViewHolder.mCastImage)
+        } else {
+            Glide.with(mContext).load(buildProfileImageUrl(cast.profilePath!!))
+                    .apply(RequestOptions().diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true))
+                    .thumbnail(0.05f)
+                    .transition(withCrossFade())
+                    .into(castViewHolder.mCastImage)
+        }
 
     }
 

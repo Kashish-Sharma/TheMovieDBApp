@@ -2,9 +2,11 @@ package kashish.com.ui.Fragments
 
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.os.Bundle
 import android.os.Handler
+import android.preference.PreferenceManager
 import android.support.v4.app.Fragment
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.GridLayoutManager
@@ -44,6 +46,7 @@ class DiscoverMoviesFragment : Fragment(), OnMovieClickListener {
     private lateinit var mSwipeRefreshLayout : SwipeRefreshLayout
     private lateinit var mGridLayoutManager : GridLayoutManager
 
+    private lateinit var mSharedPreferences: SharedPreferences
 
     private var pageNumber:Int = 1
     private var doPagination:Boolean = true
@@ -73,6 +76,8 @@ class DiscoverMoviesFragment : Fragment(), OnMovieClickListener {
     private fun initViews(){
         mRecyclerView = mMainView.findViewById(R.id.fragment_discover_movies_recycler_view)
         mSwipeRefreshLayout = mMainView.findViewById(R.id.fragment_discover_movies_swipe_refresh)
+
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
     }
     private fun clearList() {
         val size = data.size
@@ -81,7 +86,7 @@ class DiscoverMoviesFragment : Fragment(), OnMovieClickListener {
     }
     private fun initRecyclerView() {
         configureRecyclerAdapter(resources.configuration.orientation)
-        mMovieAdapter = MovieAdapter(data,this)
+        mMovieAdapter = MovieAdapter(data,this,mSharedPreferences)
         mRecyclerView.setAdapter(mMovieAdapter)
         mRecyclerView.setHasFixedSize(true)
     }
@@ -164,6 +169,7 @@ class DiscoverMoviesFragment : Fragment(), OnMovieClickListener {
                     Toast.makeText(getContext(),"Something went wrong", Toast.LENGTH_SHORT).show()
                 data.removeAt(data.size - 1)
                 mMovieAdapter.notifyItemRemoved(data.size-1)
+                mSwipeRefreshLayout.isRefreshing = false
 
             } else {
 
@@ -219,6 +225,7 @@ class DiscoverMoviesFragment : Fragment(), OnMovieClickListener {
             Log.i(TAG,error.message+" is the error message")
         })
 
+        jsonObjectRequest.setShouldCache(mSharedPreferences.getBoolean(getString(R.string.pref_cache_data_key),true))
         VolleySingleton.getInstance(this.context!!).addToRequestQueue(jsonObjectRequest)
     }
 
