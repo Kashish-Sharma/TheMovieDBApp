@@ -41,7 +41,7 @@
                 android:layout_marginStart="4dp"
                 android:layout_marginEnd="2dp"
                 android:text="The Maze Runner"
-                android:textColor="@color/black"
+                android:textColor="?attr/titleColor"
                 android:textSize="14sp" />
 
             <RatingBar

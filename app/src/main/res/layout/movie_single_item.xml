@@ -11,6 +11,7 @@
     android:layout_height="wrap_content">
 
     <android.support.v7.widget.CardView
+        android:background="?attr/bgColor"
         android:id="@+id/single_item_card_view"
         style="@style/CardView.Light"
         android:layout_width="match_parent"
@@ -48,7 +49,7 @@
                 android:maxLength="40"
                 android:singleLine="true"
                 android:text="The Maze Runner"
-                android:textColor="@color/black"
+                android:textColor="?attr/titleColor"
                 android:textSize="18sp" />
 
             <RatingBar
@@ -59,6 +60,7 @@
                 android:layout_height="wrap_content"/>
 
             <TextView
+                android:textColor="?attr/secondaryTextColor"
                 android:fontFamily="@font/open_sans_regular"
                 android:id="@+id/single_item_movie_popularity"
                 android:layout_width="wrap_content"
@@ -69,6 +71,7 @@
                 android:textSize="12sp" />
 
             <TextView
+                android:textColor="?attr/secondaryTextColor"
                 android:fontFamily="@font/open_sans_regular"
                 android:id="@+id/single_item_movie_type"
                 android:layout_width="wrap_content"
@@ -79,6 +82,7 @@
                 android:textSize="12sp" />
 
             <TextView
+                android:textColor="?attr/secondaryTextColor"
                 android:fontFamily="@font/open_sans_regular"
                 android:id="@+id/single_item_movie_release_date"
                 android:layout_width="wrap_content"

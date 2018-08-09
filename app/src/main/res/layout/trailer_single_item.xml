@@ -18,7 +18,7 @@
         android:id="@+id/activity_detail_trailer_poster_image"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@android:color/white"
+        android:background="?attr/bgColor"
         android:contentDescription="@string/trailer_poster"
         android:scaleType="centerCrop" />
 

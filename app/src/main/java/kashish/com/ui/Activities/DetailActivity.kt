@@ -1,5 +1,6 @@
 package kashish.com.ui.Activities
 
+import android.app.Activity
 import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
@@ -11,6 +12,7 @@ import android.support.design.widget.BottomSheetDialog
 import android.support.design.widget.CollapsingToolbarLayout
 import android.support.v4.widget.NestedScrollView
 import android.support.v7.app.ActionBar
+import android.support.v7.app.AppCompatDelegate
 import android.support.v7.widget.*
 import android.support.v7.widget.Toolbar
 import android.text.method.ScrollingMovementMethod
@@ -55,7 +57,7 @@ import kashish.com.utils.Helpers.buildRecommendedMoviesUrl
 import kashish.com.utils.Helpers.buildWikiUrl
 
 
-class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVideoClickListener {
+class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVideoClickListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
     private val TAG: String = DetailActivity::class.java.simpleName
     private var movie: Movie = Movie()
@@ -127,6 +129,14 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
     private lateinit var mImdbBtn : TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+        if (mSharedPreferences.getBoolean(getString(R.string.pref_night_mode_key)
+                ,resources.getBoolean(R.bool.pref_night_mode_default_value))) {
+            setTheme(R.style.AppThemeDark)
+        } else{
+            setTheme(R.style.AppTheme)
+        }
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detail)
         setUpTransparentStatusBar(window)
@@ -168,7 +178,7 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
         mActionBar.setDisplayHomeAsUpEnabled(true)
     }
     private fun setupCollapsingToolbar(){
-        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+        mSharedPreferences.registerOnSharedPreferenceChangeListener(this)
 
         if (mSharedPreferences.getBoolean(getString(R.string.pref_cache_data_key),true)){
             Glide.with(this).load(buildBackdropImageUrl(movie.backdropPath!!))
@@ -507,6 +517,11 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
         mReviewReadMoreBottomSheet.setCanceledOnTouchOutside(true)
         mReviewReadMoreBottomSheet.show()
     }
+
+    private fun restartActivity(){
+        this.recreate()
+    }
+
     override fun onReviewReadMoreClickListener(review: MovieReview) {
         showReviewReadMoreBottomSheet(review)
     }
@@ -515,5 +530,17 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
         intent.data = Uri.parse(Helpers.buildYoutubeURL(video.key!!))
         startActivity(Intent.createChooser(intent, "View Trailer:"))
     }
+    override fun onSharedPreferenceChanged(p0: SharedPreferences?, key: String?) {
+        if(key.equals(getString(R.string.pref_night_mode_key))){
+            if (p0!!.getBoolean(key,resources.getBoolean(R.bool.pref_night_mode_default_value))){
+                restartActivity()
+            } else{
+                restartActivity()            }
+        }
+    }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this)
+    }
 }
