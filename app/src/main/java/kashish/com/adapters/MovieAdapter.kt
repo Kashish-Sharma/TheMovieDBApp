@@ -1,6 +1,7 @@
 package kashish.com.adapters
 
 import android.content.Context
+import android.content.SharedPreferences
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.Adapter
@@ -8,6 +9,8 @@ import android.view.ViewGroup
 import android.view.LayoutInflater
 import android.view.View
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.RequestOptions
 import kashish.com.R
 import kashish.com.interfaces.OnMovieClickListener
 import kashish.com.models.Movie
@@ -28,7 +31,7 @@ import kotlinx.android.synthetic.main.movie_single_item.view.*
 /**
  * Created by Kashish on 30-07-2018.
  */
-class MovieAdapter(movieList: List<Movie>,listener: OnMovieClickListener) : Adapter<RecyclerView.ViewHolder>() {
+class MovieAdapter(movieList: List<Movie>,listener: OnMovieClickListener,private val mSharedPreferences: SharedPreferences) : Adapter<RecyclerView.ViewHolder>() {
 
     private lateinit var mContext: Context
     private var mListener: OnMovieClickListener
@@ -76,27 +79,28 @@ class MovieAdapter(movieList: List<Movie>,listener: OnMovieClickListener) : Adap
             CONTENT_MOVIE -> {
                 val movieViewHolder = holder as MovieViewHolder
                 val movie: Movie = movieList.get(holder.adapterPosition)
-                var movieType = "Genre: "
 
                 movieViewHolder.movieTitle.setText(movie.title)
                 movieViewHolder.movieRating.rating = movie.voteAverage!!.div(2)
                 movieViewHolder.moviePopularity.setText("Popularity: ".plus(movie.popularity.toString()))
                 movieViewHolder.movieReleaseDate.setText("Release date: ".plus(DateUtils.getStringDate(movie.releaseDate!!)))
 
-//                for (i in movie.genreIds!!) {
-//                    if (i == movie.genreIds!!.last()) movieType += getGenre(i)
-//                    else movieType += getGenre(i) + ", "
-//                }
-
                 movieViewHolder.itemView.single_item_movie_type.setText("Genre: "+movie.genreString)
-                Glide.with(mContext).load(buildImageUrl(movie.posterPath!!)).thumbnail(0.05f)
-                        .transition(withCrossFade()).into(movieViewHolder.moviePoster)
+
+                if (mSharedPreferences.getBoolean(mContext.getString(R.string.pref_cache_data_key),true)){
+                    Glide.with(mContext).load(buildImageUrl(movie.posterPath!!)).thumbnail(0.05f)
+                            .transition(withCrossFade()).into(movieViewHolder.moviePoster)
+                } else{
+                    Glide.with(mContext).load(buildImageUrl(movie.posterPath!!)).thumbnail(0.05f)
+                            .apply(RequestOptions().diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true))
+                            .transition(withCrossFade()).into(movieViewHolder.moviePoster)
+                }
+
             }
 
             CONTENT_DISCOVER -> {
                 val movieViewHolder = holder as DiscoverViewHolder
                 val movie: Movie = movieList.get(holder.adapterPosition)
-                var movieType = "Genre: "
 
                 movieViewHolder.movieTitle.setText(movie.title)
                 movieViewHolder.movieRating.rating = movie.voteAverage!!.div(2)
@@ -106,10 +110,16 @@ class MovieAdapter(movieList: List<Movie>,listener: OnMovieClickListener) : Adap
 //                    if (i == movie.genreIds!!.last()) movieType += getGenre(i)
 //                    else movieType += getGenre(i) + ", "
 //                }
-
                 movieViewHolder.itemView.discover_single_item_movie_type.setText("Genre: "+movie.genreString)
-                Glide.with(mContext).load(buildImageUrl(movie.posterPath!!)).thumbnail(0.05f)
-                        .transition(withCrossFade()).into(movieViewHolder.moviePoster)
+
+                if (mSharedPreferences.getBoolean(mContext.getString(R.string.pref_cache_data_key),true)){
+                    Glide.with(mContext).load(buildImageUrl(movie.posterPath!!)).thumbnail(0.05f)
+                            .transition(withCrossFade()).into(movieViewHolder.moviePoster)
+                } else{
+                    Glide.with(mContext).load(buildImageUrl(movie.posterPath!!)).thumbnail(0.05f)
+                            .apply(RequestOptions().diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true))
+                            .transition(withCrossFade()).into(movieViewHolder.moviePoster)
+                }
             }
 
             CONTENT_SIMILAR ->{
@@ -118,8 +128,17 @@ class MovieAdapter(movieList: List<Movie>,listener: OnMovieClickListener) : Adap
 
                 moreViewHolder.moreTitle.setText(movie.title)
                 moreViewHolder.moreSubtitle.setText(movie.genreString)
-                Glide.with(mContext).load(buildImageUrl(movie.posterPath!!)).thumbnail(0.05f)
-                        .transition(withCrossFade()).into(moreViewHolder.morePoster)
+
+                if (mSharedPreferences.getBoolean(mContext.getString(R.string.pref_cache_data_key),true)){
+                    Glide.with(mContext).load(buildImageUrl(movie.posterPath!!)).thumbnail(0.05f)
+                            .transition(withCrossFade()).into(moreViewHolder.morePoster)
+                } else{
+                    Glide.with(mContext).load(buildImageUrl(movie.posterPath!!)).thumbnail(0.05f)
+                            .apply(RequestOptions().diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true))
+                            .transition(withCrossFade()).into(moreViewHolder.morePoster)
+                }
+
+
 
             }
 

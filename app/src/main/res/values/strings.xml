@@ -18,4 +18,12 @@
     <string name="play_image">play_image</string>
     <string name="trailers">TRAILERS</string>
     <string name="search">Search</string>
+    <string name="settings">Settings</string>
+
+    <string name="pref_cache_data" translatable="false">Cache data</string>
+    <string name="pref_cache_data_key" translatable="false">cache_data</string>
+
+    <string name="pref_cache_data_summary_on" translatable="false">yes</string>
+    <string name="pref_cache_data_summary_off" translatable="false">no</string>
+
 </resources>

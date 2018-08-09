@@ -1,9 +1,11 @@
 package kashish.com.ui.Activities
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.support.design.widget.AppBarLayout
 import android.support.design.widget.BottomSheetDialog
 import android.support.design.widget.CollapsingToolbarLayout
@@ -20,7 +22,9 @@ import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.bumptech.glide.request.RequestOptions
 import kashish.com.R
 import kashish.com.adapters.MovieReviewAdapter
 import kashish.com.singleton.VolleySingleton
@@ -59,6 +63,8 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
     private lateinit var mCastSnapHelper: SnapHelper
     private lateinit var mCrewSnapHelper: SnapHelper
     private lateinit var mTrailerSnapHelper: SnapHelper
+
+    private lateinit var mSharedPreferences: SharedPreferences
 
     //Collapsing Toolbar
     private lateinit var mCollapsingToolbar: CollapsingToolbarLayout
@@ -122,7 +128,6 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setTheme(R.style.DetailTheme)
         setContentView(R.layout.activity_detail)
         setUpTransparentStatusBar(window)
 
@@ -163,11 +168,22 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
         mActionBar.setDisplayHomeAsUpEnabled(true)
     }
     private fun setupCollapsingToolbar(){
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
 
-        Glide.with(this).load(buildBackdropImageUrl(movie.backdropPath!!))
+        if (mSharedPreferences.getBoolean(getString(R.string.pref_cache_data_key),true)){
+            Glide.with(this).load(buildBackdropImageUrl(movie.backdropPath!!))
                     .transition(DrawableTransitionOptions.withCrossFade()).into(mBackdropImageView)
-        Glide.with(this).load(buildImageUrl(movie.posterPath!!))
-                .transition(DrawableTransitionOptions.withCrossFade()).into(mToolbarMoviePoster)
+            Glide.with(this).load(buildImageUrl(movie.posterPath!!))
+                    .transition(DrawableTransitionOptions.withCrossFade()).into(mToolbarMoviePoster)
+        } else{
+            Glide.with(this).load(buildBackdropImageUrl(movie.backdropPath!!))
+                    .apply(RequestOptions().diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true))
+                    .transition(DrawableTransitionOptions.withCrossFade()).into(mBackdropImageView)
+            Glide.with(this).load(buildImageUrl(movie.posterPath!!))
+                    .apply(RequestOptions().diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true))
+                    .transition(DrawableTransitionOptions.withCrossFade()).into(mToolbarMoviePoster)
+        }
+
         mToolbarMovieTitle.setText(movie.title)
         mToolbarMovieDate.setText(DateUtils.getStringDate(movie.releaseDate!!))
     }
@@ -221,6 +237,7 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
 
         mWikipediaBtn = findViewById(R.id.activity_detail_wikipedia_btn)
         mImdbBtn = findViewById(R.id.activity_detail_imdb_btn)
+
     }
     private fun initReviewRecyclerView(){
         mLinearLayoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
@@ -232,21 +249,21 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
     private fun initCastRecyclerView(){
         mLinearLayoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         mCastRecyclerView.setLayoutManager(mLinearLayoutManager)
-        mCastAdapter = CastCrewAdapter(castData)
+        mCastAdapter = CastCrewAdapter(castData,mSharedPreferences)
         mCastRecyclerView.setAdapter(mCastAdapter)
         mCastSnapHelper.attachToRecyclerView(mCastRecyclerView)
     }
     private fun initCrewRecyclerView(){
         mLinearLayoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         mCrewRecyclerView.setLayoutManager(mLinearLayoutManager)
-        mCrewAdapter = CastCrewAdapter(crewData)
+        mCrewAdapter = CastCrewAdapter(crewData,mSharedPreferences)
         mCrewRecyclerView.setAdapter(mCrewAdapter)
         mCrewSnapHelper.attachToRecyclerView(mCrewRecyclerView)
     }
     private fun initTrailerRecyclerView(){
         mLinearLayoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         mTrailerRecyclerView.setLayoutManager(mLinearLayoutManager)
-        mTrailerAdapter = VideoAdapter(trailerData,this)
+        mTrailerAdapter = VideoAdapter(trailerData,this,mSharedPreferences)
         mTrailerRecyclerView.setAdapter(mTrailerAdapter)
         mTrailerSnapHelper.attachToRecyclerView(mTrailerRecyclerView)
     }
@@ -333,7 +350,7 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
             mReviewProgressBar.visibility = View.GONE
             mTrailerProgressBar.visibility = View.GONE
         })
-
+        jsonObjectRequest.setShouldCache(mSharedPreferences.getBoolean(getString(R.string.pref_cache_data_key),true))
         VolleySingleton.getInstance(this).addToRequestQueue(jsonObjectRequest)
     }
     private fun fetchMovieReviews(){
@@ -367,7 +384,7 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
             Log.i(TAG,error.message+" is the volley error")
             mReviewProgressBar.visibility = View.GONE
         })
-
+        jsonObjectRequest.setShouldCache(mSharedPreferences.getBoolean(getString(R.string.pref_cache_data_key),true))
         VolleySingleton.getInstance(this).addToRequestQueue(jsonObjectRequest)
     }
     private fun fetchMovieCast(){
@@ -432,6 +449,7 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
             mCastProgressBar.visibility = View.GONE
         })
 
+        jsonObjectRequest.setShouldCache(mSharedPreferences.getBoolean(getString(R.string.pref_cache_data_key),true))
         VolleySingleton.getInstance(this).addToRequestQueue(jsonObjectRequest)
     }
     private fun setOnClickListenersOnWikiImdnb(){

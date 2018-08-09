@@ -2,10 +2,12 @@ package kashish.com.ui.Activities
 
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
+import android.preference.PreferenceManager
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.app.ActionBar
 import android.support.v7.widget.GridLayoutManager
@@ -47,6 +49,8 @@ class SimilarMoviesActivity : AppCompatActivity(), OnMovieClickListener {
     private lateinit var mGridLayoutManager: GridLayoutManager
     private lateinit var movie: Movie
 
+    private lateinit var mSharedPreferences: SharedPreferences
+
     private var pageNumber:Int = 1
     private var doPagination:Boolean = true
     private var isScrolling:Boolean = false
@@ -82,11 +86,13 @@ class SimilarMoviesActivity : AppCompatActivity(), OnMovieClickListener {
         mToolbarTitle = mToolbar.findViewById(R.id.similar_toolbar_title)
         mSimilarRecyclerView = findViewById(R.id.activity_similar_recycler_view)
         mSimilarSwipeToRefresh = findViewById(R.id.activity_similar_swipe_to_refresh)
+
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
     }
 
     private fun initSimilarRecyclerView(){
         configureRecyclerAdapter(resources.configuration.orientation)
-        mSimilarAdapter = MovieAdapter(similarData,this)
+        mSimilarAdapter = MovieAdapter(similarData,this,mSharedPreferences)
         mSimilarRecyclerView.setAdapter(mSimilarAdapter)
     }
 
@@ -107,6 +113,7 @@ class SimilarMoviesActivity : AppCompatActivity(), OnMovieClickListener {
                     //Toast.makeText(this,"Something went wrong", Toast.LENGTH_SHORT).show()
                 similarData.removeAt(similarData.size - 1)
                 mSimilarAdapter.notifyItemRemoved(similarData.size-1)
+                mSimilarSwipeToRefresh.isRefreshing = false
 
             } else {
 
@@ -162,6 +169,7 @@ class SimilarMoviesActivity : AppCompatActivity(), OnMovieClickListener {
             Log.i(TAG,error.message+" is the error message")
         })
 
+        jsonObjectRequest.setShouldCache(mSharedPreferences.getBoolean(getString(R.string.pref_cache_data_key),true))
         VolleySingleton.getInstance(this).addToRequestQueue(jsonObjectRequest)
     }
 

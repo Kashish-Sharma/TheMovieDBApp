@@ -1,10 +1,13 @@
 package kashish.com.ui.Activities
 
+import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.view.ViewPager
 import android.support.design.widget.TabLayout
 import android.support.v7.widget.Toolbar
+import android.view.Menu
+import android.view.MenuItem
 import kashish.com.R
 import kashish.com.adapters.MovieViewPagerAdapter
 import kashish.com.ui.Fragments.*
@@ -67,5 +70,21 @@ class MoviesActivity : AppCompatActivity() {
     private fun setupTabLayout(){
         mTabLayout.setupWithViewPager(mViewPager)
     }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.settings_menu,menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when (item!!.itemId){
+            R.id.action_settings -> {
+                val settingsIntent: Intent = Intent(this,SettingsActivity::class.java)
+                startActivity(settingsIntent)
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
 
 }
