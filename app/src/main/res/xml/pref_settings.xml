@@ -10,4 +10,12 @@
         android:summaryOn="@string/pref_cache_data_summary_on"
         android:title="@string/pref_cache_data"/>
 
+    <CheckBoxPreference
+        android:textAppearance="@font/open_sans_regular"
+        android:defaultValue="@bool/pref_night_mode_default_value"
+        android:key="@string/pref_night_mode_key"
+        android:summaryOff="@string/pref_night_mode_summary_off"
+        android:summaryOn="@string/pref_night_mode_summary_on"
+        android:title="@string/pref_night_mode"/>
+
 </PreferenceScreen>

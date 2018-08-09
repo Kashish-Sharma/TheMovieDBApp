@@ -1,22 +1,27 @@
 package kashish.com.ui.Activities
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.support.v4.view.ViewPager
 import android.support.design.widget.TabLayout
+import android.support.v7.app.AppCompatDelegate
 import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import kashish.com.R
 import kashish.com.adapters.MovieViewPagerAdapter
 import kashish.com.ui.Fragments.*
 
-class MoviesActivity : AppCompatActivity() {
+class MoviesActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceChangeListener {
 
     private lateinit var mViewPager : ViewPager
     private lateinit var mTabLayout : TabLayout
     private lateinit var mToolBar : Toolbar
+    private lateinit var mSharedPreferences: SharedPreferences
 
     //Fragments
     internal lateinit var mUpcomingMoviesFragment   : UpcomingMoviesFragment
@@ -28,6 +33,14 @@ class MoviesActivity : AppCompatActivity() {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+        if (mSharedPreferences.getBoolean(getString(R.string.pref_night_mode_key)
+                ,resources.getBoolean(R.bool.pref_night_mode_default_value))) {
+            setTheme(R.style.AppThemeDark)
+        } else{
+            setTheme(R.style.AppTheme)
+        }
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_movies)
 
@@ -35,6 +48,7 @@ class MoviesActivity : AppCompatActivity() {
         setupToolBar()
         setupTabLayout()
         setupViewPager()
+
     }
 
     override fun onBackPressed() {
@@ -45,6 +59,8 @@ class MoviesActivity : AppCompatActivity() {
         mToolBar = findViewById(R.id.activity_movies_toolbar)
         mViewPager = findViewById(R.id.activity_movies_view_pager)
         mTabLayout = findViewById(R.id.activity_movies_tab_layout)
+
+        mSharedPreferences.registerOnSharedPreferenceChangeListener(this)
     }
     private fun setupToolBar(){
         mToolBar.title = "Movies"
@@ -86,5 +102,22 @@ class MoviesActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
+    private fun restartActivity(){
+        this.recreate()
+    }
+
+    override fun onSharedPreferenceChanged(p0: SharedPreferences?, key: String?) {
+        if(key.equals(getString(R.string.pref_night_mode_key))){
+            if (p0!!.getBoolean(key,resources.getBoolean(R.bool.pref_night_mode_default_value))){
+                restartActivity()
+            } else{
+                restartActivity()            }
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this)
+    }
 
 }

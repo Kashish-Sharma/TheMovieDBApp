@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
+    android:background="?attr/backgroundColor"
     android:descendantFocusability="blocksDescendants"
     android:fitsSystemWindows="true"
     tools:context="kashish.com.ui.Activities.DetailActivity">
@@ -127,7 +127,7 @@
                 android:id="@+id/activity_detail_ratings_linear_layout"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:background="@color/white"
+                android:background="?attr/bgColor"
                 android:gravity="center"
                 android:orientation="horizontal"
                 android:paddingBottom="4dp"
@@ -147,7 +147,7 @@
                     android:background="@drawable/bg_rounded"
                     android:gravity="center"
                     android:text="adult: false"
-                    android:textColor="@color/dark_dark_gray" />
+                    android:textColor="?attr/primaryTextColor" />
 
                 <TextView
                     android:id="@+id/activity_detail_vote_average"
@@ -157,7 +157,7 @@
                     android:background="@drawable/bg_rounded"
                     android:gravity="center"
                     android:text="rating: 8.6/10"
-                    android:textColor="@color/dark_dark_gray" />
+                    android:textColor="?attr/primaryTextColor" />
 
                 <TextView
                     android:id="@+id/activity_detail_vote_count"
@@ -169,14 +169,14 @@
                     android:background="@drawable/bg_rounded"
                     android:gravity="center"
                     android:text="votes: 8.09k"
-                    android:textColor="@color/dark_dark_gray" />
+                    android:textColor="?attr/primaryTextColor" />
 
             </LinearLayout>
             <View
                 app:layout_constraintTop_toBottomOf="@+id/activity_detail_ratings_linear_layout"
                 android:layout_width="match_parent"
                 android:layout_height="0.5dp"
-                android:background="@color/bg_dark" />
+                android:background="?attr/dividerColor" />
 
             <TextView
                 android:id="@+id/activity_detail_overview_text"
@@ -189,7 +189,7 @@
                 android:fontFamily="@font/opensans_semibold"
                 android:gravity="bottom"
                 android:text="@string/overview"
-                android:textColor="@color/dark_gray"
+                android:textColor="?attr/secondaryTextColor"
                 android:textSize="12sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -203,7 +203,7 @@
                 android:layout_height="match_parent"
                 android:layout_marginTop="4dp"
                 android:layout_marginBottom="4dp"
-                android:background="@color/white"
+                android:background="?attr/bgColor"
                 android:orientation="vertical"
                 android:showDividers="end"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -213,7 +213,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
-                    android:background="@color/bg_dark" />
+                    android:background="?attr/dividerColor" />
 
                 <LinearLayout
                     android:id="@+id/activity_detail_movie_time_linear_layout"
@@ -230,14 +230,14 @@
                         android:layout_marginStart="8dp"
                         android:fontFamily="@font/open_sans_regular"
                         android:text="@string/runtime_mins"
-                        android:textColor="@color/dark_gray" />
+                        android:textColor="?attr/secondaryTextColor" />
 
                     <View
                         android:layout_width="1dp"
                         android:layout_height="22sp"
                         android:layout_gravity="center"
                         android:layout_marginStart="8dp"
-                        android:background="@color/bg_dark" />
+                        android:background="?attr/dividerColor" />
 
                     <TextView
                         android:id="@+id/activity_detail_movie_budget"
@@ -246,14 +246,14 @@
                         android:layout_marginStart="8dp"
                         android:fontFamily="@font/open_sans_regular"
                         android:text="@string/budget_k"
-                        android:textColor="@color/dark_gray" />
+                        android:textColor="?attr/secondaryTextColor" />
 
                 </LinearLayout>
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
-                    android:background="@color/bg_dark" />
+                    android:background="?attr/dividerColor" />
 
                 <TextView
                     android:id="@+id/activity_detail_overview"
@@ -265,7 +265,7 @@
                     android:paddingStart="8dp"
                     android:scrollbars="vertical"
                     android:textAlignment="textStart"
-                    android:textColor="@color/dark_dark_gray" />
+                    android:textColor="?attr/primaryTextColor" />
 
                 <TextView
                     android:id="@+id/activity_detail_genre"
@@ -281,7 +281,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
-                    android:background="@color/bg_dark" />
+                    android:background="?attr/dividerColor" />
 
                 <RatingBar
                     android:id="@+id/activity_detail_rating_bar"
@@ -297,7 +297,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
-                    android:background="@color/bg_dark" />
+                    android:background="?attr/dividerColor" />
             </LinearLayout>
 
             <TextView
@@ -311,7 +311,7 @@
                 android:fontFamily="@font/opensans_semibold"
                 android:gravity="bottom"
                 android:text="@string/reviews"
-                android:textColor="@color/dark_gray"
+                android:textColor="?attr/secondaryTextColor"
                 android:textSize="12sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -319,7 +319,7 @@
 
             <RelativeLayout
                 android:layout_marginTop="4dp"
-                android:background="@color/white"
+                android:background="?attr/bgColor"
                 android:id="@+id/activity_detail_review_relative_layout"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -330,7 +330,7 @@
                     android:layout_above="@+id/activity_detail_review_recycler_view"
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
-                    android:background="@color/bg_dark" />
+                    android:background="?attr/dividerColor" />
                 <android.support.v7.widget.RecyclerView
                     android:layout_toStartOf="@+id/activity_detail_review_progress_bar"
                     android:id="@+id/activity_detail_review_recycler_view"
@@ -348,7 +348,7 @@
                     android:layout_below="@+id/activity_detail_review_recycler_view"
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
-                    android:background="@color/bg_dark" />
+                    android:background="?attr/dividerColor" />
             </RelativeLayout>
 
             <TextView
@@ -362,7 +362,7 @@
                 android:fontFamily="@font/opensans_semibold"
                 android:gravity="bottom"
                 android:text="@string/cast"
-                android:textColor="@color/dark_gray"
+                android:textColor="?attr/secondaryTextColor"
                 android:textSize="12sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -370,7 +370,7 @@
 
             <RelativeLayout
                 android:layout_marginTop="4dp"
-                android:background="@color/white"
+                android:background="?attr/bgColor"
                 android:id="@+id/activity_detail_cast_relative_layout"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -399,7 +399,7 @@
                     android:layout_below="@+id/activity_detail_cast_recycler_view"
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
-                    android:background="@color/bg_dark" />
+                    android:background="?attr/dividerColor" />
 
             </RelativeLayout>
 
@@ -414,7 +414,7 @@
                 android:fontFamily="@font/opensans_semibold"
                 android:gravity="bottom"
                 android:text="CREW"
-                android:textColor="@color/dark_gray"
+                android:textColor="?attr/secondaryTextColor"
                 android:textSize="12sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -422,7 +422,7 @@
 
             <RelativeLayout
                 android:layout_marginTop="4dp"
-                android:background="@color/white"
+                android:background="?attr/bgColor"
                 android:id="@+id/activity_detail_crew_relative_layout"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -434,7 +434,7 @@
                     android:layout_above="@+id/activity_detail_crew_recycler_view"
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
-                    android:background="@color/bg_dark" />
+                    android:background="?attr/dividerColor" />
 
                 <android.support.v7.widget.RecyclerView
                     android:layout_toStartOf="@+id/activity_detail_crew_progress_bar"
@@ -454,7 +454,7 @@
                     android:layout_below="@+id/activity_detail_crew_recycler_view"
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
-                    android:background="@color/bg_dark" />
+                    android:background="?attr/dividerColor" />
 
             </RelativeLayout>
 
@@ -469,7 +469,7 @@
                 android:fontFamily="@font/opensans_semibold"
                 android:gravity="bottom"
                 android:text="@string/trailers"
-                android:textColor="@color/dark_gray"
+                android:textColor="?attr/secondaryTextColor"
                 android:textSize="12sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -478,7 +478,7 @@
             <RelativeLayout
                 android:layout_marginTop="4dp"
                 android:id="@+id/activity_detail_trailer_relative_layout"
-                android:background="@color/white"
+                android:background="?attr/bgColor"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/activity_detail_trailer_text"
@@ -489,7 +489,7 @@
                     android:layout_above="@+id/activity_detail_trailer_recycler_view"
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
-                    android:background="@color/bg_dark" />
+                    android:background="?attr/dividerColor" />
 
                 <android.support.v7.widget.RecyclerView
                     android:layout_toStartOf="@+id/activity_detail_trailer_progress_bar"
@@ -509,7 +509,7 @@
                     android:layout_above="@+id/activity_detail_trailer_recycler_view"
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
-                    android:background="@color/bg_dark" />
+                    android:background="?attr/dividerColor" />
             </RelativeLayout>
 
 
@@ -520,7 +520,7 @@
                 app:layout_constraintBottom_toTopOf="@+id/activity_similar_movie_text"
                 android:layout_width="match_parent"
                 android:layout_height="0.5dp"
-                android:background="@color/bg_dark"/>
+                android:background="?attr/dividerColor"/>
             <TextView
                 android:background="@drawable/bg_ripple"
                 android:drawablePadding="4dp"
@@ -535,7 +535,7 @@
                 android:fontFamily="@font/open_sans_regular"
                 android:gravity="center|start"
                 android:text="See similar movies"
-                android:textColor="@color/dark_dark_gray"
+                android:textColor="?attr/primaryTextColor"
                 android:textSize="16sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -546,7 +546,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/activity_similar_movie_text"
                 android:layout_width="match_parent"
                 android:layout_height="0.5dp"
-                android:background="@color/bg_dark"/>
+                android:background="?attr/dividerColor"/>
 
             <TextView
                 android:id="@+id/activity_detail_find_out_more_text"
@@ -558,7 +558,7 @@
                 android:fontFamily="@font/opensans_semibold"
                 android:gravity="bottom"
                 android:text="FIND OUT MORE"
-                android:textColor="@color/dark_gray"
+                android:textColor="?attr/secondaryTextColor"
                 android:textSize="12sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -571,7 +571,7 @@
                 app:layout_constraintBottom_toTopOf="@+id/activity_detail_wikipedia_btn"
                 android:layout_width="match_parent"
                 android:layout_height="0.5dp"
-                android:background="@color/bg_dark"/>
+                android:background="?attr/dividerColor"/>
             <TextView
                 android:background="@drawable/bg_ripple"
                 android:drawablePadding="4dp"
@@ -586,7 +586,7 @@
                 android:fontFamily="@font/open_sans_regular"
                 android:gravity="center|start"
                 android:text="Wikipedia"
-                android:textColor="@color/dark_dark_gray"
+                android:textColor="?attr/primaryTextColor"
                 android:textSize="16sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -598,7 +598,7 @@
                 android:layout_marginBottom="8dp"
                 android:layout_width="match_parent"
                 android:layout_height="0.5dp"
-                android:background="@color/bg_dark"/>
+                android:background="?attr/dividerColor"/>
 
             <TextView
                 android:background="@drawable/bg_ripple"
@@ -614,7 +614,7 @@
                 android:fontFamily="@font/open_sans_regular"
                 android:gravity="center|start"
                 android:text="IMDB"
-                android:textColor="@color/dark_dark_gray"
+                android:textColor="?attr/primaryTextColor"
                 android:textSize="16sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -625,7 +625,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/activity_detail_imdb_btn"
                 android:layout_width="match_parent"
                 android:layout_height="0.5dp"
-                android:background="@color/bg_dark"/>
+                android:background="?attr/dividerColor"/>
 
             <View
                 android:id="@+id/activity_detail_final_view"
