@@ -3,9 +3,6 @@ package kashish.com.adapters
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
-import kashish.com.ui.Fragments.DiscoverMoviesFragment
-import kashish.com.ui.Fragments.TopRatedMoviesFragment
-import kashish.com.ui.Fragments.UpcomingMoviesFragment
 
 /**
  * Created by Kashish on 30-07-2018.
