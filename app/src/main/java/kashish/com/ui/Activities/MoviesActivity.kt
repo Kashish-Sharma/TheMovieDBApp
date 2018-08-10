@@ -26,7 +26,6 @@ class MoviesActivity : AppCompatActivity(), SharedPreferences.OnSharedPreference
     //Fragments
     internal lateinit var mUpcomingMoviesFragment   : UpcomingMoviesFragment
     internal lateinit var mTopRatedMoviesFragment   : TopRatedMoviesFragment
-    internal lateinit var mDiscoverMoviesFragment   : DiscoverMoviesFragment
     internal lateinit var mPopularMoviesFragment    : PopularMoviesFragment
     internal lateinit var mNowShowingMoviesFragment : NowShowingMoviesFragment
     internal lateinit var mMovieViewPagerAdapter    : MovieViewPagerAdapter
@@ -70,7 +69,6 @@ class MoviesActivity : AppCompatActivity(), SharedPreferences.OnSharedPreference
         mMovieViewPagerAdapter = MovieViewPagerAdapter(getSupportFragmentManager())
         mUpcomingMoviesFragment = UpcomingMoviesFragment()
         mTopRatedMoviesFragment = TopRatedMoviesFragment()
-        mDiscoverMoviesFragment = DiscoverMoviesFragment()
         mPopularMoviesFragment = PopularMoviesFragment()
         mNowShowingMoviesFragment = NowShowingMoviesFragment()
 
@@ -78,10 +76,9 @@ class MoviesActivity : AppCompatActivity(), SharedPreferences.OnSharedPreference
         mMovieViewPagerAdapter.addFragment(mUpcomingMoviesFragment, "Upcoming")
         mMovieViewPagerAdapter.addFragment(mPopularMoviesFragment, "Popular")
         mMovieViewPagerAdapter.addFragment(mTopRatedMoviesFragment, "Top Rated")
-        mMovieViewPagerAdapter.addFragment(mDiscoverMoviesFragment, "Discover")
         mViewPager.adapter = mMovieViewPagerAdapter
 
-        mViewPager.offscreenPageLimit = 5
+        mViewPager.offscreenPageLimit = 4
     }
     private fun setupTabLayout(){
         mTabLayout.setupWithViewPager(mViewPager)

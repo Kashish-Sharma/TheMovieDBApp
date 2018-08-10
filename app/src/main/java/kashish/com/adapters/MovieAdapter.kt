@@ -14,17 +14,14 @@ import com.bumptech.glide.request.RequestOptions
 import kashish.com.R
 import kashish.com.interfaces.OnMovieClickListener
 import kashish.com.models.Movie
-import kashish.com.utils.Constants.Companion.CONTENT_DISCOVER
 import kashish.com.utils.Constants.Companion.CONTENT_MOVIE
 import kashish.com.utils.Constants.Companion.CONTENT_PROGRESS
 import kashish.com.utils.Constants.Companion.CONTENT_SIMILAR
 import kashish.com.utils.DateUtils
 import kashish.com.utils.Helpers.buildImageUrl
-import kashish.com.viewholders.DiscoverViewHolder
 import kashish.com.viewholders.MoreViewHolder
 import kashish.com.viewholders.MovieViewHolder
 import kashish.com.viewholders.ProgressBarViewHolder
-import kotlinx.android.synthetic.main.discover_single_item.view.*
 import kotlinx.android.synthetic.main.movie_single_item.view.*
 
 
@@ -51,11 +48,6 @@ class MovieAdapter(movieList: List<Movie>,listener: OnMovieClickListener,private
                 view = LayoutInflater.from(parent.context)
                         .inflate(R.layout.movie_single_item, parent, false)
                 return MovieViewHolder(view,mContext, movieList,mListener)
-            }
-            CONTENT_DISCOVER ->{
-                view = LayoutInflater.from(parent.context)
-                        .inflate(R.layout.discover_single_item, parent, false)
-                return DiscoverViewHolder(view,mContext, movieList,mListener)
             }
 
             CONTENT_SIMILAR ->{
@@ -98,29 +90,6 @@ class MovieAdapter(movieList: List<Movie>,listener: OnMovieClickListener,private
 
             }
 
-            CONTENT_DISCOVER -> {
-                val movieViewHolder = holder as DiscoverViewHolder
-                val movie: Movie = movieList.get(holder.adapterPosition)
-
-                movieViewHolder.movieTitle.setText(movie.title)
-                movieViewHolder.movieRating.rating = movie.voteAverage!!.div(2)
-                movieViewHolder.movieReleaseDate.setText("Release date: ".plus(DateUtils.getStringDate(movie.releaseDate!!)))
-
-//                for (i in movie.genreIds!!) {
-//                    if (i == movie.genreIds!!.last()) movieType += getGenre(i)
-//                    else movieType += getGenre(i) + ", "
-//                }
-                movieViewHolder.itemView.discover_single_item_movie_type.setText("Genre: "+movie.genreString)
-
-                if (mSharedPreferences.getBoolean(mContext.getString(R.string.pref_cache_data_key),true)){
-                    Glide.with(mContext).load(buildImageUrl(movie.posterPath!!)).thumbnail(0.05f)
-                            .transition(withCrossFade()).into(movieViewHolder.moviePoster)
-                } else{
-                    Glide.with(mContext).load(buildImageUrl(movie.posterPath!!)).thumbnail(0.05f)
-                            .apply(RequestOptions().diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true))
-                            .transition(withCrossFade()).into(movieViewHolder.moviePoster)
-                }
-            }
 
             CONTENT_SIMILAR ->{
                 val moreViewHolder = holder as MoreViewHolder
