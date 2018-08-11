@@ -26,10 +26,20 @@
         <activity
             android:name=".ui.Activities.SimilarMoviesActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".ui.Activities.SettingsActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".ui.Activities.FavouritesActivity"
-            android:screenOrientation="portrait"></activity>
+        <activity
+            android:name=".ui.Activities.SettingsActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.Activities.FavouritesActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".ui.Activities.SearchActivity"
+            android:launchMode="singleTop">
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+            <meta-data android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
+        </activity>
     </application>
 
 </manifest>

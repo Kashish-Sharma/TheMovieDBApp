@@ -50,7 +50,9 @@ class CastCrewAdapter(private var castList: List<Cast>, private val mSharedPrefe
                     .into(castViewHolder.mCastImage)
         } else {
             Glide.with(mContext).load(buildProfileImageUrl(cast.profilePath!!))
-                    .apply(RequestOptions().diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true))
+                    .apply(RequestOptions().placeholder(R.color.gray)
+                            .diskCacheStrategy(DiskCacheStrategy.NONE)
+                            .skipMemoryCache(true))
                     .thumbnail(0.05f)
                     .transition(withCrossFade())
                     .into(castViewHolder.mCastImage)

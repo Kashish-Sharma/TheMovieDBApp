@@ -29,6 +29,11 @@ import java.util.*
  */
 object Helpers {
 
+    fun buildSearchMovieUrl(query: String, pageNumber: Int, adult: String = "false"):String{
+        return "https://api.themoviedb.org/3/search/movie?api_key=" + TMDB_API_KEY +
+                "&language=en-US&query=" + query + "&page="+pageNumber+"&include_adult="+adult+"&region=US|IN|UK"+"&with_release_type=2|3"
+    }
+
     fun buildUpcomingMoviesUrl(pageNumber: Int, adult: String = "false"): String{
         return "https://api.themoviedb.org/3/movie/upcoming?api_key="+ TMDB_API_KEY+
                 "&language=en-US"+"&page="+pageNumber+"&region=US|IN|UK"+"&with_release_type=2|3"

@@ -100,6 +100,12 @@ class MoviesActivity : AppCompatActivity(), SharedPreferences.OnSharedPreference
                 val favouriteIntent: Intent = Intent(this,FavouritesActivity::class.java)
                 startActivity(favouriteIntent)
             }
+
+            R.id.action_search -> {
+                val searchIntent: Intent = Intent(this,SearchActivity::class.java)
+                startActivity(searchIntent)
+            }
+
         }
         return super.onOptionsItemSelected(item)
     }

@@ -12,7 +12,7 @@ import kashish.com.database.MovieEntry
  */
 class FavouritesViewModel(application: Application) : AndroidViewModel(application) {
 
-    private lateinit var movies: LiveData<MutableList<MovieEntry>>
+    private var movies: LiveData<MutableList<MovieEntry>>
     private val FavouritesViewModelTAG:String = "FavouritesViewModelTAG"
 
     init {
