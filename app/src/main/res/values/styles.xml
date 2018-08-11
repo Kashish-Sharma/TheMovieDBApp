@@ -35,6 +35,39 @@
     </style>
 
 
+    <style name="AppThemeSearch" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:fontFamily">@font/open_sans_regular</item>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
+        <item name="primaryTextColor">@color/dark_dark_gray</item>
+        <item name="secondaryTextColor">@color/dark_gray</item>
+        <item name="backgroundColor">@color/background</item>
+        <item name="dividerColor">@color/bg_dark</item>
+        <item name="bgColor">@color/white</item>
+        <item name="titleColor">@color/black</item>
+        <item name="cardBgColor">@color/white</item>
+    </style>
+
+    <style name="AppThemeSearchDark" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:fontFamily">@font/open_sans_regular</item>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
+        <item name="primaryTextColor">@color/white</item>
+        <item name="secondaryTextColor">@color/off_white</item>
+        <item name="backgroundColor">@color/background_night</item>
+        <item name="dividerColor">@color/dark_dark_gray</item>
+        <item name="bgColor">@color/bgColor_night</item>
+        <item name="titleColor">@color/white</item>
+        <item name="cardBgColor">@color/background_night</item>
+    </style>
+
+
     <style name="WindowAnimationTransition">
         <item name="android:windowEnterTransition">@android:anim/fade_in</item>
         <item name="android:windowExitTransition">@android:anim/fade_out</item>

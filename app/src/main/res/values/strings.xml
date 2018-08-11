@@ -31,6 +31,12 @@
     <string name="pref_night_mode_key" translatable="false">night_mode</string>
     <string name="pref_night_mode_summary_on" translatable="false">Enabled</string>
     <string name="pref_night_mode_summary_off" translatable="false">Disabled</string>
-    <string name="favourite">Favourite</string>
+    <string name="favourite">Favourites</string>
+    <string name="wikipedia">Wikipedia</string>
+    <string name="imdb">IMDB</string>
+    <string name="find_out_more">FIND OUT MORE</string>
+    <string name="see_similar_movies">See similar movies</string>
+    <string name="crew">CREW</string>
+    <string name="search_hint">Search a movie</string>
 
 </resources>
