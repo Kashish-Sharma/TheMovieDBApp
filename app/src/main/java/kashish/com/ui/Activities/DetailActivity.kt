@@ -1,6 +1,9 @@
 package kashish.com.ui.Activities
 
 import android.app.Activity
+import android.arch.lifecycle.LiveData
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
@@ -43,6 +46,9 @@ import org.json.JSONObject
 import kashish.com.adapters.CastCrewAdapter
 import kashish.com.adapters.MovieAdapter
 import kashish.com.adapters.VideoAdapter
+import kashish.com.database.AppDatabase
+import kashish.com.database.AppExecutors
+import kashish.com.database.MovieEntry
 import kashish.com.interfaces.OnMovieClickListener
 import kashish.com.interfaces.OnReviewReadMoreClickListener
 import kashish.com.interfaces.OnVideoClickListener
@@ -55,6 +61,8 @@ import kashish.com.utils.Helpers.buildImdbUrl
 import kashish.com.utils.Helpers.buildMovieCastUrl
 import kashish.com.utils.Helpers.buildRecommendedMoviesUrl
 import kashish.com.utils.Helpers.buildWikiUrl
+import kashish.com.viewmodels.FavouritesViewModel
+import java.util.*
 
 
 class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVideoClickListener, SharedPreferences.OnSharedPreferenceChangeListener {
@@ -82,6 +90,7 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
     //Nested scroll view
     private lateinit var mNestedScrollView: NestedScrollView
     private lateinit var movieDetail: MovieDetail
+    private lateinit var mAddToFavourite: CheckBox
 
     //Ratings
     private lateinit var mAdult: TextView
@@ -128,6 +137,15 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
     private lateinit var mWikipediaBtn : TextView
     private lateinit var mImdbBtn : TextView
 
+    //Database
+    private val EXTRA_MOVIE_ID: String = "extraMovieId"
+    private val INSTANCE_MOVIE_ID: String = "instanceMovieId"
+    companion object {
+        private val DEFAULT_TASK_ID: Int = -1
+    }
+    private var mMovieId = DEFAULT_TASK_ID
+    private lateinit var mDatabase: AppDatabase
+
     override fun onCreate(savedInstanceState: Bundle?) {
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
         if (mSharedPreferences.getBoolean(getString(R.string.pref_night_mode_key)
@@ -143,9 +161,9 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
 
         getMovie()
         initToolBar()
+        initViews()
         setupCollapsingToolbar()
 
-        initViews()
         initReviewRecyclerView()
         initCastRecyclerView()
         initCrewRecyclerView()
@@ -157,7 +175,7 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
         setRatingsData()
         setOverViewData()
         setOnClickListenersOnWikiImdnb()
-
+        setFavouriteOnClickListener()
     }
 
     private fun getMovie(){
@@ -172,6 +190,7 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
         mToolbarMovieTitle = findViewById(R.id.activity_detail_movie_title)
         mToolbarMovieDate = findViewById(R.id.activity_detail_movie_date)
         mToolbarMoviePoster = findViewById(R.id.activity_detail_poster_image)
+        mAddToFavourite = findViewById(R.id.activity_detail_add_to_favourite)
 
         setSupportActionBar(mToolbar)
         mActionBar = supportActionBar!!
@@ -194,20 +213,20 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
                     .transition(DrawableTransitionOptions.withCrossFade()).into(mToolbarMoviePoster)
         }
 
+
         mToolbarMovieTitle.setText(movie.title)
         mToolbarMovieDate.setText(DateUtils.getStringDate(movie.releaseDate!!))
-    }
-    private fun collapseAppBarOnScrollUp(){
-        mAppBarLayout.addOnOffsetChangedListener(AppBarLayout.OnOffsetChangedListener { appBarLayout, verticalOffset ->
-            if (Math.abs(verticalOffset) == appBarLayout.totalScrollRange) {
-                // Collapsed
-            } else if (verticalOffset == 0) {
-                // Expanded
-            } else {
-                // Somewhere in between
-            }
+
+        //Checking if already added to favourite
+        AppExecutors.getInstance().diskIO().execute(Runnable {
+            val isCheck = mDatabase.movieDao().checkIfFavourite(movie.id!!)
+            runOnUiThread(Runnable {
+                mAddToFavourite.isChecked = isCheck
+            })
         })
+
     }
+
     private fun initViews(){
         mReviewSnapHelper = LinearSnapHelper()
         mCastSnapHelper = LinearSnapHelper()
@@ -247,6 +266,8 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
 
         mWikipediaBtn = findViewById(R.id.activity_detail_wikipedia_btn)
         mImdbBtn = findViewById(R.id.activity_detail_imdb_btn)
+
+        mDatabase = AppDatabase.getInstance(applicationContext)
 
     }
     private fun initReviewRecyclerView(){
@@ -517,7 +538,42 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
         mReviewReadMoreBottomSheet.setCanceledOnTouchOutside(true)
         mReviewReadMoreBottomSheet.show()
     }
+    private fun setFavouriteOnClickListener(){
+        mAddToFavourite.setOnClickListener(View.OnClickListener {
+            val movieEntry = MovieEntry()
+            movieEntry.movieId = movie.id
+            movieEntry.voteCount = movie.voteCount
+            movieEntry.video = movie.video
+            movieEntry.voteAverage = movie.voteAverage
+            movieEntry.title = movie.title
+            movieEntry.popularity = movie.popularity
+            movieEntry.posterPath = movie.posterPath
+            movieEntry.originalLanguage = movie.originalLanguage
+            movieEntry.originalTitle = movie.originalTitle
+            movieEntry.genreIds = movie.genreString
+            movieEntry.backdropPath = movie.backdropPath
+            movieEntry.adult = movie.adult
+            movieEntry.overview = movie.overview
+            movieEntry.releaseDate = movie.releaseDate
+            movieEntry.contentType = movie.contentType
+            movieEntry.totalPages = movie.totalPages
+            movieEntry.genreString = movie.genreString
+            movieEntry.timeAdded = Date()
 
+            if (mAddToFavourite.isChecked){
+                AppExecutors.getInstance().diskIO().execute(Runnable {
+                    kotlin.run {
+                        mDatabase.movieDao().insertFavourite(movieEntry)
+                    }
+                })
+                Toast.makeText(this,"Added", Toast.LENGTH_SHORT).show()
+            } else{
+                AppExecutors.getInstance().diskIO().execute(Runnable {
+                    mDatabase.movieDao().deleteFavourite(movieEntry)
+                })
+            }
+        })
+    }
     private fun restartActivity(){
         this.recreate()
     }

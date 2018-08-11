@@ -89,6 +89,22 @@
                     android:textColor="@color/white"
                     android:textSize="12sp" />
 
+
+                <CheckBox
+                    android:id="@+id/activity_detail_add_to_favourite"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentBottom="true"
+                    android:layout_margin="16dp"
+                    android:button="@null"
+                    android:checked="false"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="@drawable/like_icon"
+                    android:stateListAnimator="@animator/scale"
+                    app:layout_constraintLeft_toLeftOf="parent" />
+
             </RelativeLayout>
 
             <android.support.v7.widget.Toolbar
