@@ -13,8 +13,8 @@ import android.arch.persistence.room.Query
 @Dao
 public interface MovieDao{
 
-    @Query("SELECT * FROM favourites ORDER BY timeAdded")
-    fun loadAllFavourites(): LiveData<List<MovieEntry>>
+    @Query("SELECT * FROM favourites ORDER BY timeAdded DESC")
+    fun loadAllFavourites(): LiveData<MutableList<MovieEntry>>
 
     @Query("SELECT * FROM favourites WHERE movieId = :id ORDER BY timeAdded")
     fun checkIfFavourite(id: Int):Boolean

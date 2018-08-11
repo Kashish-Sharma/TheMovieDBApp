@@ -31,5 +31,6 @@
     <string name="pref_night_mode_key" translatable="false">night_mode</string>
     <string name="pref_night_mode_summary_on" translatable="false">Enabled</string>
     <string name="pref_night_mode_summary_off" translatable="false">Disabled</string>
+    <string name="favourite">Favourite</string>
 
 </resources>

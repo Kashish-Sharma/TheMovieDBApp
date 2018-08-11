@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:background="?attr/backgroundColor"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="kashish.com.ui.Activities.FavouritesActivity">
+
+    <android.support.v7.widget.Toolbar
+        android:elevation="10dp"
+        android:background="@color/colorPrimary"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        android:id="@+id/activity_favourites_toolbar"
+        android:layout_width="match_parent"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        android:layout_height="?attr/actionBarSize"/>
+
+    <ProgressBar
+        android:layout_below="@+id/activity_favourites_toolbar"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/activity_favourites_progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+
+        <android.support.v7.widget.RecyclerView
+            android:layout_below="@+id/activity_favourites_progress"
+            android:id="@+id/activity_favourites_movies_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        </android.support.v7.widget.RecyclerView>
+
+</RelativeLayout>
