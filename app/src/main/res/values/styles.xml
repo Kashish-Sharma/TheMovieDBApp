@@ -15,7 +15,6 @@
         <item name="bgColor">@color/white</item>
         <item name="titleColor">@color/black</item>
         <item name="cardBgColor">@color/white</item>
-        <item name="android:windowAnimationStyle">@style/WindowAnimationTransition</item>
     </style>
 
 
@@ -33,7 +32,6 @@
         <item name="bgColor">@color/bgColor_night</item>
         <item name="titleColor">@color/white</item>
         <item name="cardBgColor">@color/background_night</item>
-        <item name="android:windowAnimationStyle">@style/WindowAnimationTransition</item>
     </style>
 
 
