@@ -26,7 +26,10 @@
         <activity
             android:name=".ui.Activities.SimilarMoviesActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".ui.Activities.SettingsActivity"></activity>
+        <activity android:name=".ui.Activities.SettingsActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ui.Activities.FavouritesActivity"
+            android:screenOrientation="portrait"></activity>
     </application>
 
 </manifest>

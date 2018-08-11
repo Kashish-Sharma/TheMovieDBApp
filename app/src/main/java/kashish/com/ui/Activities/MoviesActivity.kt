@@ -95,6 +95,11 @@ class MoviesActivity : AppCompatActivity(), SharedPreferences.OnSharedPreference
                 val settingsIntent: Intent = Intent(this,SettingsActivity::class.java)
                 startActivity(settingsIntent)
             }
+
+            R.id.action_favourite -> {
+                val favouriteIntent: Intent = Intent(this,FavouritesActivity::class.java)
+                startActivity(favouriteIntent)
+            }
         }
         return super.onOptionsItemSelected(item)
     }
