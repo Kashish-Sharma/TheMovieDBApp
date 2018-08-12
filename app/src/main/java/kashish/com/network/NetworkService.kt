@@ -1,4 +1,4 @@
-package kashish.com.singleton
+package kashish.com.network
 
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor

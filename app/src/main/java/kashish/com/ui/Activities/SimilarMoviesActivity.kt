@@ -1,6 +1,5 @@
 package kashish.com.ui.Activities
 
-import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.res.Configuration
@@ -23,7 +22,7 @@ import android.view.MenuItem
 import android.widget.TextView
 import android.widget.Toast
 import kashish.com.requestmodels.MovieRequest
-import kashish.com.singleton.NetworkService
+import kashish.com.network.NetworkService
 import kashish.com.utils.Urls
 import retrofit2.Call
 import retrofit2.Callback

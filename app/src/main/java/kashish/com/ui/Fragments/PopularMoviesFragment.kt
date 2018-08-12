@@ -17,23 +17,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AbsListView
 import android.widget.Toast
-import com.android.volley.Request
-import com.android.volley.Response
-import com.android.volley.toolbox.JsonObjectRequest
 
 import kashish.com.R
 import kashish.com.adapters.MovieAdapter
 import kashish.com.interfaces.OnMovieClickListener
 import kashish.com.models.Movie
 import kashish.com.requestmodels.MovieRequest
-import kashish.com.singleton.NetworkService
-import kashish.com.singleton.VolleySingleton
+import kashish.com.network.NetworkService
 import kashish.com.ui.Activities.DetailActivity
 import kashish.com.utils.Constants
-import kashish.com.utils.Helpers
 import kashish.com.utils.Urls
-import org.json.JSONArray
-import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 
