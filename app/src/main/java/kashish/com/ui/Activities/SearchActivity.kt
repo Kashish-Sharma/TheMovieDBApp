@@ -8,7 +8,6 @@ import android.content.res.Configuration
 import android.os.Bundle
 import android.os.Handler
 import android.preference.PreferenceManager
-import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -18,21 +17,14 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.AbsListView
 import android.widget.Toast
-import com.android.volley.Request
-import com.android.volley.Response
-import com.android.volley.toolbox.JsonObjectRequest
 import kashish.com.R
 import kashish.com.adapters.MovieAdapter
 import kashish.com.interfaces.OnMovieClickListener
 import kashish.com.models.Movie
 import kashish.com.requestmodels.MovieRequest
-import kashish.com.singleton.NetworkService
-import kashish.com.singleton.VolleySingleton
+import kashish.com.network.NetworkService
 import kashish.com.utils.Constants
-import kashish.com.utils.Helpers
 import kashish.com.utils.Urls
-import org.json.JSONArray
-import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 

@@ -41,7 +41,7 @@ import kashish.com.models.*
 import kashish.com.requestmodels.MovieCreditRequest
 import kashish.com.requestmodels.MovieReviewsRequest
 import kashish.com.requestmodels.MovieVideosRequest
-import kashish.com.singleton.NetworkService
+import kashish.com.network.NetworkService
 import kashish.com.utils.Helpers
 import kashish.com.utils.Helpers.buildImdbUrl
 import kashish.com.utils.Helpers.buildWikiUrl

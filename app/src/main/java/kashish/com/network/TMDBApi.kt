@@ -1,4 +1,4 @@
-package kashish.com.singleton
+package kashish.com.network
 
 import kashish.com.models.MovieDetail
 import kashish.com.requestmodels.MovieCreditRequest
