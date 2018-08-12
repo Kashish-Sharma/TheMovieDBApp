@@ -2,7 +2,6 @@ package kashish.com.adapters
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.preference.PreferenceManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -20,7 +19,7 @@ import kashish.com.viewholders.CastCrewViewHolder
 /**
  * Created by Kashish on 03-08-2018.
  */
-class CastCrewAdapter(private var castList: List<Cast>, private val mSharedPreferences: SharedPreferences) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class CastAdapter(private var castList: List<Cast>, private val mSharedPreferences: SharedPreferences) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private lateinit var mContext: Context
 
@@ -45,12 +44,13 @@ class CastCrewAdapter(private var castList: List<Cast>, private val mSharedPrefe
 
         if (mSharedPreferences.getBoolean(mContext.getString(R.string.pref_cache_data_key),true)){
             Glide.with(mContext).load(buildProfileImageUrl(cast.profilePath!!))
+                    .apply(RequestOptions().placeholder(R.color.dark_gray))
                     .thumbnail(0.05f)
                     .transition(withCrossFade())
                     .into(castViewHolder.mCastImage)
         } else {
             Glide.with(mContext).load(buildProfileImageUrl(cast.profilePath!!))
-                    .apply(RequestOptions().placeholder(R.color.gray)
+                    .apply(RequestOptions().placeholder(R.color.dark_gray)
                             .diskCacheStrategy(DiskCacheStrategy.NONE)
                             .skipMemoryCache(true))
                     .thumbnail(0.05f)

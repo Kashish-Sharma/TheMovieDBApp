@@ -1,9 +1,5 @@
 package kashish.com.ui.Activities
 
-import android.app.Activity
-import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
@@ -15,53 +11,43 @@ import android.support.design.widget.BottomSheetDialog
 import android.support.design.widget.CollapsingToolbarLayout
 import android.support.v4.widget.NestedScrollView
 import android.support.v7.app.ActionBar
-import android.support.v7.app.AppCompatDelegate
 import android.support.v7.widget.*
 import android.support.v7.widget.Toolbar
+import android.text.method.LinkMovementMethod
 import android.text.method.ScrollingMovementMethod
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.*
-import com.android.volley.Request
-import com.android.volley.Response
-import com.android.volley.toolbox.JsonObjectRequest
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
 import kashish.com.R
 import kashish.com.adapters.MovieReviewAdapter
-import kashish.com.singleton.VolleySingleton
-import kashish.com.utils.Constants.Companion.CONTENT_REVIEW
-import kashish.com.utils.Constants.Companion.RESULTS
 import kashish.com.utils.DateUtils
 import kashish.com.utils.Helpers.buildBackdropImageUrl
 import kashish.com.utils.Helpers.buildImageUrl
-import kashish.com.utils.Helpers.buildMovieDetailUrl
-import kashish.com.utils.Helpers.buildMovieReviewUrl
 import kashish.com.utils.Helpers.setUpTransparentStatusBar
-import org.json.JSONArray
-import org.json.JSONObject
-import kashish.com.adapters.CastCrewAdapter
-import kashish.com.adapters.MovieAdapter
+import kashish.com.adapters.CastAdapter
+import kashish.com.adapters.CrewAdapter
 import kashish.com.adapters.VideoAdapter
 import kashish.com.database.AppDatabase
 import kashish.com.database.AppExecutors
 import kashish.com.database.MovieEntry
-import kashish.com.interfaces.OnMovieClickListener
 import kashish.com.interfaces.OnReviewReadMoreClickListener
 import kashish.com.interfaces.OnVideoClickListener
 import kashish.com.models.*
-import kashish.com.utils.Constants
-import kashish.com.utils.Constants.Companion.CAST
-import kashish.com.utils.Constants.Companion.CREW
+import kashish.com.requestmodels.MovieCreditRequest
+import kashish.com.requestmodels.MovieReviewsRequest
+import kashish.com.requestmodels.MovieVideosRequest
+import kashish.com.singleton.NetworkService
 import kashish.com.utils.Helpers
 import kashish.com.utils.Helpers.buildImdbUrl
-import kashish.com.utils.Helpers.buildMovieCastUrl
-import kashish.com.utils.Helpers.buildRecommendedMoviesUrl
 import kashish.com.utils.Helpers.buildWikiUrl
-import kashish.com.viewmodels.FavouritesViewModel
+import kashish.com.utils.Urls
+import retrofit2.Call
+import retrofit2.Callback
 import java.util.*
 
 
@@ -89,7 +75,7 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
 
     //Nested scroll view
     private lateinit var mNestedScrollView: NestedScrollView
-    private lateinit var movieDetail: MovieDetail
+    private var movieDetail: MovieDetail = MovieDetail()
     private lateinit var mAddToFavourite: CheckBox
 
     //Ratings
@@ -115,20 +101,20 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
     private lateinit var mReviewReadMoreContent : TextView
 
     //Cast
-    lateinit var mCastAdapter: CastCrewAdapter
+    lateinit var mCastAdapter: CastAdapter
     var castData: MutableList<Cast> = mutableListOf()
     private lateinit var mCastRecyclerView : RecyclerView
     private lateinit var mCastProgressBar : ProgressBar
 
     //Crew
-    lateinit var mCrewAdapter: CastCrewAdapter
-    var crewData: MutableList<Cast> = mutableListOf()
+    lateinit var mCrewAdapter: CrewAdapter
+    var crewData: MutableList<Crew> = mutableListOf()
     private lateinit var mCrewRecyclerView : RecyclerView
     private lateinit var mCrewProgressBar : ProgressBar
 
     //Trailer
     lateinit var mTrailerAdapter: VideoAdapter
-    var trailerData: MutableList<Video> = mutableListOf()
+    var trailerData: MutableList<MovieVideo> = mutableListOf()
     private lateinit var mTrailerRecyclerView : RecyclerView
     private lateinit var mTrailerProgressBar : ProgressBar
 
@@ -145,6 +131,7 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
     }
     private var mMovieId = DEFAULT_TASK_ID
     private lateinit var mDatabase: AppDatabase
+    private lateinit var networkService: NetworkService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
@@ -268,6 +255,7 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
         mImdbBtn = findViewById(R.id.activity_detail_imdb_btn)
 
         mDatabase = AppDatabase.getInstance(applicationContext)
+        networkService = NetworkService.instance
 
     }
     private fun initReviewRecyclerView(){
@@ -280,14 +268,14 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
     private fun initCastRecyclerView(){
         mLinearLayoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         mCastRecyclerView.setLayoutManager(mLinearLayoutManager)
-        mCastAdapter = CastCrewAdapter(castData,mSharedPreferences)
+        mCastAdapter = CastAdapter(castData,mSharedPreferences)
         mCastRecyclerView.setAdapter(mCastAdapter)
         mCastSnapHelper.attachToRecyclerView(mCastRecyclerView)
     }
     private fun initCrewRecyclerView(){
         mLinearLayoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         mCrewRecyclerView.setLayoutManager(mLinearLayoutManager)
-        mCrewAdapter = CastCrewAdapter(crewData,mSharedPreferences)
+        mCrewAdapter = CrewAdapter(crewData,mSharedPreferences)
         mCrewRecyclerView.setAdapter(mCrewAdapter)
         mCrewSnapHelper.attachToRecyclerView(mCrewRecyclerView)
     }
@@ -329,160 +317,115 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
         }
         return super.onOptionsItemSelected(item)
     }
+
+
     private fun fetchMovieDetails(){
+        val call: Call<MovieDetail> = networkService.tmdbApi.getDetailMovie(movie.id.toString(),
+                Urls.TMDB_API_KEY,"videos")
 
-        val movieDetailUrl = buildMovieDetailUrl(movie.id.toString())
-
-        val jsonObjectRequest = JsonObjectRequest(Request.Method.GET,
-                movieDetailUrl,null, Response.Listener { response ->
-
-            val jsonObject: JSONObject = response
-            movieDetail = MovieDetail("", "", 0, 0, "", "", 0)
-
-            try {
-                movieDetail.homePage = jsonObject.getString("homepage")
-                movieDetail.imdbId = jsonObject.getString("imdb_id")
-                movieDetail.budget = jsonObject.getInt("budget")
-                movieDetail.revenue = jsonObject.getInt("revenue")
-                movieDetail.runtime =  jsonObject.getInt("runtime")
-                movieDetail.releaseStatus = jsonObject.getString("status")
-                movieDetail.tagLine = jsonObject.getString("tagline")
-            } catch (e:Exception){
-                Log.i(TAG,e.message)
-            }
-
-            setRuntimeAndBudget(movieDetail.runtime, movieDetail.budget)
-
-            val videosObject: JSONObject = jsonObject.getJSONObject("videos")
-            val videosArray: JSONArray = videosObject.getJSONArray("results")
-            if (videosArray.length() == 0){
-                //stop call to pagination in any case
+        call.enqueue(object : Callback<MovieDetail>{
+            override fun onFailure(call: Call<MovieDetail>?, t: Throwable?) {
+                Log.i(TAG,t!!.message+" is the error")
                 mTrailerProgressBar.visibility = View.GONE
             }
-            for (i in 0 until videosArray.length()) {
-                val jresponse: JSONObject = videosArray.getJSONObject(i)
-                val trailer = Video()
-                trailer.key = jresponse.getString("key")
-                trailer.id = jresponse.getString("id")
-                trailer.iso_3166 = jresponse.getString("iso_3166_1")
-                trailer.iso_639 = jresponse.getString("iso_639_1")
-                trailer.name = jresponse.getString("name")
-                trailer.site = jresponse.getString("site")
-                trailer.size = jresponse.getInt("size")
-                trailer.type = jresponse.getString("type")
-                trailerData.add(trailer)
-            }
-            mTrailerAdapter.notifyItemRangeInserted(trailerData.size - videosArray.length(),videosArray.length())
-            mTrailerProgressBar.visibility = View.GONE
-            
 
-        }, Response.ErrorListener { error ->
-            Log.i(TAG,error.message+" is the volley error")
-            mReviewProgressBar.visibility = View.GONE
-            mTrailerProgressBar.visibility = View.GONE
+            override fun onResponse(call: Call<MovieDetail>?, response: retrofit2.Response<MovieDetail>?) {
+                movieDetail = response!!.body()!!
+
+                setRuntimeAndBudget(movieDetail.runtime, movieDetail.budget)
+
+                val videoResult: MovieVideosRequest = movieDetail.videosResult!!
+
+                if (videoResult.videos!!.isEmpty()){
+                    mTrailerProgressBar.visibility = View.GONE
+                } else{
+                    for (i in 0 until videoResult.videos!!.size) {
+                        var trailer: MovieVideo
+                        trailer = videoResult.videos!!.get(i)
+                        trailerData.add(trailer)
+                    }
+
+                    mTrailerAdapter.notifyItemRangeInserted(trailerData.size - videoResult.videos!!.size,videoResult.videos!!.size)
+                    mTrailerProgressBar.visibility = View.GONE
+                }
+
+            }
         })
-        jsonObjectRequest.setShouldCache(mSharedPreferences.getBoolean(getString(R.string.pref_cache_data_key),true))
-        VolleySingleton.getInstance(this).addToRequestQueue(jsonObjectRequest)
+
+
     }
     private fun fetchMovieReviews(){
-        val jsonObjectRequest = JsonObjectRequest(Request.Method.GET,
-                buildMovieReviewUrl(movie.id.toString(), 1),null, Response.Listener { response ->
-
-            val jsonArray: JSONArray = response.getJSONArray(RESULTS)
-            if (jsonArray.length() == 0){
-                //stop call to pagination in any case
-                mReviewProgressBar.visibility = View.GONE
+        val call: Call<MovieReviewsRequest> = networkService.tmdbApi
+                .getMovieReviews(movie.id!!.toLong(), Urls.TMDB_API_KEY)
+        call.enqueue(object : Callback<MovieReviewsRequest> {
+            override fun onFailure(call: Call<MovieReviewsRequest>?, t: Throwable?) {
+            Log.i(TAG,t!!.message+" is the error")
+            mReviewProgressBar.visibility = View.GONE
             }
 
-            for (i in 0 until jsonArray.length()) {
-                val jresponse: JSONObject = jsonArray.getJSONObject(i)
+            override fun onResponse(call: Call<MovieReviewsRequest>?, response: retrofit2.Response<MovieReviewsRequest>?) {
 
-                val review = MovieReview()
+                val movieReviews: MovieReviewsRequest = response!!.body()!!
 
-                review.author = jresponse.getString("author")
-                review.content = jresponse.getString("content")
-                review.contentType = CONTENT_REVIEW
-                review.id = jresponse.getString("id")
-                review.url = jresponse.getString("url")
+                if (movieReviews.reviews!!.isEmpty()){
+                    mReviewProgressBar.visibility = View.GONE
+                } else{
+                    for (i in 0 until movieReviews.reviews!!.size) {
+                        val review: MovieReview = movieReviews.reviews!!.get(i)
+                        data.add(review)
+                    }
+                    mReviewReviewAdapter.notifyItemRangeInserted(data.size - movieReviews.reviews!!.size,movieReviews.reviews!!.size)
+                    mReviewProgressBar.visibility = View.GONE
+                }
 
-                data.add(review)
             }
 
-            mReviewReviewAdapter.notifyItemRangeInserted(data.size - jsonArray.length(),jsonArray.length())
-            mReviewProgressBar.visibility = View.GONE
-
-        }, Response.ErrorListener { error ->
-            Log.i(TAG,error.message+" is the volley error")
-            mReviewProgressBar.visibility = View.GONE
         })
-        jsonObjectRequest.setShouldCache(mSharedPreferences.getBoolean(getString(R.string.pref_cache_data_key),true))
-        VolleySingleton.getInstance(this).addToRequestQueue(jsonObjectRequest)
     }
     private fun fetchMovieCast(){
-        val jsonObjectRequest = JsonObjectRequest(Request.Method.GET,
-                buildMovieCastUrl(movie.id.toString()),null, Response.Listener { response ->
-
-            //Getting cast
-            val jsonArray: JSONArray = response.getJSONArray(CAST)
-
-            if (jsonArray.length() == 0){
-                //stop call to pagination in any case
-                mCastProgressBar.visibility = View.GONE
-            }
-
-            for (i in 0 until jsonArray.length()) {
-                val jresponse: JSONObject = jsonArray.getJSONObject(i)
-
-                val cast = Cast()
-
-                cast.castId = jresponse.getInt("cast_id")
-                cast.character = jresponse.getString("character")
-                cast.creditId = jresponse.getString("credit_id")
-                cast.id = jresponse.getInt("id")
-                cast.name = jresponse.getString("name")
-                cast.order = jresponse.getInt("order")
-                cast.profilePath = jresponse.getString("profile_path")
-
-
-                if(cast.profilePath!=null)
-                    castData.add(cast)
-
-            }
-
-            mCastAdapter.notifyItemRangeInserted(castData.size - jsonArray.length(),jsonArray.length())
-            mCastProgressBar.visibility = View.GONE
-
-
-            //Getting crew
-            val jsonCrewArray: JSONArray = response.getJSONArray(CREW)
-            if (jsonArray.length() == 0){
-                //stop call to pagination in any case
-                mCrewProgressBar.visibility = View.GONE
-            }
-            for (i in 0 until jsonCrewArray.length()) {
-                val jCrewresponse: JSONObject = jsonCrewArray.getJSONObject(i)
-                val crew = Cast()
-                    crew.character = jCrewresponse.getString("job")
-                    //crew.department = jCrewresponse.getString("department")
-                    crew.creditId = jCrewresponse.getString("credit_id")
-                    crew.id = jCrewresponse.getInt("id")
-                    crew.name = jCrewresponse.getString("name")
-                    crew.profilePath = jCrewresponse.getString("profile_path")
-                if (crew.profilePath!=null)
-                    crewData.add(crew)
-            }
-            mCrewAdapter.notifyItemRangeInserted(crewData.size - jsonArray.length()-1,jsonArray.length()-1)
+        val call: Call<MovieCreditRequest> = networkService.tmdbApi
+                .getMovieCredits(movie.id!!.toLong(), Urls.TMDB_API_KEY)
+        call.enqueue(object: Callback<MovieCreditRequest>{
+            override fun onFailure(call: Call<MovieCreditRequest>?, t: Throwable?) {
+            Log.i(TAG,t!!.message+" is the error")
             mCrewProgressBar.visibility = View.GONE
+            mCastProgressBar.visibility = View.GONE            }
 
-        }, Response.ErrorListener { error ->
-            Log.i(TAG,error.message+" is the volley error")
-            mCrewProgressBar.visibility = View.GONE
-            mCastProgressBar.visibility = View.GONE
+            override fun onResponse(call: Call<MovieCreditRequest>?, response: retrofit2.Response<MovieCreditRequest>?) {
+                val movieCreditRequest: MovieCreditRequest = response!!.body()!!
+
+                val crewResults: List<Crew> = movieCreditRequest.crewResult!!
+                val castResults: List<Cast> = movieCreditRequest.castResult!!
+
+                if (crewResults.isEmpty()) mCrewProgressBar.visibility = View.GONE
+                else{
+                    for (i in 0 until crewResults.size) {
+                        val crew: Crew = crewResults[i]
+                        if (crew.profilePath==null) crew.profilePath = "asdfghj"
+                        crewData.add(crew)
+                    }
+                    mCrewAdapter.notifyItemRangeInserted(crewData.size - crewResults.size,crewResults.size)
+                    mCrewProgressBar.visibility = View.GONE
+                }
+
+
+                if (castResults.isEmpty()) mCastProgressBar.visibility = View.GONE
+                else{
+                    for (i in 0 until castResults.size) {
+                        val cast: Cast = castResults[i]
+                        if (cast.profilePath==null) cast.profilePath = "asdfghj"
+                        castData.add(cast)
+                    }
+                    mCastAdapter.notifyItemRangeInserted(castData.size - castResults.size,castResults.size)
+                    mCastProgressBar.visibility = View.GONE
+                }
+
+            }
+
         })
-
-        jsonObjectRequest.setShouldCache(mSharedPreferences.getBoolean(getString(R.string.pref_cache_data_key),true))
-        VolleySingleton.getInstance(this).addToRequestQueue(jsonObjectRequest)
     }
+
+
     private fun setOnClickListenersOnWikiImdnb(){
         mWikipediaBtn.setOnClickListener(View.OnClickListener {
 
@@ -533,6 +476,7 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
 
         mReviewReadMoreAuthor.setText(review.author)
         mReviewReadMoreContent.setText(review.content)
+        mReviewReadMoreContent.setMovementMethod(LinkMovementMethod.getInstance());
 
         mReviewReadMoreBottomSheet.setCancelable(false)
         mReviewReadMoreBottomSheet.setCanceledOnTouchOutside(true)
@@ -555,8 +499,6 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
             movieEntry.adult = movie.adult
             movieEntry.overview = movie.overview
             movieEntry.releaseDate = movie.releaseDate
-            movieEntry.contentType = movie.contentType
-            movieEntry.totalPages = movie.totalPages
             movieEntry.genreString = movie.genreString
             movieEntry.timeAdded = Date()
 
@@ -581,9 +523,9 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
     override fun onReviewReadMoreClickListener(review: MovieReview) {
         showReviewReadMoreBottomSheet(review)
     }
-    override fun onVideoClickListener(video: Video) {
+    override fun onVideoClickListener(movieVideo: MovieVideo) {
         val intent = Intent(Intent.ACTION_VIEW)
-        intent.data = Uri.parse(Helpers.buildYoutubeURL(video.key!!))
+        intent.data = Uri.parse(Helpers.buildYoutubeURL(movieVideo.key!!))
         startActivity(Intent.createChooser(intent, "View Trailer:"))
     }
     override fun onSharedPreferenceChanged(p0: SharedPreferences?, key: String?) {

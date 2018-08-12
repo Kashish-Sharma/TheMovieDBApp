@@ -94,23 +94,22 @@ class FavouritesActivity : AppCompatActivity(), OnMovieClickListener, SharedPref
                 try {
                     for (i in 0 until t!!.size){
                         val movie = Movie()
-                        val movieEntry = t.get(i)
+                        val movieEntry = t[i]
                         movie.id = movieEntry.movieId
                         movie.voteCount = movieEntry.voteCount
                         movie.video = movieEntry.video
                         movie.voteAverage = movieEntry.voteAverage
                         movie.title = movieEntry.title
                         movie.popularity = movieEntry.popularity
-                        movie.posterPath = movieEntry.posterPath
+                        movie.posterPath = movieEntry.posterPath!!
                         movie.originalLanguage = movieEntry.originalLanguage
                         movie.originalTitle = movieEntry.originalTitle
-                        movie.backdropPath = movieEntry.backdropPath
+                        movie.backdropPath = movieEntry.backdropPath!!
                         movie.adult = movieEntry.adult
                         movie.overview = movieEntry.overview
                         movie.releaseDate = movieEntry.releaseDate
-                        movie.contentType = movieEntry.contentType
-                        movie.totalPages = movieEntry.totalPages
-                        movie.genreString = movieEntry.genreString
+                        movie.contentType = movieEntry.contentType!!
+                        movie.genreString = movieEntry.genreString!!
                         movie.contentType = CONTENT_MOVIE
 
                         favouriteData.add(movie)

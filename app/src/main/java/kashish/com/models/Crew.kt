@@ -4,15 +4,13 @@ import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
 /**
- * Created by Kashish on 03-08-2018.
+ * Created by Kashish on 13-08-2018.
  */
-class Cast() {
-    @SerializedName("cast_id")
+class Crew {
+
+    @SerializedName("department")
     @Expose
-    var castId: Int = 0
-    @SerializedName("character")
-    @Expose
-    var character: String? = null
+    var department: String? = null
     @SerializedName("credit_id")
     @Expose
     var creditId: String? = null
@@ -23,9 +21,6 @@ class Cast() {
     @SerializedName("name")
     @Expose
     var name:String? = null
-    @SerializedName("order")
-    @Expose
-    var order:Int? = -1
     @SerializedName("profile_path")
     @Expose
     var profilePath: String? = null
