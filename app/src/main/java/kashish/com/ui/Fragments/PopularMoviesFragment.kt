@@ -25,12 +25,17 @@ import kashish.com.R
 import kashish.com.adapters.MovieAdapter
 import kashish.com.interfaces.OnMovieClickListener
 import kashish.com.models.Movie
+import kashish.com.requestmodels.MovieRequest
+import kashish.com.singleton.NetworkService
 import kashish.com.singleton.VolleySingleton
 import kashish.com.ui.Activities.DetailActivity
 import kashish.com.utils.Constants
 import kashish.com.utils.Helpers
+import kashish.com.utils.Urls
 import org.json.JSONArray
 import org.json.JSONObject
+import retrofit2.Call
+import retrofit2.Callback
 
 
 /**
@@ -47,6 +52,8 @@ class PopularMoviesFragment : Fragment(), OnMovieClickListener {
     private lateinit var mGridLayoutManager : GridLayoutManager
 
     private lateinit var mSharedPreferences: SharedPreferences
+    private lateinit var networkService: NetworkService
+
 
     private var pageNumber:Int = 1
     private var doPagination:Boolean = true
@@ -78,7 +85,9 @@ class PopularMoviesFragment : Fragment(), OnMovieClickListener {
         mRecyclerView = mMainView.findViewById(R.id.fragment_popular_movies_recycler_view)
         mSwipeRefreshLayout = mMainView.findViewById(R.id.fragment_popular_movies_swipe_refresh)
 
+        data = mutableListOf()
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+        networkService = NetworkService.instance
     }
     private fun clearList() {
         val size = data.size
@@ -139,81 +148,7 @@ class PopularMoviesFragment : Fragment(), OnMovieClickListener {
             }
         })
     }
-    private fun fetchData(){
 
-        val jsonObjectRequest = JsonObjectRequest(Request.Method.GET,
-                Helpers.buildPopularMoviesUrl(pageNumber),null, Response.Listener { response ->
-
-            val jsonArray: JSONArray = response.getJSONArray(Constants.RESULTS)
-
-            if (jsonArray.length() == 0){
-                //stop call to pagination in any case
-                doPagination = false
-
-                //show msg no posts
-                if(pageNumber == 1)
-                    Toast.makeText(getContext(),"Something went wrong", Toast.LENGTH_SHORT).show()
-                data.removeAt(data.size - 1)
-                mMovieAdapter.notifyItemRemoved(data.size-1)
-                mSwipeRefreshLayout.isRefreshing = false
-
-            } else {
-
-                //Data loaded, remove progress
-                data.removeAt(data.size-1)
-                mMovieAdapter.notifyItemRemoved(data.size-1)
-
-
-                for (i in 0 until jsonArray.length()) {
-                    val jresponse: JSONObject = jsonArray.getJSONObject(i)
-
-                    val movie = Movie()
-
-                    movie.totalPages = response.getInt(Constants.TOTAL_PAGES)
-                    movie.voteCount = jresponse.getInt(Constants.VOTE_COUNT)
-                    movie.id = jresponse.getInt(Constants.ID)
-                    movie.video = jresponse.getBoolean(Constants.VIDEO)
-                    movie.voteAverage = jresponse.getDouble(Constants.VOTE_AVERAGE).toFloat()
-                    movie.title = jresponse.getString(Constants.TITLE)
-                    movie.popularity = jresponse.getDouble(Constants.POPULARITY).toFloat()
-                    movie.posterPath = jresponse.getString(Constants.POSTER_PATH)
-                    movie.originalLanguage = jresponse.getString(Constants.ORIGINAL_LANGUAGE)
-                    movie.originalTitle = jresponse.getString(Constants.ORIGINAL_TITLE)
-
-                    val array: JSONArray = jresponse.getJSONArray(Constants.GENRE_IDS)
-                    //val genreList: MutableList<Int> = mutableListOf()
-                    for (j in 0 until array.length()) {
-                        //genreList.add(array.getInt(j))
-                        movie.genreString += Constants.getGenre(array.getInt(j)) + ", "
-                    }
-
-                    //movie.genreIds = genreList
-                    movie.backdropPath = jresponse.getString(Constants.BACKDROP_PATH)
-                    movie.adult = jresponse.getBoolean(Constants.ADULT)
-                    movie.overview = jresponse.getString(Constants.OVERVIEW)
-                    movie.releaseDate = jresponse.getString(Constants.RELEASE_DATE)
-                    movie.contentType = Constants.CONTENT_MOVIE
-
-                    data.add(movie)
-                }
-
-                //addProgressBarInList()
-
-                mMovieAdapter.notifyItemRangeInserted(data.size - jsonArray.length(), jsonArray.length())
-
-                isLoading = false
-
-                if (mSwipeRefreshLayout.isRefreshing())
-                    mSwipeRefreshLayout.setRefreshing(false)
-            }
-
-        }, Response.ErrorListener { error ->
-            Log.i(TAG,error.message+" is the error message")
-        })
-
-        jsonObjectRequest.setShouldCache(mSharedPreferences.getBoolean(getString(R.string.pref_cache_data_key),true))
-        VolleySingleton.getInstance(this.context!!).addToRequestQueue(jsonObjectRequest)
-    }
     private fun delayByfewSeconds(){
         val handler = Handler()
         handler.postDelayed(Runnable {
@@ -229,6 +164,69 @@ class PopularMoviesFragment : Fragment(), OnMovieClickListener {
         val progressBarContent = Movie()
         progressBarContent.contentType = Constants.CONTENT_PROGRESS
         data.add(progressBarContent)
+    }
+
+    private fun fetchData(){
+        val call: Call<MovieRequest> = networkService.tmdbApi.getPopularMovies(Urls.TMDB_API_KEY
+                ,"en-US",pageNumber,"US|IN|UK","2|3")
+
+        call.enqueue(object : Callback<MovieRequest> {
+            override fun onResponse(call: Call<MovieRequest>?, response: retrofit2.Response<MovieRequest>?) {
+
+                val movieRequest: MovieRequest = response!!.body()!!
+                Log.i("jhasbfbiuf",movieRequest.page.toString()+ " are the total pages")
+
+                if (movieRequest.results!!.isEmpty()){
+                    //stop call to pagination in any case
+                    doPagination = false
+                    //show msg no posts
+                    if(pageNumber == 1)
+                        Toast.makeText(getContext(),"Something went wrong", Toast.LENGTH_SHORT).show()
+                    data.removeAt(data.size - 1)
+                    mMovieAdapter.notifyItemRemoved(data.size-1)
+                    mSwipeRefreshLayout.isRefreshing = false
+
+                }
+                else {
+
+                    //Data loaded, remove progress
+                    data.removeAt(data.size-1)
+                    mMovieAdapter.notifyItemRemoved(data.size-1)
+
+                    for (i in 0 until movieRequest.results!!.size){
+                        val movie: Movie = movieRequest.results!!.get(i)
+
+                        for (j in 0 until movie.genreIds!!.size) {
+                            movie.genreString += Constants.getGenre(movie.genreIds!!.get(j)) + ", "
+                        }
+
+                        if (movie.posterPath.isNullOrEmpty()){
+                            movie.posterPath = "asdsadad"
+                        }
+
+                        if (movie.backdropPath.isNullOrEmpty()){
+                            movie.backdropPath = "asdsadad"
+                        }
+
+                        movie.contentType = Constants.CONTENT_MOVIE
+                        data.add(movie)
+
+                    }
+
+                    isLoading = false
+                    if (mSwipeRefreshLayout.isRefreshing())
+                        mSwipeRefreshLayout.setRefreshing(false)
+                    mMovieAdapter.notifyItemRangeInserted(data.size - movieRequest.results!!.size, movieRequest.results!!.size)
+                }
+
+
+            }
+
+            override fun onFailure(call: Call<MovieRequest>?, t: Throwable?) {
+                Log.i(TAG,t!!.message+" is the error message")
+            }
+
+        })
     }
 
     override fun onConfigurationChanged(newConfig: Configuration?) {

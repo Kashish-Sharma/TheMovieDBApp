@@ -7,6 +7,9 @@
     android:layout_height="wrap_content">
 
     <TextView
+        android:clickable="true"
+        android:focusable="true"
+        android:layout_marginTop="12dp"
         android:layout_marginBottom="10dp"
         android:fontFamily="@font/opensans_semibold"
         android:textColor="?attr/primaryTextColor"
@@ -17,8 +20,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
     <TextView
+        android:linksClickable="true"
         android:fontFamily="@font/open_sans_regular"
-        android:textColor="?attr/primaryTextColor"
+        android:textColor="?attr/secondaryTextColor"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="16dp"
         android:maxHeight="300dp"

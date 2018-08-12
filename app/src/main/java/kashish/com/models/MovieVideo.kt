@@ -3,7 +3,7 @@ package kashish.com.models
 /**
  * Created by Kashish on 04-08-2018.
  */
-class Video() {
+class MovieVideo() {
     var id: String? = null
     var iso_639: String? = null
     var iso_3166: String? = null

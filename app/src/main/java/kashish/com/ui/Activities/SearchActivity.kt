@@ -25,11 +25,16 @@ import kashish.com.R
 import kashish.com.adapters.MovieAdapter
 import kashish.com.interfaces.OnMovieClickListener
 import kashish.com.models.Movie
+import kashish.com.requestmodels.MovieRequest
+import kashish.com.singleton.NetworkService
 import kashish.com.singleton.VolleySingleton
 import kashish.com.utils.Constants
 import kashish.com.utils.Helpers
+import kashish.com.utils.Urls
 import org.json.JSONArray
 import org.json.JSONObject
+import retrofit2.Call
+import retrofit2.Callback
 
 class SearchActivity : AppCompatActivity(), OnMovieClickListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -43,6 +48,7 @@ class SearchActivity : AppCompatActivity(), OnMovieClickListener, SharedPreferen
     private lateinit var movie: Movie
 
     private lateinit var mSharedPreferences: SharedPreferences
+    private lateinit var networkService: NetworkService
 
     private var pageNumber:Int = 1
     private var doPagination:Boolean = true
@@ -72,7 +78,10 @@ class SearchActivity : AppCompatActivity(), OnMovieClickListener, SharedPreferen
 
     private fun initViews(){
         mSearchRecyclerView = findViewById(R.id.activity_search_recycler_view)
-        mSharedPreferences.registerOnSharedPreferenceChangeListener(this)
+
+        searchData = mutableListOf()
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+        networkService = NetworkService.instance
     }
 
     private fun initSearchRecyclerView(){
@@ -82,80 +91,63 @@ class SearchActivity : AppCompatActivity(), OnMovieClickListener, SharedPreferen
     }
 
     private fun fetchSearchMovie(query: String){
+        val call: Call<MovieRequest> = networkService.tmdbApi.getSearchMovies(Urls.TMDB_API_KEY
+                ,"en-US",query,pageNumber,"false","US|IN|UK","2|3")
 
-        val jsonObjectRequest = JsonObjectRequest(Request.Method.GET,
-                Helpers.buildSearchMovieUrl(query,pageNumber,"false"),
-                null, Response.Listener { response ->
+        call.enqueue(object : Callback<MovieRequest> {
+            override fun onResponse(call: Call<MovieRequest>?, response: retrofit2.Response<MovieRequest>?) {
 
+                val movieRequest: MovieRequest = response!!.body()!!
+                Log.i("jhasbfbiuf",movieRequest.page.toString()+ " are the total pages")
 
-            val jsonArray: JSONArray = response.getJSONArray(Constants.RESULTS)
+                if (movieRequest.results!!.isEmpty()){
+                    //stop call to pagination in any case
+                    doPagination = false
+                    //show msg no posts
+                    if(pageNumber == 1)
+                        Toast.makeText(this@SearchActivity,"Something went wrong", Toast.LENGTH_SHORT).show()
+                    searchData.removeAt(searchData.size - 1)
+                    mSearchAdapter.notifyItemRemoved(searchData.size-1)
 
-            if (jsonArray.length() == 0){
-                //stop call to pagination in any case
-                doPagination = false
+                }
+                else {
 
-                //show msg no posts
-                //if(pageNumber == 1)
-                //Toast.makeText(this,"Something went wrong", Toast.LENGTH_SHORT).show()
-                searchData.removeAt(searchData.size - 1)
-                mSearchAdapter.notifyItemRemoved(searchData.size-1)
-
-            } else {
-
-                //Data loaded, remove progress
-                if (searchData.size > 0){
+                    //Data loaded, remove progress
                     searchData.removeAt(searchData.size-1)
                     mSearchAdapter.notifyItemRemoved(searchData.size-1)
-                }
 
+                    for (i in 0 until movieRequest.results!!.size){
+                        val movie: Movie = movieRequest.results!!.get(i)
 
-                for (i in 0 until jsonArray.length()) {
-                    val jresponse: JSONObject = jsonArray.getJSONObject(i)
+                        for (j in 0 until movie.genreIds!!.size) {
+                            movie.genreString += Constants.getGenre(movie.genreIds!!.get(j)) + ", "
+                        }
 
-                    val movie = Movie()
+                        if (movie.posterPath.isNullOrEmpty()){
+                            movie.posterPath = "asdsadad"
+                        }
 
-                    movie.totalPages = response.getInt(Constants.TOTAL_PAGES)
-                    movie.voteCount = jresponse.getInt(Constants.VOTE_COUNT)
-                    movie.id = jresponse.getInt(Constants.ID)
-                    movie.video = jresponse.getBoolean(Constants.VIDEO)
-                    movie.voteAverage = jresponse.getDouble(Constants.VOTE_AVERAGE).toFloat()
-                    movie.title = jresponse.getString(Constants.TITLE)
-                    movie.popularity = jresponse.getDouble(Constants.POPULARITY).toFloat()
-                    movie.posterPath = jresponse.getString(Constants.POSTER_PATH)
-                    movie.originalLanguage = jresponse.getString(Constants.ORIGINAL_LANGUAGE)
-                    movie.originalTitle = jresponse.getString(Constants.ORIGINAL_TITLE)
+                        if (movie.backdropPath.isNullOrEmpty()){
+                            movie.backdropPath = "asdsadad"
+                        }
 
-                    val array: JSONArray = jresponse.getJSONArray(Constants.GENRE_IDS)
-                    //val genreList: MutableList<Int> = mutableListOf()
-                    for (j in 0 until array.length()) {
-                        //genreList.add(array.getInt(j))
-                        movie.genreString += Constants.getGenre(array.getInt(j)) + ", "
+                        movie.contentType = Constants.CONTENT_SIMILAR
+                        searchData.add(movie)
+
                     }
 
-                    //movie.genreIds = genreList
-                    movie.backdropPath = jresponse.getString(Constants.BACKDROP_PATH)
-                    movie.adult = jresponse.getBoolean(Constants.ADULT)
-                    movie.overview = jresponse.getString(Constants.OVERVIEW)
-                    movie.releaseDate = jresponse.getString(Constants.RELEASE_DATE)
-                    movie.contentType = Constants.CONTENT_SIMILAR
-
-                    searchData.add(movie)
+                    isLoading = false
+                    mSearchAdapter.notifyItemRangeInserted(searchData.size - movieRequest.results!!.size, movieRequest.results!!.size)
                 }
 
-                //addProgressBarInList()
-
-                mSearchAdapter.notifyItemRangeInserted(searchData.size - jsonArray.length(), jsonArray.length())
-
-                isLoading = false
 
             }
 
-        }, Response.ErrorListener { error ->
-            Log.i(TAG,error.message+" is the error message")
-        })
+            override fun onFailure(call: Call<MovieRequest>?, t: Throwable?) {
+                Log.i(TAG,t!!.message+" is the error message")
+            }
 
-        jsonObjectRequest.setShouldCache(mSharedPreferences.getBoolean(getString(R.string.pref_cache_data_key),true))
-        VolleySingleton.getInstance(this).addToRequestQueue(jsonObjectRequest)
+        })
     }
 
     private fun addProgressBarInList() {
@@ -278,7 +270,6 @@ class SearchActivity : AppCompatActivity(), OnMovieClickListener, SharedPreferen
             override fun onQueryTextChange(query: String): Boolean {
                 // filter recycler view when text is changed
                 Log.i("SearchInfo", query + " is the onQueryTextChange")
-                clearList()
                 return false
             }
         })
