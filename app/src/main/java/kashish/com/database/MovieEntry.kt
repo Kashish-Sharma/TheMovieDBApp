@@ -32,5 +32,4 @@ class MovieEntry {
     var totalPages: Int? = null
     var genreString: String? = ""
     var timeAdded: Date? = null
-
 }

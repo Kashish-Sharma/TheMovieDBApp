@@ -42,6 +42,7 @@ import kashish.com.requestmodels.MovieCreditRequest
 import kashish.com.requestmodels.MovieReviewsRequest
 import kashish.com.requestmodels.MovieVideosRequest
 import kashish.com.network.NetworkService
+import kashish.com.utils.Constants.Companion.CONTENT_FAVOURITE
 import kashish.com.utils.Helpers
 import kashish.com.utils.Helpers.buildImdbUrl
 import kashish.com.utils.Helpers.buildWikiUrl
@@ -529,12 +530,8 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
         startActivity(Intent.createChooser(intent, "View Trailer:"))
     }
     override fun onSharedPreferenceChanged(p0: SharedPreferences?, key: String?) {
-        if(key.equals(getString(R.string.pref_night_mode_key))){
-            if (p0!!.getBoolean(key,resources.getBoolean(R.bool.pref_night_mode_default_value))){
-                restartActivity()
-            } else{
-                restartActivity()            }
-        }
+        if(key.equals(getString(R.string.pref_night_mode_key)))
+            restartActivity()
     }
 
     override fun onDestroy() {
