@@ -1,4 +1,4 @@
-package kashish.com.database
+package kashish.com.database.Converters
 
 import android.arch.persistence.room.TypeConverter
 

@@ -4,12 +4,17 @@ import android.arch.persistence.db.SupportSQLiteOpenHelper
 import android.arch.persistence.room.*
 import android.content.Context
 import android.util.Log
+import kashish.com.database.Entities.*
+import kashish.com.database.Converters.DateConverter
+import kashish.com.database.Dao.*
 
 /**
  * Created by Kashish on 11-08-2018.
  */
 
-@Database(entities = arrayOf(MovieEntry::class), version = 1, exportSchema = false)
+@Database(entities = arrayOf(FavouritesEntry::class, SearchEntry::class,
+        NowShowingEntry::class, PopularEntry::class,
+        TopRatedEntry::class, UpcomingEntry::class), version = 1, exportSchema = false)
 @TypeConverters(DateConverter::class)
 abstract class AppDatabase: RoomDatabase() {
 
@@ -36,7 +41,12 @@ abstract class AppDatabase: RoomDatabase() {
     }
 
 
-    abstract fun movieDao(): FavouritesDao
+    abstract fun favouritesDao(): FavouritesDao
+    abstract fun nowShowingDao(): NowShowingDao
+    abstract fun poplarDao(): PopularDao
+    abstract fun searchDao(): SearchDao
+    abstract fun topRatedDao(): TopRatedDao
+    abstract fun upcomingDao(): UpcomingDao
 
 
 

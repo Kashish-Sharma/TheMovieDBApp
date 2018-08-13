@@ -16,7 +16,7 @@ class NetworkService private constructor() {
     val tmdbApi: TMDBApi
         get() {
             if (mTmdbApi == null) {
-                mTmdbApi = mRetrofit.create<TMDBApi>(TMDBApi::class.java!!)
+                mTmdbApi = mRetrofit.create<TMDBApi>(TMDBApi::class.java)
             }
             return mTmdbApi!!
         }

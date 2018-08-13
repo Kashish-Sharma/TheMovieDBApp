@@ -17,7 +17,7 @@ import android.view.View
 import android.widget.ProgressBar
 import kashish.com.R
 import kashish.com.adapters.MovieAdapter
-import kashish.com.database.MovieEntry
+import kashish.com.database.Entities.FavouritesEntry
 import kashish.com.interfaces.OnMovieClickListener
 import kashish.com.models.Movie
 import kashish.com.utils.Constants.Companion.CONTENT_MOVIE
@@ -76,8 +76,8 @@ class FavouritesActivity : AppCompatActivity(), OnMovieClickListener, SharedPref
     private fun fetchFavouriteMovie(){
         val favouriteviewModel: FavouritesViewModel =
                 ViewModelProviders.of(this).get(FavouritesViewModel::class.java)
-        favouriteviewModel.getMovies().observe(this, object : Observer<MutableList<MovieEntry>>{
-            override fun onChanged(t: MutableList<MovieEntry>?) {
+        favouriteviewModel.getMovies().observe(this, object : Observer<MutableList<FavouritesEntry>>{
+            override fun onChanged(t: MutableList<FavouritesEntry>?) {
                 clearList()
                     for (i in 0 until t!!.size){
                         val movie = Movie()

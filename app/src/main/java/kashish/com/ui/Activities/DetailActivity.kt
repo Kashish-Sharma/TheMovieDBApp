@@ -34,7 +34,7 @@ import kashish.com.adapters.CrewAdapter
 import kashish.com.adapters.VideoAdapter
 import kashish.com.database.AppDatabase
 import kashish.com.database.AppExecutors
-import kashish.com.database.MovieEntry
+import kashish.com.database.Entities.FavouritesEntry
 import kashish.com.interfaces.OnReviewReadMoreClickListener
 import kashish.com.interfaces.OnVideoClickListener
 import kashish.com.models.*
@@ -42,7 +42,6 @@ import kashish.com.requestmodels.MovieCreditRequest
 import kashish.com.requestmodels.MovieReviewsRequest
 import kashish.com.requestmodels.MovieVideosRequest
 import kashish.com.network.NetworkService
-import kashish.com.utils.Constants.Companion.CONTENT_FAVOURITE
 import kashish.com.utils.Helpers
 import kashish.com.utils.Helpers.buildImdbUrl
 import kashish.com.utils.Helpers.buildWikiUrl
@@ -207,7 +206,7 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
 
         //Checking if already added to favourite
         AppExecutors.getInstance().diskIO().execute(Runnable {
-            val isCheck = mDatabase.movieDao().checkIfFavourite(movie.id!!)
+            val isCheck = mDatabase.favouritesDao().checkIfFavourite(movie.id!!)
             runOnUiThread(Runnable {
                 mAddToFavourite.isChecked = isCheck
             })
@@ -485,7 +484,7 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
     }
     private fun setFavouriteOnClickListener(){
         mAddToFavourite.setOnClickListener(View.OnClickListener {
-            val movieEntry = MovieEntry()
+            val movieEntry = FavouritesEntry()
             movieEntry.movieId = movie.id
             movieEntry.voteCount = movie.voteCount
             movieEntry.video = movie.video
@@ -506,13 +505,13 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
             if (mAddToFavourite.isChecked){
                 AppExecutors.getInstance().diskIO().execute(Runnable {
                     kotlin.run {
-                        mDatabase.movieDao().insertFavourite(movieEntry)
+                        mDatabase.favouritesDao().insertFavourite(movieEntry)
                     }
                 })
                 Toast.makeText(this,"Added", Toast.LENGTH_SHORT).show()
             } else{
                 AppExecutors.getInstance().diskIO().execute(Runnable {
-                    mDatabase.movieDao().deleteFavourite(movieEntry)
+                    mDatabase.favouritesDao().deleteFavourite(movieEntry)
                 })
             }
         })
