@@ -1,11 +1,16 @@
 package kashish.com.network
 
+import android.util.Log
+import kashish.com.database.Entities.SearchEntry
 import kashish.com.models.MovieDetail
 import kashish.com.requestmodels.MovieCreditRequest
 import kashish.com.requestmodels.MovieRequest
 import kashish.com.requestmodels.MovieReviewsRequest
 import kashish.com.requestmodels.MovieVideosRequest
+import kashish.com.utils.Urls
 import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -13,6 +18,8 @@ import retrofit2.http.Query
 /**
  * Created by Kashish on 12-08-2018.
  */
+private val TAG: String = "TMDBApi"
+
 interface TMDBApi {
     @GET("movie/popular")
     fun getPopularMovies(@Query("api_key") apiKey: String,
@@ -70,4 +77,39 @@ interface TMDBApi {
 
     @GET("movie/{id}/credits")
     fun getMovieCredits(@Path("id") id: Long, @Query("api_key") apiKey: String): Call<MovieCreditRequest>
+}
+
+fun getSearchMovies(
+        service: NetworkService,
+        query: String,
+        page: Int,
+        onSuccess: (movierequest: MovieRequest) -> Unit,
+        onError: (error: String) -> Unit) {
+    Log.d(TAG, "query: $query, page: $page")
+
+    Log.i("SearchInfo", query + " is the API")
+
+    service.tmdbApi.getSearchMovies(Urls.TMDB_API_KEY, "en-US",
+            query, page,"false","US|IN|UK",
+            "2|3").enqueue(
+            object : Callback<MovieRequest> {
+                override fun onFailure(call: Call<MovieRequest>?, t: Throwable) {
+                    Log.d(TAG, "fail to get data")
+                    onError(t.message ?: "unknown error")
+                }
+
+                override fun onResponse(
+                        call: Call<MovieRequest>?,
+                        response: Response<MovieRequest>
+                ) {
+                    Log.d(TAG, "got a response $response")
+                    if (response.isSuccessful) {
+                        val movierequest = response.body() ?: MovieRequest()
+                        onSuccess(movierequest)
+                    } else {
+                        onError(response.errorBody()?.string() ?: "Unknown error")
+                    }
+                }
+            }
+    )
 }

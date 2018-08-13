@@ -39,4 +39,6 @@
     <string name="crew">CREW</string>
     <string name="search_hint">Search a movie</string>
 
+    <string name="no_results">No results 😓</string>
+
 </resources>

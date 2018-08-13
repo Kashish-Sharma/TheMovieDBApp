@@ -54,7 +54,7 @@ class Constants {
         val CAST = "cast"
         val CREW = "crew"
 
-
+        val RANDOM_PATH = "asdfghjkl"
 
         //CONTENT_TYPES
         val CONTENT_MOVIE = 0
