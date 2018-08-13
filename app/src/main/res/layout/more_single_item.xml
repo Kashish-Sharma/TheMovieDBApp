@@ -29,23 +29,24 @@
         android:layout_marginEnd="8dp"
         android:ellipsize="end"
         android:text="asdfghjkl;asdsas"
-        android:maxLines="2"
+        android:singleLine="true"
+        android:maxLength="25"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.057"
         app:layout_constraintStart_toEndOf="@+id/item_more_image"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:maxLines="1"
+        android:singleLine="true"
+        android:maxLength="30"
         android:ellipsize="end"
         android:fontFamily="@font/open_sans_regular"
         android:id="@+id/item_more_subtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
         android:text="asdxzczxczxczxczxczxc"
         android:textColor="?attr/secondaryTextColor"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/item_more_name"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/item_more_name"
         app:layout_constraintTop_toBottomOf="@+id/item_more_name" />

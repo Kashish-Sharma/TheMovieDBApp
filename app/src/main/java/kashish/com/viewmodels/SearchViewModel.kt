@@ -5,14 +5,14 @@ import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.Transformations
 import android.arch.lifecycle.ViewModel
 import android.util.Log
-import kashish.com.data.TmdbRepository
+import kashish.com.data.SearchRepository
 import kashish.com.database.DatabaseResults.SearchResults
 import kashish.com.database.Entities.SearchEntry
 
 /**
  * Created by Kashish on 13-08-2018.
  */
-class SearchViewModel(private val repository: TmdbRepository) : ViewModel() {
+class SearchViewModel(private val repository: SearchRepository) : ViewModel() {
 
     companion object {
         private const val VISIBLE_THRESHOLD = 5
@@ -32,8 +32,6 @@ class SearchViewModel(private val repository: TmdbRepository) : ViewModel() {
      * Search a repository based on a query string.
      */
     fun searchRepo(queryString: String) {
-        Log.i("SearchInfo", queryString + " is the searchRepo")
-
         queryLiveData.postValue(queryString)
     }
 

@@ -8,6 +8,7 @@ import kashish.com.database.LocalCache.SearchLocalCache
 import kashish.com.models.Movie
 import kashish.com.network.NetworkService
 import kashish.com.network.getSearchMovies
+import kashish.com.utils.Constants
 import kashish.com.utils.Constants.Companion.CONTENT_SIMILAR
 import kashish.com.utils.Constants.Companion.RANDOM_PATH
 import kashish.com.utils.Urls.Companion.TMDB_API_KEY
@@ -16,7 +17,7 @@ import java.util.*
 /**
  * Created by Kashish on 13-08-2018.
  */
-class TmdbRepository(
+class SearchRepository(
         private val service: NetworkService,
         private val searchCache: SearchLocalCache
 ) {
@@ -34,7 +35,6 @@ class TmdbRepository(
      * Search repositories whose names match the query.
      */
     fun search(query: String): SearchResults {
-        Log.d("GithubRepository", "New query: $query")
         lastRequestedPage = 1
         requestAndSaveSearchData(query)
         // Get data from the local cache
@@ -46,7 +46,6 @@ class TmdbRepository(
     }
     private fun requestAndSaveSearchData(query: String) {
         if (isRequestInProgress) return
-        Log.i("SearchInfo", query + " is the TmdbRepo")
 
         isRequestInProgress = true
 
@@ -70,6 +69,12 @@ class TmdbRepository(
                 searchEntry.adult = movie.adult
                 searchEntry.overview = movie.overview
                 searchEntry.releaseDate = movie.releaseDate
+                for (j in 0 until movie.genreIds!!.size) {
+                    if(j==movie.genreIds!!.size-1)
+                        movie.genreString += Constants.getGenre(movie.genreIds!!.get(j))
+                    else
+                        movie.genreString += Constants.getGenre(movie.genreIds!!.get(j))+", "
+                }
                 searchEntry.genreString = movie.genreString
                 searchEntry.contentType = CONTENT_SIMILAR
                 searchEntry.timeAdded = Date()

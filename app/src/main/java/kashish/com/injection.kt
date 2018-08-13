@@ -2,9 +2,12 @@ package kashish.com
 
 import android.arch.lifecycle.ViewModelProvider
 import android.content.Context
+import kashish.com.ViewModelFactory.ViewModelNowShowingFactory
 import kashish.com.ViewModelFactory.ViewModelSearchFactory
-import kashish.com.data.TmdbRepository
+import kashish.com.data.NowShowingRepository
+import kashish.com.data.SearchRepository
 import kashish.com.database.AppDatabase
+import kashish.com.database.LocalCache.NowShowingLocalCache
 import kashish.com.database.LocalCache.SearchLocalCache
 import kashish.com.network.NetworkService
 import java.util.concurrent.Executors
@@ -14,17 +17,28 @@ import java.util.concurrent.Executors
  */
 object Injection {
 
-    private fun provideCache(context: Context): SearchLocalCache {
+    //Search
+    private fun provideSearchCache(context: Context): SearchLocalCache {
         val database = AppDatabase.getInstance(context)
         return SearchLocalCache(database.searchDao(), Executors.newSingleThreadExecutor())
     }
-
-    private fun provideRepository(context: Context): TmdbRepository {
-        return TmdbRepository(NetworkService.instance, provideCache(context))
+    private fun provideSearchRepository(context: Context): SearchRepository {
+        return SearchRepository(NetworkService.instance, provideSearchCache(context))
+    }
+    fun provideSearchViewModelFactory(context: Context): ViewModelProvider.Factory {
+        return ViewModelSearchFactory(provideSearchRepository(context))
     }
 
-    fun provideSearchViewModelFactory(context: Context): ViewModelProvider.Factory {
-        return ViewModelSearchFactory(provideRepository(context))
+    //NowShowing
+    private fun provideNowShowingCache(context: Context): NowShowingLocalCache {
+        val database = AppDatabase.getInstance(context)
+        return NowShowingLocalCache(database.nowShowingDao(), Executors.newSingleThreadExecutor())
+    }
+    private fun provideNowShowingRepository(context: Context): NowShowingRepository {
+        return NowShowingRepository(NetworkService.instance, provideNowShowingCache(context))
+    }
+    fun provideNowShowingViewModelFactory(context: Context): ViewModelProvider.Factory {
+        return ViewModelNowShowingFactory(provideNowShowingRepository(context))
     }
 
 }
