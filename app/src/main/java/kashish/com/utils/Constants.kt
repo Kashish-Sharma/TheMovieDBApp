@@ -63,6 +63,9 @@ class Constants {
         val CONTENT_SIMILAR = 3
         val CONTENT_PROGRESS = 777
 
+        //TABLE CONTENT TYPES
+        val CONTENT_FAVOURITE = 111
+
         //Shared preferences
         val USER_DEFAULT_REGION = "user_default_region"
         val USER_DEFAULT_REGION_STATUS = "user_default_region_status"

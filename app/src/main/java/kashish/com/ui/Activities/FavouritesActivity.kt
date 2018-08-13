@@ -7,9 +7,7 @@ import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Handler
 import android.preference.PreferenceManager
-import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
@@ -19,20 +17,18 @@ import android.view.View
 import android.widget.ProgressBar
 import kashish.com.R
 import kashish.com.adapters.MovieAdapter
-import kashish.com.database.ListConverter
 import kashish.com.database.MovieEntry
 import kashish.com.interfaces.OnMovieClickListener
 import kashish.com.models.Movie
-import kashish.com.utils.Constants
 import kashish.com.utils.Constants.Companion.CONTENT_MOVIE
 import kashish.com.viewmodels.FavouritesViewModel
-import java.util.*
 
 class FavouritesActivity : AppCompatActivity(), OnMovieClickListener, SharedPreferences.OnSharedPreferenceChangeListener  {
 
     private val GRID_COLUMNS_PORTRAIT = 1
     private val GRID_COLUMNS_LANDSCAPE = 2
     private val TAG: String = SimilarMoviesActivity::class.simpleName.toString()
+
     lateinit var mFavouriteAdapter: MovieAdapter
     var favouriteData: MutableList<Movie> = mutableListOf()
     private lateinit var mFavouriteRecyclerView : RecyclerView
@@ -40,14 +36,6 @@ class FavouritesActivity : AppCompatActivity(), OnMovieClickListener, SharedPref
 
     private lateinit var mSharedPreferences: SharedPreferences
     private lateinit var mFavouriteProgress: ProgressBar
-
-    private var pageNumber:Int = 1
-    private var doPagination:Boolean = true
-    private var isScrolling:Boolean = false
-    private  var currentItem:Int = -1
-    private  var totalItem:Int = -1
-    private  var scrolledOutItem:Int = -1
-    private var isLoading: Boolean = false
 
     //Toolbar
     private lateinit var mToolbar: Toolbar
@@ -69,7 +57,7 @@ class FavouritesActivity : AppCompatActivity(), OnMovieClickListener, SharedPref
         setToolbar()
         initContentList()
         initFavouriteRecyclerView()
-        delayByfewSeconds()
+        fetchFavouriteMovie()
     }
 
     private fun initFavouriteRecyclerView(){
@@ -91,7 +79,6 @@ class FavouritesActivity : AppCompatActivity(), OnMovieClickListener, SharedPref
         favouriteviewModel.getMovies().observe(this, object : Observer<MutableList<MovieEntry>>{
             override fun onChanged(t: MutableList<MovieEntry>?) {
                 clearList()
-                try {
                     for (i in 0 until t!!.size){
                         val movie = Movie()
                         val movieEntry = t[i]
@@ -108,7 +95,6 @@ class FavouritesActivity : AppCompatActivity(), OnMovieClickListener, SharedPref
                         movie.adult = movieEntry.adult
                         movie.overview = movieEntry.overview
                         movie.releaseDate = movieEntry.releaseDate
-                        movie.contentType = movieEntry.contentType!!
                         movie.genreString = movieEntry.genreString!!
                         movie.contentType = CONTENT_MOVIE
 
@@ -116,20 +102,12 @@ class FavouritesActivity : AppCompatActivity(), OnMovieClickListener, SharedPref
                     }
                     mFavouriteAdapter.notifyDataSetChanged()
                     mFavouriteProgress.visibility = View.GONE
-                } catch (e: Exception){
-                    Log.e(TAG,e.message+" is the favourite error")
-                }
+
             }
         })
         Log.d("FavouritesViewModelTAG","Retreiving updates from livedata")
     }
 
-    private fun delayByfewSeconds(){
-        val handler = Handler()
-        handler.postDelayed(Runnable {
-            fetchFavouriteMovie()
-        }, 2000)
-    }
 
     private fun initContentList(){
         favouriteData = mutableListOf()
@@ -180,13 +158,9 @@ class FavouritesActivity : AppCompatActivity(), OnMovieClickListener, SharedPref
     }
 
     override fun onSharedPreferenceChanged(p0: SharedPreferences?, key: String?) {
-        if(key.equals(getString(R.string.pref_night_mode_key))){
-            if (p0!!.getBoolean(key,resources.getBoolean(R.bool.pref_night_mode_default_value))){
-                restartActivity()
-            } else{
-                restartActivity()            }
+        if(key.equals(getString(R.string.pref_night_mode_key)))
+            restartActivity()
         }
-    }
 
     override fun onDestroy() {
         super.onDestroy()
@@ -194,3 +168,4 @@ class FavouritesActivity : AppCompatActivity(), OnMovieClickListener, SharedPref
     }
 
 }
+

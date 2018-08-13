@@ -11,7 +11,7 @@ import android.arch.persistence.room.Query
  */
 
 @Dao
-public interface MovieDao{
+public interface FavouritesDao {
 
     @Query("SELECT * FROM favourites ORDER BY timeAdded DESC")
     fun loadAllFavourites(): LiveData<MutableList<MovieEntry>>

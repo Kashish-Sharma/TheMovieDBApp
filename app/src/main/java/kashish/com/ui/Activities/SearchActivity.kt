@@ -225,12 +225,8 @@ class SearchActivity : AppCompatActivity(), OnMovieClickListener, SharedPreferen
     }
 
     override fun onSharedPreferenceChanged(p0: SharedPreferences?, key: String?) {
-        if(key.equals(getString(R.string.pref_night_mode_key))){
-            if (p0!!.getBoolean(key,resources.getBoolean(R.bool.pref_night_mode_default_value))){
-                restartActivity()
-            } else{
-                restartActivity()            }
-        }
+        if(key.equals(getString(R.string.pref_night_mode_key)))
+            restartActivity()
     }
 
     override fun onDestroy() {

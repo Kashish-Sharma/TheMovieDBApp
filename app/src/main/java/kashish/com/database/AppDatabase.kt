@@ -16,7 +16,7 @@ abstract class AppDatabase: RoomDatabase() {
     companion object {
         private val LOG_TAG: String = AppDatabase::class.simpleName.toString()
         private val LOCK: Any = Object()
-        private val DATABSE_NAME: String = "favourites"
+        private val DATABSE_NAME: String = "movies"
         @Volatile
         private var sInstance: AppDatabase? = null
 
@@ -36,7 +36,7 @@ abstract class AppDatabase: RoomDatabase() {
     }
 
 
-    abstract fun movieDao(): MovieDao
+    abstract fun movieDao(): FavouritesDao
 
 
 
