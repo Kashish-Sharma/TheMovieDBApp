@@ -44,7 +44,6 @@ class SearchActivity : AppCompatActivity(), OnMovieClickListener, SharedPreferen
 
     private lateinit var viewModel: SearchViewModel
     private lateinit var mSearchAdapter: SearchAdapter
-    var searchData: MutableList<Movie> = mutableListOf()
 
     private lateinit var emptyList: TextView
     private lateinit var mSearchRecyclerView : RecyclerView
@@ -53,13 +52,6 @@ class SearchActivity : AppCompatActivity(), OnMovieClickListener, SharedPreferen
     private lateinit var mSharedPreferences: SharedPreferences
     private lateinit var networkService: NetworkService
 
-//    private var pageNumber:Int = 1
-//    private var doPagination:Boolean = true
-//    private var isScrolling:Boolean = false
-//    private  var currentItem:Int = -1
-//    private  var totalItem:Int = -1
-//    private  var scrolledOutItem:Int = -1
-//    private var isLoading: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
@@ -74,7 +66,6 @@ class SearchActivity : AppCompatActivity(), OnMovieClickListener, SharedPreferen
 
         initViews()
         setToolbar()
-        initContentList()
         initSearchRecyclerView()
         setupScrollListener()
 
@@ -83,7 +74,6 @@ class SearchActivity : AppCompatActivity(), OnMovieClickListener, SharedPreferen
     private fun initViews(){
         mSearchRecyclerView = findViewById(R.id.activity_search_recycler_view)
         emptyList = findViewById(R.id.emptyList)
-        searchData = mutableListOf()
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
         networkService = NetworkService.instance
     }
@@ -92,6 +82,7 @@ class SearchActivity : AppCompatActivity(), OnMovieClickListener, SharedPreferen
         configureRecyclerAdapter(resources.configuration.orientation)
         viewModel = ViewModelProviders.of(this, Injection.provideSearchViewModelFactory(this))
                 .get(SearchViewModel::class.java)
+
         mSearchAdapter = SearchAdapter(this,mSharedPreferences)
         mSearchRecyclerView.adapter = mSearchAdapter
         Toast.makeText(this,"Started",Toast.LENGTH_SHORT).show()
@@ -128,9 +119,6 @@ class SearchActivity : AppCompatActivity(), OnMovieClickListener, SharedPreferen
         }
     }
 
-    private fun initContentList(){
-        searchData = mutableListOf()
-    }
 
 
     private fun setToolbar(){
@@ -183,6 +171,7 @@ class SearchActivity : AppCompatActivity(), OnMovieClickListener, SharedPreferen
         menuInflater.inflate(R.menu.options_menu, menu)
         // Associate searchable configuration with the SearchView
         val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
+        menu.findItem(R.id.search).expandActionView()
         val searchView = menu.findItem(R.id.search).actionView as SearchView
         searchView.setSearchableInfo(searchManager
                 .getSearchableInfo(getComponentName()))

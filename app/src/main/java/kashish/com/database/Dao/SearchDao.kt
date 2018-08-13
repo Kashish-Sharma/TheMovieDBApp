@@ -25,7 +25,7 @@ public interface SearchDao {
     @Delete
     fun deleteSearch(searchEntry: SearchEntry)
 
-    @Query("SELECT * FROM search WHERE (title LIKE :queryString) ORDER BY timeAdded")
+    @Query("SELECT * FROM search WHERE (title LIKE :queryString) ORDER BY voteCount DESC , popularity DESC")
     fun searchesByName(queryString: String): LiveData<List<SearchEntry>>
 
 }

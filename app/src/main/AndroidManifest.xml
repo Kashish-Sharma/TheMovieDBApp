@@ -33,7 +33,6 @@
             android:name=".ui.Activities.FavouritesActivity"
             android:screenOrientation="portrait" />
         <activity android:name=".ui.Activities.SearchActivity"
-            android:screenOrientation="portrait"
             android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />

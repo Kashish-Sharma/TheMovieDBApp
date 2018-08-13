@@ -1,11 +1,9 @@
 package kashish.com.database.Dao
 
 import android.arch.lifecycle.LiveData
-import android.arch.persistence.room.Dao
-import android.arch.persistence.room.Delete
-import android.arch.persistence.room.Insert
-import android.arch.persistence.room.Query
+import android.arch.persistence.room.*
 import kashish.com.database.Entities.NowShowingEntry
+import kashish.com.database.Entities.SearchEntry
 
 /**
  * Created by Kashish on 13-08-2018.
@@ -13,16 +11,22 @@ import kashish.com.database.Entities.NowShowingEntry
 @Dao
  interface NowShowingDao {
 
-    @Query("SELECT * FROM nowshowing ORDER BY timeAdded DESC")
-    fun loadAllNowShowing(): LiveData<MutableList<NowShowingEntry>>
+    @Query("SELECT * FROM nowshowing")
+    fun loadAllNowShowing(): LiveData<List<NowShowingEntry>>
 
     @Query("SELECT * FROM nowshowing WHERE movieId = :id ORDER BY timeAdded")
     fun checkIfNowShowing(id: Int):Boolean
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertNowShowing(nowShowingEntry: NowShowingEntry)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insert(searches: List<NowShowingEntry>)
 
     @Delete
     fun deleteNowShowing(nowShowingEntry: NowShowingEntry)
+
+    @Query("DELETE FROM nowshowing")
+    fun deleteAll()
 
 }

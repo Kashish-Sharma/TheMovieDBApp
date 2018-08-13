@@ -130,9 +130,11 @@ class SimilarMoviesActivity : AppCompatActivity(), OnMovieClickListener, SharedP
 
                     for (i in 0 until movieRequest.results!!.size){
                         val movie: Movie = movieRequest.results!!.get(i)
-
                         for (j in 0 until movie.genreIds!!.size) {
-                            movie.genreString += Constants.getGenre(movie.genreIds!!.get(j)) + ", "
+                            if(j==movie.genreIds!!.size-1)
+                                movie.genreString += Constants.getGenre(movie.genreIds!!.get(j))
+                            else
+                                movie.genreString += Constants.getGenre(movie.genreIds!!.get(j))+", "
                         }
 
                         if (movie.posterPath.isNullOrEmpty()){

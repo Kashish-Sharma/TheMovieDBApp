@@ -79,12 +79,11 @@ interface TMDBApi {
     fun getMovieCredits(@Path("id") id: Long, @Query("api_key") apiKey: String): Call<MovieCreditRequest>
 }
 
-fun getSearchMovies(
-        service: NetworkService,
-        query: String,
-        page: Int,
-        onSuccess: (movierequest: MovieRequest) -> Unit,
-        onError: (error: String) -> Unit) {
+fun getSearchMovies( service: NetworkService,
+                     query: String,
+                     page: Int,
+                    onSuccess: (movierequest: MovieRequest) -> Unit,
+                    onError: (error: String) -> Unit) {
     Log.d(TAG, "query: $query, page: $page")
 
     Log.i("SearchInfo", query + " is the API")
@@ -112,4 +111,164 @@ fun getSearchMovies(
                 }
             }
     )
+}
+
+fun getNowShowingMovies( service: NetworkService,
+                         language: String = "en-US",
+                         page: Int,
+                         region: String = "US|IN|UK",
+                         onSuccess: (movierequest: MovieRequest) -> Unit,
+                         onError: (error: String) -> Unit){
+
+    service.tmdbApi.getNowShowingMovies(Urls.TMDB_API_KEY,language,
+            page,region,"2|3").enqueue(
+            object : Callback<MovieRequest> {
+                override fun onFailure(call: Call<MovieRequest>?, t: Throwable) {
+                    Log.d(TAG, "fail to get data")
+                    onError(t.message ?: "unknown error")
+                }
+
+                override fun onResponse(
+                        call: Call<MovieRequest>?,
+                        response: Response<MovieRequest>
+                ) {
+                    Log.d(TAG, "got a response $response")
+                    if (response.isSuccessful) {
+                        val movierequest = response.body() ?: MovieRequest()
+                        onSuccess(movierequest)
+                    } else {
+                        onError(response.errorBody()?.string() ?: "Unknown error")
+                    }
+                }
+            }
+    )
+
+}
+
+
+fun getUpcomingMovies( service: NetworkService,
+                         language: String = "en-US",
+                         page: Int,
+                         region: String = "US|IN|UK",
+                         onSuccess: (movierequest: MovieRequest) -> Unit,
+                         onError: (error: String) -> Unit){
+
+    service.tmdbApi.getUpcomingMovies(Urls.TMDB_API_KEY,language,
+            page,region,"2|3").enqueue(
+            object : Callback<MovieRequest> {
+                override fun onFailure(call: Call<MovieRequest>?, t: Throwable) {
+                    Log.d(TAG, "fail to get data")
+                    onError(t.message ?: "unknown error")
+                }
+
+                override fun onResponse(
+                        call: Call<MovieRequest>?,
+                        response: Response<MovieRequest>
+                ) {
+                    Log.d(TAG, "got a response $response")
+                    if (response.isSuccessful) {
+                        val movierequest = response.body() ?: MovieRequest()
+                        onSuccess(movierequest)
+                    } else {
+                        onError(response.errorBody()?.string() ?: "Unknown error")
+                    }
+                }
+            }
+    )
+
+}
+
+fun getTopRatedMovies( service: NetworkService,
+                         language: String = "en-US",
+                         page: Int,
+                         region: String = "US|IN|UK",
+                         onSuccess: (movierequest: MovieRequest) -> Unit,
+                         onError: (error: String) -> Unit){
+
+    service.tmdbApi.getTopRatedMovies(Urls.TMDB_API_KEY,language,
+            page,region,"2|3").enqueue(
+            object : Callback<MovieRequest> {
+                override fun onFailure(call: Call<MovieRequest>?, t: Throwable) {
+                    Log.d(TAG, "fail to get data")
+                    onError(t.message ?: "unknown error")
+                }
+
+                override fun onResponse(
+                        call: Call<MovieRequest>?,
+                        response: Response<MovieRequest>
+                ) {
+                    Log.d(TAG, "got a response $response")
+                    if (response.isSuccessful) {
+                        val movierequest = response.body() ?: MovieRequest()
+                        onSuccess(movierequest)
+                    } else {
+                        onError(response.errorBody()?.string() ?: "Unknown error")
+                    }
+                }
+            }
+    )
+
+}
+
+fun getPopularMovies( service: NetworkService,
+                       language: String = "en-US",
+                       page: Int,
+                       region: String = "US|IN|UK",
+                       onSuccess: (movierequest: MovieRequest) -> Unit,
+                       onError: (error: String) -> Unit){
+
+    service.tmdbApi.getPopularMovies(Urls.TMDB_API_KEY,language,
+            page,region,"2|3").enqueue(
+            object : Callback<MovieRequest> {
+                override fun onFailure(call: Call<MovieRequest>?, t: Throwable) {
+                    Log.d(TAG, "fail to get data")
+                    onError(t.message ?: "unknown error")
+                }
+
+                override fun onResponse(
+                        call: Call<MovieRequest>?,
+                        response: Response<MovieRequest>
+                ) {
+                    Log.d(TAG, "got a response $response")
+                    if (response.isSuccessful) {
+                        val movierequest = response.body() ?: MovieRequest()
+                        onSuccess(movierequest)
+                    } else {
+                        onError(response.errorBody()?.string() ?: "Unknown error")
+                    }
+                }
+            }
+    )
+
+}
+
+fun getRecommendedMovies( service: NetworkService,
+                          movieId: String,
+                      language: String = "en-US",
+                      page: Int,
+                      onSuccess: (movierequest: MovieRequest) -> Unit,
+                      onError: (error: String) -> Unit){
+
+    service.tmdbApi.getRecommendedMovies(movieId,Urls.TMDB_API_KEY,language,page).
+            enqueue( object : Callback<MovieRequest> {
+                override fun onFailure(call: Call<MovieRequest>?, t: Throwable) {
+                    Log.d(TAG, "fail to get data")
+                    onError(t.message ?: "unknown error")
+                }
+
+                override fun onResponse(
+                        call: Call<MovieRequest>?,
+                        response: Response<MovieRequest>
+                ) {
+                    Log.d(TAG, "got a response $response")
+                    if (response.isSuccessful) {
+                        val movierequest = response.body() ?: MovieRequest()
+                        onSuccess(movierequest)
+                    } else {
+                        onError(response.errorBody()?.string() ?: "Unknown error")
+                    }
+                }
+            }
+    )
+
 }
