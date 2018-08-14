@@ -1,6 +1,7 @@
 package kashish.com.network
 
 import android.util.Log
+import kashish.com.database.DatabaseResults.SearchResults
 import kashish.com.database.Entities.SearchEntry
 import kashish.com.models.MovieDetail
 import kashish.com.requestmodels.MovieCreditRequest
@@ -83,7 +84,7 @@ fun getSearchMovies( service: NetworkService,
                      query: String,
                      page: Int,
                     onSuccess: (movierequest: MovieRequest) -> Unit,
-                    onError: (error: String) -> Unit) {
+                    onError: (error: String) -> Unit){
     Log.d(TAG, "query: $query, page: $page")
 
     Log.i("SearchInfo", query + " is the API")

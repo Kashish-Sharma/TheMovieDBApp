@@ -71,7 +71,7 @@ class PopularMoviesFragment : Fragment(), OnMovieClickListener {
         initRecyclerView()
         setSwipeRefreshLayoutListener()
         setupScrollListener()
-        getPopularData()
+        getPopularData(true)
 
         return mMainView
     }
@@ -109,16 +109,16 @@ class PopularMoviesFragment : Fragment(), OnMovieClickListener {
     private fun setSwipeRefreshLayoutListener() {
         mSwipeRefreshLayout.setOnRefreshListener {
             AppExecutors.getInstance().diskIO().execute(Runnable {
-                mDatabase.nowShowingDao().deleteAll()
+                mDatabase.poplarDao().deleteAll()
             })
             mRecyclerView.scrollToPosition(0)
-            viewModel.getNowShowing()
+            viewModel.getPopular(true)
             mMovieAdapter.submitList(null)
             mSwipeRefreshLayout.isRefreshing = false
         }
     }
-    private fun getPopularData(){
-        viewModel.getNowShowing()
+    private fun getPopularData(doReload: Boolean){
+        viewModel.getPopular(doReload)
         mMovieAdapter.submitList(null)
         mSwipeRefreshLayout.isRefreshing = false
     }

@@ -23,18 +23,21 @@ class NowShowingRepository(
     private val networkNowShowingErrors = MutableLiveData<String>()
     // avoid triggering multiple requests in the same time
     private var isRequestInProgress = false
-    fun nowShowing(): NowShowingResults {
+    fun nowShowing(doReload: Boolean): NowShowingResults {
         lastNowShowingRequestedPage = 1
-        requestMoreNowShowing()
+        requestMoreNowShowing(doReload)
         // Get data from the local cache
         val data = nowShowingCache.getAllNowShowing()
         return NowShowingResults(data, networkNowShowingErrors)
     }
-    fun requestMoreNowShowing() {
-        requestAndSaveNowShowingData()
+    fun requestMoreNowShowing(doReload: Boolean) {
+        requestAndSaveNowShowingData(doReload)
     }
-    private fun requestAndSaveNowShowingData() {
+    private fun requestAndSaveNowShowingData(doReload: Boolean) {
         if (isRequestInProgress) return
+        if (doReload){
+            lastNowShowingRequestedPage = 1
+        }
 
         isRequestInProgress = true
 

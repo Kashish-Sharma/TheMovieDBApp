@@ -75,7 +75,7 @@ class NowShowingMoviesFragment : Fragment(), OnMovieClickListener {
         initRecyclerView()
         setSwipeRefreshLayoutListener()
         setupScrollListener()
-        getNowShowingData()
+        getNowShowingData(false)
 
         return mMainView
     }
@@ -114,14 +114,14 @@ class NowShowingMoviesFragment : Fragment(), OnMovieClickListener {
                 mDatabase.nowShowingDao().deleteAll()
             })
             mRecyclerView.scrollToPosition(0)
-            viewModel.getNowShowing()
+            viewModel.getNowShowing(true)
             mMovieAdapter.submitList(null)
             mSwipeRefreshLayout.isRefreshing = false
         }
     }
 
-    private fun getNowShowingData(){
-        viewModel.getNowShowing()
+    private fun getNowShowingData(doReload: Boolean){
+        viewModel.getNowShowing(doReload)
         mMovieAdapter.submitList(null)
         mSwipeRefreshLayout.isRefreshing = false
     }
