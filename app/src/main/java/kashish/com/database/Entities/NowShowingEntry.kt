@@ -2,13 +2,14 @@ package kashish.com.database.Entities
 
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.PrimaryKey
+import kashish.com.utils.Constants.Companion.NOWSHOWING
 import java.util.*
 
 /**
  * Created by Kashish on 13-08-2018.
  */
 @Entity(tableName = "nowshowing")
-class NowShowingEntry {
+ class NowShowingEntry {
 
     @PrimaryKey
     var movieId: Int? = null
@@ -29,4 +30,5 @@ class NowShowingEntry {
     var totalPages: Int? = null
     var genreString: String? = ""
     var timeAdded: Date? = null
+    var tableName: Int = NOWSHOWING
 }

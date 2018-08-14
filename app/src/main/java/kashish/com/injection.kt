@@ -4,11 +4,14 @@ import android.arch.lifecycle.ViewModelProvider
 import android.content.Context
 import kashish.com.ViewModelFactory.ViewModelNowShowingFactory
 import kashish.com.ViewModelFactory.ViewModelSearchFactory
+import kashish.com.ViewModelFactory.ViewModelUpcomingFactory
 import kashish.com.data.NowShowingRepository
 import kashish.com.data.SearchRepository
+import kashish.com.data.UpcomingRepository
 import kashish.com.database.AppDatabase
 import kashish.com.database.LocalCache.NowShowingLocalCache
 import kashish.com.database.LocalCache.SearchLocalCache
+import kashish.com.database.LocalCache.UpcomingLocalCache
 import kashish.com.network.NetworkService
 import java.util.concurrent.Executors
 
@@ -39,6 +42,18 @@ object Injection {
     }
     fun provideNowShowingViewModelFactory(context: Context): ViewModelProvider.Factory {
         return ViewModelNowShowingFactory(provideNowShowingRepository(context))
+    }
+
+    //Upcoming
+    private fun provideUpcomingCache(context: Context): UpcomingLocalCache {
+        val database = AppDatabase.getInstance(context)
+        return UpcomingLocalCache(database.upcomingDao(), Executors.newSingleThreadExecutor())
+    }
+    private fun provideUpcomingRepository(context: Context): UpcomingRepository {
+        return UpcomingRepository(NetworkService.instance, provideUpcomingCache(context))
+    }
+    fun provideUpcomingViewModelFactory(context: Context): ViewModelProvider.Factory {
+        return ViewModelUpcomingFactory(provideUpcomingRepository(context))
     }
 
 }

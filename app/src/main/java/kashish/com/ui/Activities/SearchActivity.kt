@@ -8,7 +8,6 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.os.Bundle
-import android.os.Handler
 import android.preference.PreferenceManager
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
@@ -18,23 +17,20 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.AbsListView
 import android.widget.TextView
 import android.widget.Toast
 import kashish.com.Injection
 import kashish.com.R
-import kashish.com.adapters.MovieAdapter
-import kashish.com.adapters.SearchAdapter
+import kashish.com.adapters.NowShowingAdapter
+import kashish.com.database.AppDatabase
+import kashish.com.database.AppExecutors
 import kashish.com.database.Entities.SearchEntry
 import kashish.com.interfaces.OnMovieClickListener
 import kashish.com.models.Movie
-import kashish.com.requestmodels.MovieRequest
 import kashish.com.network.NetworkService
 import kashish.com.utils.Constants
-import kashish.com.utils.Urls
+import kashish.com.utils.Constants.Companion.SEARCHES
 import kashish.com.viewmodels.SearchViewModel
-import retrofit2.Call
-import retrofit2.Callback
 
 class SearchActivity : AppCompatActivity(), OnMovieClickListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -43,12 +39,13 @@ class SearchActivity : AppCompatActivity(), OnMovieClickListener, SharedPreferen
     private val TAG: String = SearchActivity::class.simpleName.toString()
 
     private lateinit var viewModel: SearchViewModel
-    private lateinit var mSearchAdapter: SearchAdapter
+    private lateinit var mSearchAdapter: NowShowingAdapter
 
     private lateinit var emptyList: TextView
     private lateinit var mSearchRecyclerView : RecyclerView
     private lateinit var mGridLayoutManager: GridLayoutManager
 
+    private lateinit var mDatabase: AppDatabase
     private lateinit var mSharedPreferences: SharedPreferences
     private lateinit var networkService: NetworkService
 
@@ -76,6 +73,7 @@ class SearchActivity : AppCompatActivity(), OnMovieClickListener, SharedPreferen
         emptyList = findViewById(R.id.emptyList)
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
         networkService = NetworkService.instance
+        mDatabase = AppDatabase.getInstance(this)
     }
 
     private fun initSearchRecyclerView(){
@@ -83,13 +81,13 @@ class SearchActivity : AppCompatActivity(), OnMovieClickListener, SharedPreferen
         viewModel = ViewModelProviders.of(this, Injection.provideSearchViewModelFactory(this))
                 .get(SearchViewModel::class.java)
 
-        mSearchAdapter = SearchAdapter(this,mSharedPreferences)
+        mSearchAdapter = NowShowingAdapter(this,mSharedPreferences)
         mSearchRecyclerView.adapter = mSearchAdapter
         Toast.makeText(this,"Started",Toast.LENGTH_SHORT).show()
         viewModel.searches.observe(this, Observer<List<SearchEntry>> {
             Log.d("Activity", "list: ${it?.size}")
             showEmptyList(it?.size == 0)
-            mSearchAdapter.submitList(it)
+            mSearchAdapter.submitList(convertEntryToMovieList(it!!))
         })
         viewModel.networkErrors.observe(this, Observer<String> {
             Toast.makeText(this, "\uD83D\uDE28 Wooops ${it}", Toast.LENGTH_LONG).show()
@@ -124,6 +122,32 @@ class SearchActivity : AppCompatActivity(), OnMovieClickListener, SharedPreferen
     private fun setToolbar(){
         supportActionBar!!.title = resources.getString(R.string.search)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+    }
+
+    private fun convertEntryToMovieList(list: List<SearchEntry>): MutableList<Movie>{
+        val movieList: MutableList<Movie> = mutableListOf()
+        for(i in 0 until list.size)
+        {       val movie = list.get(i)
+            val passMovie = Movie()
+            passMovie.id = movie.movieId
+            passMovie.voteCount = movie.voteCount
+            passMovie.video = movie.video
+            passMovie.voteAverage = movie.voteAverage
+            passMovie.title = movie.title
+            passMovie.popularity = movie.popularity
+            passMovie.posterPath = movie.posterPath!!
+            passMovie.originalLanguage = movie.originalLanguage
+            passMovie.originalTitle = movie.originalTitle
+            passMovie.backdropPath = movie.backdropPath!!
+            passMovie.adult = movie.adult
+            passMovie.overview = movie.overview
+            passMovie.releaseDate = movie.releaseDate
+            passMovie.genreString = movie.genreString!!
+            passMovie.contentType = Constants.CONTENT_MOVIE
+            passMovie.tableName = SEARCHES
+            movieList.add(passMovie)
+        }
+        return movieList
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
@@ -182,6 +206,9 @@ class SearchActivity : AppCompatActivity(), OnMovieClickListener, SharedPreferen
             override fun onQueryTextSubmit(query: String): Boolean {
                 // filter recycler view when query submitted
                 Log.i("SearchInfo", query + " is the onQueryTextSubmit")
+                AppExecutors.getInstance().diskIO().execute(Runnable {
+                    mDatabase.searchDao().deleteAll()
+                })
                 mSearchRecyclerView.scrollToPosition(0)
                 viewModel.searchRepo(query)
                 mSearchAdapter.submitList(null)

@@ -70,6 +70,14 @@ class Constants {
         val USER_DEFAULT_REGION = "user_default_region"
         val USER_DEFAULT_REGION_STATUS = "user_default_region_status"
 
+        //Constants
+        val FAVOURITES: Int = 1231
+        val TOP_RATED: Int = 1232
+        val UPCOMING: Int = 1233
+        val NOWSHOWING: Int = 1234
+        val POPULAR: Int = 1235
+        val SEARCHES: Int = 1236
+
     }
 
 }

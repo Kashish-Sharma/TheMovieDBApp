@@ -2,6 +2,7 @@ package kashish.com.database.Entities
 
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.PrimaryKey
+import kashish.com.utils.Constants.Companion.UPCOMING
 import java.util.*
 
 /**
@@ -10,7 +11,8 @@ import java.util.*
 @Entity(tableName = "upcoming")
 class UpcomingEntry {
 
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
+    var id: Int? = null
     var movieId: Int? = null
     var voteCount: Int? = null
     var video: Boolean? = null
@@ -29,4 +31,6 @@ class UpcomingEntry {
     var totalPages: Int? = null
     var genreString: String? = ""
     var timeAdded: Date? = null
+    var tableName: Int = UPCOMING
+
 }
