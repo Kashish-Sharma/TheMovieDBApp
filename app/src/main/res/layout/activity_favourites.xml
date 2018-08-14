@@ -17,16 +17,8 @@
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         android:layout_height="?attr/actionBarSize"/>
 
-    <ProgressBar
-        android:layout_below="@+id/activity_favourites_toolbar"
-        android:layout_centerHorizontal="true"
-        android:id="@+id/activity_favourites_progress"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
-
         <android.support.v7.widget.RecyclerView
-            android:layout_below="@+id/activity_favourites_progress"
+            android:layout_below="@+id/activity_favourites_toolbar"
             android:id="@+id/activity_favourites_movies_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent">

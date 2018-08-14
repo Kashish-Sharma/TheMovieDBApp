@@ -483,7 +483,7 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
         mReviewReadMoreBottomSheet.show()
     }
     private fun setFavouriteOnClickListener(){
-        mAddToFavourite.setOnClickListener(View.OnClickListener {
+        mAddToFavourite.setOnClickListener({
             val movieEntry = FavouritesEntry()
             movieEntry.movieId = movie.id
             movieEntry.voteCount = movie.voteCount
@@ -503,15 +503,17 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
             movieEntry.timeAdded = Date()
 
             if (mAddToFavourite.isChecked){
-                AppExecutors.getInstance().diskIO().execute(Runnable {
+                AppExecutors.getInstance().diskIO().execute({
                     kotlin.run {
                         mDatabase.favouritesDao().insertFavourite(movieEntry)
                     }
                 })
                 Toast.makeText(this,"Added", Toast.LENGTH_SHORT).show()
             } else{
-                AppExecutors.getInstance().diskIO().execute(Runnable {
-                    mDatabase.favouritesDao().deleteFavourite(movieEntry)
+                AppExecutors.getInstance().diskIO().execute({
+                    kotlin.run {
+                        mDatabase.favouritesDao().deleteFavourite(movieEntry)
+                    }
                 })
             }
         })
