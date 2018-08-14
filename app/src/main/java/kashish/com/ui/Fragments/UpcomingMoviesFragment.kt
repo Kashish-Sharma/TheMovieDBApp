@@ -71,7 +71,7 @@ class UpcomingMoviesFragment : Fragment(), OnMovieClickListener {
 
         initViews()
         initRecyclerView()
-        getUpcomingData()
+        getUpcomingData(true)
         setSwipeRefreshLayoutListener()
         setupScrollListener()
 
@@ -122,8 +122,8 @@ class UpcomingMoviesFragment : Fragment(), OnMovieClickListener {
         }
     }
 
-    private fun getUpcomingData(){
-        viewModel.getUpcoming()
+    private fun getUpcomingData(doReload: Boolean){
+        viewModel.getUpcoming(doReload)
         mMovieAdapter.submitList(null)
         mSwipeRefreshLayout.isRefreshing = false
     }
@@ -131,10 +131,10 @@ class UpcomingMoviesFragment : Fragment(), OnMovieClickListener {
     private fun setSwipeRefreshLayoutListener() {
         mSwipeRefreshLayout.setOnRefreshListener {
             AppExecutors.getInstance().diskIO().execute(Runnable {
-                mDatabase.nowShowingDao().deleteAll()
+                mDatabase.upcomingDao().deleteAll()
             })
             mRecyclerView.scrollToPosition(0)
-            viewModel.getUpcoming()
+            viewModel.getUpcoming(true)
             mMovieAdapter.submitList(null)
             mSwipeRefreshLayout.isRefreshing = false
         }

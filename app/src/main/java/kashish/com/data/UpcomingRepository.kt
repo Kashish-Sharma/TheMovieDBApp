@@ -29,19 +29,23 @@ class UpcomingRepository(
     /**
      * Search repositories whose names match the query.
      */
-    fun upcoming(): UpcomingResults {
+    fun upcoming(doReload: Boolean): UpcomingResults {
         lastRequestedPage = 1
-        requestMoreUpcoming()
+        requestMoreUpcoming(doReload)
         // Get data from the local cache
         val data = upcomingCache.getAllUpcoming()
         return UpcomingResults(data, networkErrors)
     }
 
-    fun requestMoreUpcoming() {
-        requestAndSaveUpcomingData()
+    fun requestMoreUpcoming(doReload: Boolean) {
+        requestAndSaveUpcomingData(doReload)
     }
-    private fun requestAndSaveUpcomingData() {
+    private fun requestAndSaveUpcomingData(doReload: Boolean) {
         if (isRequestInProgress) return
+
+        if (doReload){
+            lastRequestedPage = 1
+        }
 
         isRequestInProgress = true
 

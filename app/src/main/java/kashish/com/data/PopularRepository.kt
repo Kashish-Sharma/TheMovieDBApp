@@ -1,6 +1,7 @@
 package kashish.com.data
 
 import android.arch.lifecycle.MutableLiveData
+import android.util.Log
 import kashish.com.database.DatabaseResults.NowShowingResults
 import kashish.com.database.DatabaseResults.PopularResults
 import kashish.com.database.Entities.NowShowingEntry
@@ -26,18 +27,23 @@ class PopularRepository(
     private val networkPopularErrors = MutableLiveData<String>()
     // avoid triggering multiple requests in the same time
     private var isRequestInProgress = false
-    fun popular(): PopularResults {
+    fun popular(doReload: Boolean): PopularResults {
         lastPopularRequestedPage = 1
-        requestMorePopular()
+        requestMorePopular(doReload)
         // Get data from the local cache
         val data = popularCache.getAllPopular()
         return PopularResults(data, networkPopularErrors)
     }
-    fun requestMorePopular() {
-        requestAndSavePopularData()
+    fun requestMorePopular(doReload: Boolean) {
+        requestAndSavePopularData(doReload)
     }
-    private fun requestAndSavePopularData() {
+    private fun requestAndSavePopularData(doReload: Boolean) {
         if (isRequestInProgress) return
+
+        if (doReload){
+            lastPopularRequestedPage = 1
+        }
+
 
         isRequestInProgress = true
 

@@ -17,9 +17,9 @@ class PopularViewModel(private val repository: PopularRepository) : ViewModel() 
         private const val VISIBLE_THRESHOLD = 5
     }
 
-    private val queryLiveData = MutableLiveData<String>()
+    private val queryLiveData = MutableLiveData<Boolean>()
     private val popularResult: LiveData<PopularResults> = Transformations.map(queryLiveData, {
-        repository.popular()
+        repository.popular(it)
     })
 
     val nowshowing: LiveData<List<PopularEntry>> = Transformations.switchMap(popularResult,
@@ -27,18 +27,14 @@ class PopularViewModel(private val repository: PopularRepository) : ViewModel() 
     val networkErrors: LiveData<String> = Transformations.switchMap(popularResult,
             { it -> it.networkErrors })
 
-    fun getNowShowing() {
-        queryLiveData.postValue(null)
+    fun getPopular(doReload: Boolean) {
+        queryLiveData.value = doReload
     }
 
     fun listScrolled(visibleItemCount: Int, lastVisibleItemPosition: Int, totalItemCount: Int) {
         if (visibleItemCount + lastVisibleItemPosition + VISIBLE_THRESHOLD >= totalItemCount) {
-            repository.requestMorePopular()
+            repository.requestMorePopular(false)
         }
     }
 
-    /**
-     * Get the last query value.
-     */
-    fun lastQueryValue(): String? = queryLiveData.value
 }

@@ -17,9 +17,9 @@ class UpcomingViewModel(private val repository: UpcomingRepository) : ViewModel(
         private const val VISIBLE_THRESHOLD = 5
     }
 
-    private val queryLiveData = MutableLiveData<String>()
+    private val queryLiveData = MutableLiveData<Boolean>()
     private val upcomingResult: LiveData<UpcomingResults> = Transformations.map(queryLiveData, {
-        repository.upcoming()
+        repository.upcoming(it)
     })
 
     val upcoming: LiveData<List<UpcomingEntry>> = Transformations.switchMap(upcomingResult,
@@ -27,18 +27,14 @@ class UpcomingViewModel(private val repository: UpcomingRepository) : ViewModel(
     val networkErrors: LiveData<String> = Transformations.switchMap(upcomingResult,
             { it -> it.networkErrors })
 
-    fun getUpcoming() {
-        queryLiveData.postValue(null)
+    fun getUpcoming(doReload: Boolean) {
+        queryLiveData.value = doReload
     }
 
     fun listScrolled(visibleItemCount: Int, lastVisibleItemPosition: Int, totalItemCount: Int) {
         if (visibleItemCount + lastVisibleItemPosition + VISIBLE_THRESHOLD >= totalItemCount) {
-            repository.requestMoreUpcoming()
+            repository.requestMoreUpcoming(false)
         }
     }
 
-    /**
-     * Get the last query value.
-     */
-    fun lastQueryValue(): String? = queryLiveData.value
 }

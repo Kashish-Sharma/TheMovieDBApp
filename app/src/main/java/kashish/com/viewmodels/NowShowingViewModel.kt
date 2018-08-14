@@ -12,15 +12,15 @@ import kashish.com.database.Entities.NowShowingEntry
 /**
  * Created by Kashish on 14-08-2018.
  */
-class NowShowingViewModel(private val repository: NowShowingRepository) : ViewModel() {
+class NowShowingViewModel(private val repository: NowShowingRepository ) : ViewModel() {
 
     companion object {
         private const val VISIBLE_THRESHOLD = 5
     }
 
-    private val queryLiveData = MutableLiveData<String>()
+    private val queryLiveData = MutableLiveData<Boolean>()
     private val nowShowingResult: LiveData<NowShowingResults> = Transformations.map(queryLiveData, {
-        repository.nowShowing()
+        repository.nowShowing(it)
     })
 
     val nowshowing: LiveData<List<NowShowingEntry>> = Transformations.switchMap(nowShowingResult,
@@ -28,18 +28,14 @@ class NowShowingViewModel(private val repository: NowShowingRepository) : ViewMo
     val networkErrors: LiveData<String> = Transformations.switchMap(nowShowingResult,
             { it -> it.networkErrors })
 
-    fun getNowShowing() {
-        queryLiveData.postValue(null)
+    fun getNowShowing(doReload: Boolean) {
+        queryLiveData.value = doReload
     }
 
     fun listScrolled(visibleItemCount: Int, lastVisibleItemPosition: Int, totalItemCount: Int) {
         if (visibleItemCount + lastVisibleItemPosition + VISIBLE_THRESHOLD >= totalItemCount) {
-            repository.requestMoreNowShowing()
+            repository.requestMoreNowShowing(false)
         }
     }
 
-    /**
-     * Get the last query value.
-     */
-    fun lastQueryValue(): String? = queryLiveData.value
 }
