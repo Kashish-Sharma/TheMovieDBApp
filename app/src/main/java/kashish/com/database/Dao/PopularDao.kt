@@ -1,10 +1,7 @@
 package kashish.com.database.Dao
 
 import android.arch.lifecycle.LiveData
-import android.arch.persistence.room.Dao
-import android.arch.persistence.room.Delete
-import android.arch.persistence.room.Insert
-import android.arch.persistence.room.Query
+import android.arch.persistence.room.*
 import kashish.com.database.Entities.PopularEntry
 
 /**
@@ -13,10 +10,10 @@ import kashish.com.database.Entities.PopularEntry
 @Dao
 interface PopularDao {
 
-    @Query("SELECT * FROM nowshowing ORDER BY timeAdded DESC")
-    fun loadAllPopular(): LiveData<MutableList<PopularEntry>>
+    @Query("SELECT * FROM popular ORDER BY popularity DESC")
+    fun loadAllPopular(): LiveData<List<PopularEntry>>
 
-    @Query("SELECT * FROM nowshowing WHERE movieId = :id ORDER BY timeAdded")
+    @Query("SELECT * FROM popular WHERE movieId = :id ORDER BY timeAdded")
     fun checkIfPopular(id: Int):Boolean
 
     @Insert
@@ -24,5 +21,11 @@ interface PopularDao {
 
     @Delete
     fun deletePopular(popularEntry: PopularEntry)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insert(searches: List<PopularEntry>)
+
+    @Query("DELETE FROM popular")
+    fun deleteAll()
 
 }

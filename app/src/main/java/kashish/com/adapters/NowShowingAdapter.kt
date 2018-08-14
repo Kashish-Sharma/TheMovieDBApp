@@ -16,6 +16,7 @@ import kashish.com.interfaces.OnMovieClickListener
 import kashish.com.models.Movie
 import kashish.com.utils.Constants.Companion.NOWSHOWING
 import kashish.com.utils.Constants.Companion.SEARCHES
+import kashish.com.utils.Constants.Companion.TOP_RATED
 import kashish.com.utils.Constants.Companion.UPCOMING
 import kashish.com.viewholders.MovieViewHolder
 import kashish.com.viewholders.NowShowingViewHolder
@@ -41,13 +42,6 @@ class NowShowingAdapter(private val listener: OnMovieClickListener,
                 return NowShowingViewHolder(view,context,listener)
             }
 
-            UPCOMING -> {
-                val view: View = LayoutInflater.from(parent.context)
-                        .inflate(R.layout.movie_single_item, parent, false)
-                this.context = parent.context
-                return UpcomingViewHolder(view,context,listener)
-            }
-
             SEARCHES -> {
                 val view: View = LayoutInflater.from(parent.context)
                         .inflate(R.layout.more_single_item, parent, false)
@@ -64,12 +58,6 @@ class NowShowingAdapter(private val listener: OnMovieClickListener,
             NOWSHOWING -> {
                 val movie: Movie = getItem(position)
                     val movieViewHolder = holder as NowShowingViewHolder
-                    movieViewHolder.bindNowShowingData(movie,mSharedPreferences)
-            }
-
-            UPCOMING -> {
-                val movie: Movie = getItem(position)
-                    val movieViewHolder = holder as UpcomingViewHolder
                     movieViewHolder.bindNowShowingData(movie,mSharedPreferences)
             }
 

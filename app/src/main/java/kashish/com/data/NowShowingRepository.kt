@@ -17,27 +17,19 @@ class NowShowingRepository(
         private val service: NetworkService,
         private val nowShowingCache: NowShowingLocalCache
 ) {
-
     // keep the last requested page. When the request is successful, increment the page number.
-    private var lastRequestedPage = 1
-
+    private var lastNowShowingRequestedPage = 1
     // LiveData of network errors.
-    private val networkErrors = MutableLiveData<String>()
-
+    private val networkNowShowingErrors = MutableLiveData<String>()
     // avoid triggering multiple requests in the same time
     private var isRequestInProgress = false
-
-    /**
-     * Search repositories whose names match the query.
-     */
     fun nowShowing(): NowShowingResults {
-        lastRequestedPage = 1
+        lastNowShowingRequestedPage = 1
         requestMoreNowShowing()
         // Get data from the local cache
         val data = nowShowingCache.getAllNowShowing()
-        return NowShowingResults(data, networkErrors)
+        return NowShowingResults(data, networkNowShowingErrors)
     }
-
     fun requestMoreNowShowing() {
         requestAndSaveNowShowingData()
     }
@@ -47,7 +39,7 @@ class NowShowingRepository(
         isRequestInProgress = true
 
         getNowShowingMovies(service,"en-US",
-        lastRequestedPage,
+                lastNowShowingRequestedPage,
         "US|IN|UK",
                 { movierequest ->
             val nowShowingEntryList: MutableList<NowShowingEntry> = mutableListOf()
@@ -83,12 +75,12 @@ class NowShowingRepository(
                 nowShowingEntryList.add(nowShowingEntry)
             }
             nowShowingCache.insert(nowShowingEntryList,{
-                lastRequestedPage++
+                lastNowShowingRequestedPage++
                 isRequestInProgress = false
             })
         }, {
             error ->
-            networkErrors.postValue(error)
+            networkNowShowingErrors.postValue(error)
             isRequestInProgress = false
         })
 

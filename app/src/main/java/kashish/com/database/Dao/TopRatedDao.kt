@@ -1,10 +1,7 @@
 package kashish.com.database.Dao
 
 import android.arch.lifecycle.LiveData
-import android.arch.persistence.room.Dao
-import android.arch.persistence.room.Delete
-import android.arch.persistence.room.Insert
-import android.arch.persistence.room.Query
+import android.arch.persistence.room.*
 import kashish.com.database.Entities.TopRatedEntry
 
 /**
@@ -13,7 +10,7 @@ import kashish.com.database.Entities.TopRatedEntry
 @Dao
 interface TopRatedDao {
 
-    @Query("SELECT * FROM toprated ORDER BY timeAdded DESC")
+    @Query("SELECT * FROM toprated ORDER BY popularity DESC")
     fun loadAllToprated(): LiveData<MutableList<TopRatedEntry>>
 
     @Query("SELECT * FROM toprated WHERE movieId = :id ORDER BY timeAdded")
@@ -24,5 +21,11 @@ interface TopRatedDao {
 
     @Delete
     fun deleteToprated(topRatedEntry: TopRatedEntry)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insert(searches: List<TopRatedEntry>)
+
+    @Query("DELETE FROM toprated")
+    fun deleteAll()
 
 }
