@@ -17,9 +17,12 @@ import android.view.View
 import android.widget.ProgressBar
 import kashish.com.R
 import kashish.com.adapters.MovieAdapter
+import kashish.com.adapters.NowShowingAdapter
 import kashish.com.database.Entities.FavouritesEntry
+import kashish.com.database.Entities.NowShowingEntry
 import kashish.com.interfaces.OnMovieClickListener
 import kashish.com.models.Movie
+import kashish.com.utils.Constants
 import kashish.com.utils.Constants.Companion.CONTENT_MOVIE
 import kashish.com.viewmodels.FavouritesViewModel
 
@@ -29,13 +32,13 @@ class FavouritesActivity : AppCompatActivity(), OnMovieClickListener, SharedPref
     private val GRID_COLUMNS_LANDSCAPE = 2
     private val TAG: String = SimilarMoviesActivity::class.simpleName.toString()
 
-    lateinit var mFavouriteAdapter: MovieAdapter
+    lateinit var mFavouriteAdapter: NowShowingAdapter
     var favouriteData: MutableList<Movie> = mutableListOf()
     private lateinit var mFavouriteRecyclerView : RecyclerView
     private lateinit var mGridLayoutManager: GridLayoutManager
 
     private lateinit var mSharedPreferences: SharedPreferences
-    private lateinit var mFavouriteProgress: ProgressBar
+    private lateinit var favouriteviewModel: FavouritesViewModel
 
     //Toolbar
     private lateinit var mToolbar: Toolbar
@@ -55,70 +58,60 @@ class FavouritesActivity : AppCompatActivity(), OnMovieClickListener, SharedPref
 
         initViews()
         setToolbar()
-        initContentList()
         initFavouriteRecyclerView()
         fetchFavouriteMovie()
     }
 
     private fun initFavouriteRecyclerView(){
         configureRecyclerAdapter(resources.configuration.orientation)
-        mFavouriteAdapter = MovieAdapter(favouriteData,this,mSharedPreferences)
+        mFavouriteAdapter = NowShowingAdapter(this,mSharedPreferences)
         mFavouriteRecyclerView.setAdapter(mFavouriteAdapter)
     }
 
     private fun initViews(){
         mToolbar = findViewById(R.id.activity_favourites_toolbar)
         mFavouriteRecyclerView = findViewById(R.id.activity_favourites_movies_recycler_view)
-        mFavouriteProgress = findViewById(R.id.activity_favourites_progress)
         mSharedPreferences.registerOnSharedPreferenceChangeListener(this)
+
+        favouriteviewModel = ViewModelProviders.of(this).get(FavouritesViewModel::class.java)
     }
 
     private fun fetchFavouriteMovie(){
-        val favouriteviewModel: FavouritesViewModel =
-                ViewModelProviders.of(this).get(FavouritesViewModel::class.java)
+
         favouriteviewModel.getMovies().observe(this, object : Observer<MutableList<FavouritesEntry>>{
             override fun onChanged(t: MutableList<FavouritesEntry>?) {
-                clearList()
-                    for (i in 0 until t!!.size){
-                        val movie = Movie()
-                        val movieEntry = t[i]
-                        movie.id = movieEntry.movieId
-                        movie.voteCount = movieEntry.voteCount
-                        movie.video = movieEntry.video
-                        movie.voteAverage = movieEntry.voteAverage
-                        movie.title = movieEntry.title
-                        movie.popularity = movieEntry.popularity
-                        movie.posterPath = movieEntry.posterPath!!
-                        movie.originalLanguage = movieEntry.originalLanguage
-                        movie.originalTitle = movieEntry.originalTitle
-                        movie.backdropPath = movieEntry.backdropPath!!
-                        movie.adult = movieEntry.adult
-                        movie.overview = movieEntry.overview
-                        movie.releaseDate = movieEntry.releaseDate
-                        movie.genreString = movieEntry.genreString!!
-                        movie.contentType = CONTENT_MOVIE
-
-                        favouriteData.add(movie)
-                    }
-                    mFavouriteAdapter.notifyDataSetChanged()
-                    mFavouriteProgress.visibility = View.GONE
-
+                mFavouriteAdapter.submitList(convertEntryToMovieList(t!!))
             }
         })
         Log.d("FavouritesViewModelTAG","Retreiving updates from livedata")
     }
 
-
-    private fun initContentList(){
-        favouriteData = mutableListOf()
+    private fun convertEntryToMovieList(list: List<FavouritesEntry>): MutableList<Movie>{
+        val movieList: MutableList<Movie> = mutableListOf()
+        for(i in 0 until list.size)
+        {       val movie = list.get(i)
+            val passMovie = Movie()
+            passMovie.id = movie.movieId
+            passMovie.voteCount = movie.voteCount
+            passMovie.video = movie.video
+            passMovie.voteAverage = movie.voteAverage
+            passMovie.title = movie.title
+            passMovie.popularity = movie.popularity
+            passMovie.posterPath = movie.posterPath!!
+            passMovie.originalLanguage = movie.originalLanguage
+            passMovie.originalTitle = movie.originalTitle
+            passMovie.backdropPath = movie.backdropPath!!
+            passMovie.adult = movie.adult
+            passMovie.overview = movie.overview
+            passMovie.releaseDate = movie.releaseDate
+            passMovie.genreString = movie.genreString!!
+            passMovie.contentType = Constants.CONTENT_MOVIE
+            passMovie.tableName = Constants.NOWSHOWING
+            movieList.add(passMovie)
+        }
+        return movieList
     }
 
-
-    private fun clearList() {
-        val size = favouriteData.size
-        favouriteData.clear()
-        mFavouriteAdapter.notifyItemRangeRemoved(0, size)
-    }
 
     private fun setToolbar(){
         mToolbar.title = "Favourites"
