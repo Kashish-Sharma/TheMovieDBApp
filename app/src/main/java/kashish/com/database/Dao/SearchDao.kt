@@ -10,7 +10,7 @@ import kashish.com.database.Entities.SearchEntry
 @Dao
 public interface SearchDao {
 
-    @Query("SELECT * FROM search ORDER BY timeAdded DESC")
+    @Query("SELECT * FROM search ORDER BY timeAdded ASC")
     fun loadAllSearch(): LiveData<MutableList<SearchEntry>>
 
     @Query("SELECT * FROM search WHERE movieId = :id ORDER BY timeAdded")
@@ -25,7 +25,7 @@ public interface SearchDao {
     @Delete
     fun deleteSearch(searchEntry: SearchEntry)
 
-    @Query("SELECT * FROM search WHERE (title LIKE :queryString)")
+    @Query("SELECT * FROM search WHERE (title LIKE :queryString) ORDER BY timeAdded ASC")
     fun searchesByName(queryString: String): LiveData<List<SearchEntry>>
 
     @Query("DELETE FROM search")

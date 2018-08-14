@@ -12,8 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".ui.Activities.MoviesActivity"
-            android:screenOrientation="portrait">
+            android:name=".ui.Activities.MoviesActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

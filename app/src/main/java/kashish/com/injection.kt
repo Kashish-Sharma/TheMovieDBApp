@@ -2,19 +2,10 @@ package kashish.com
 
 import android.arch.lifecycle.ViewModelProvider
 import android.content.Context
-import kashish.com.ViewModelFactory.ViewModelNowShowingFactory
-import kashish.com.ViewModelFactory.ViewModelPopularFactory
-import kashish.com.ViewModelFactory.ViewModelSearchFactory
-import kashish.com.ViewModelFactory.ViewModelUpcomingFactory
-import kashish.com.data.NowShowingRepository
-import kashish.com.data.PopularRepository
-import kashish.com.data.SearchRepository
-import kashish.com.data.UpcomingRepository
+import kashish.com.ViewModelFactory.*
+import kashish.com.data.*
 import kashish.com.database.AppDatabase
-import kashish.com.database.LocalCache.NowShowingLocalCache
-import kashish.com.database.LocalCache.PopularLocalCache
-import kashish.com.database.LocalCache.SearchLocalCache
-import kashish.com.database.LocalCache.UpcomingLocalCache
+import kashish.com.database.LocalCache.*
 import kashish.com.network.NetworkService
 import java.util.concurrent.Executors
 
@@ -69,6 +60,18 @@ object Injection {
     }
     fun providePopularViewModelFactory(context: Context): ViewModelProvider.Factory {
         return ViewModelPopularFactory(providePopularRepository(context))
+    }
+
+    //TopRated
+    private fun provideTopRatedCache(context: Context): TopRatedLocalCache {
+        val database = AppDatabase.getInstance(context)
+        return TopRatedLocalCache(database.topRatedDao(), Executors.newSingleThreadExecutor())
+    }
+    private fun provideTopRatedRepository(context: Context): TopRatedRepository {
+        return TopRatedRepository(NetworkService.instance, provideTopRatedCache(context))
+    }
+    fun provideTopRatedViewModelFactory(context: Context): ViewModelProvider.Factory {
+        return ViewModelTopRatedFactory(provideTopRatedRepository(context))
     }
 
 }
