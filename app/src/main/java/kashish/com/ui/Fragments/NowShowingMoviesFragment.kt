@@ -36,6 +36,7 @@ import kashish.com.ui.Activities.DetailActivity
 import kashish.com.utils.Constants
 import kashish.com.utils.Constants.Companion.CONTENT_MOVIE
 import kashish.com.utils.Constants.Companion.CONTENT_PROGRESS
+import kashish.com.utils.Constants.Companion.NOWSHOWING
 import kashish.com.utils.Urls.Companion.TMDB_API_KEY
 import kashish.com.viewmodels.NowShowingViewModel
 import retrofit2.Call
@@ -97,12 +98,11 @@ class NowShowingMoviesFragment : Fragment(), OnMovieClickListener {
         mMovieAdapter = NowShowingAdapter(this,mSharedPreferences)
         mRecyclerView.adapter = mMovieAdapter
 
-        Toast.makeText(context,"Started",Toast.LENGTH_SHORT).show()
 
         viewModel.nowshowing.observe(this, Observer<List<NowShowingEntry>> {
             Log.i("asdfghjkjhgfdfghj", "list: ${it?.size}")
             showEmptyList(it?.size == 0)
-            mMovieAdapter.submitList(it)
+            mMovieAdapter.submitList(convertEntryToMovieList(it!!))
         })
         viewModel.networkErrors.observe(this, Observer<String> {
             Toast.makeText(context, "\uD83D\uDE28 Wooops ${it}", Toast.LENGTH_LONG).show()
@@ -149,6 +149,32 @@ class NowShowingMoviesFragment : Fragment(), OnMovieClickListener {
         })
     }
 
+    private fun convertEntryToMovieList(list: List<NowShowingEntry>): MutableList<Movie>{
+        val movieList: MutableList<Movie> = mutableListOf()
+        for(i in 0 until list.size)
+        {       val movie = list.get(i)
+            val passMovie = Movie()
+            passMovie.id = movie.movieId
+            passMovie.voteCount = movie.voteCount
+            passMovie.video = movie.video
+            passMovie.voteAverage = movie.voteAverage
+            passMovie.title = movie.title
+            passMovie.popularity = movie.popularity
+            passMovie.posterPath = movie.posterPath!!
+            passMovie.originalLanguage = movie.originalLanguage
+            passMovie.originalTitle = movie.originalTitle
+            passMovie.backdropPath = movie.backdropPath!!
+            passMovie.adult = movie.adult
+            passMovie.overview = movie.overview
+            passMovie.releaseDate = movie.releaseDate
+            passMovie.genreString = movie.genreString!!
+            passMovie.contentType = Constants.CONTENT_MOVIE
+            passMovie.tableName = NOWSHOWING
+            movieList.add(passMovie)
+        }
+        return movieList
+    }
+
     override fun onConfigurationChanged(newConfig: Configuration?) {
         super.onConfigurationChanged(newConfig)
         configureRecyclerAdapter(newConfig!!.orientation)
@@ -166,6 +192,8 @@ class NowShowingMoviesFragment : Fragment(), OnMovieClickListener {
         context!!.startActivity(detailIntent)
     }
 
+}
 
 
-}// Required empty public constructor
+
+// Required empty public constructor

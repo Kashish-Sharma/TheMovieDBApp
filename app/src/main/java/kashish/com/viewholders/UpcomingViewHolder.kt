@@ -10,25 +10,23 @@ import android.widget.RatingBar
 import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import com.bumptech.glide.request.RequestOptions
 import kashish.com.R
-import kashish.com.database.Entities.NowShowingEntry
+import kashish.com.database.Entities.UpcomingEntry
 import kashish.com.interfaces.OnMovieClickListener
 import kashish.com.models.Movie
 import kashish.com.utils.Constants
 import kashish.com.utils.DateUtils
-import kashish.com.utils.Helpers
 import kashish.com.utils.Helpers.buildImageUrl
 import kotlinx.android.synthetic.main.movie_single_item.view.*
 
 /**
  * Created by Kashish on 14-08-2018.
  */
-class NowShowingViewHolder(itemView: View?,
-                      val context: Context,
-                      val listener: OnMovieClickListener) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
+class UpcomingViewHolder(itemView: View?,
+                         val context: Context,
+                         val listener: OnMovieClickListener) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
 
     var movieTitle: TextView
     var movieRating: RatingBar

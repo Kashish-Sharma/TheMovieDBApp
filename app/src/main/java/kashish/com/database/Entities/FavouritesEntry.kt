@@ -4,6 +4,7 @@ import android.arch.persistence.room.Entity
 import android.arch.persistence.room.Ignore
 import android.arch.persistence.room.PrimaryKey
 import android.arch.persistence.room.TypeConverters
+import kashish.com.utils.Constants.Companion.FAVOURITES
 import java.util.*
 
 /**
@@ -13,7 +14,8 @@ import java.util.*
 @Entity(tableName = "favourites")
 class FavouritesEntry {
 
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
+    var id: Int? = null
     var movieId: Int? = null
     var voteCount: Int? = null
     var video: Boolean? = null
@@ -32,4 +34,5 @@ class FavouritesEntry {
     var totalPages: Int? = null
     var genreString: String? = ""
     var timeAdded: Date? = null
+    var tableName: Int = FAVOURITES
 }

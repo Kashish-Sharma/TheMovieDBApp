@@ -58,6 +58,7 @@ class Movie() : Parcelable {
     @Expose
     var genreString: String = ""
     var contentType: Int = Constants.CONTENT_MOVIE
+    var tableName: Int? = null
 
     constructor(parcel: Parcel) : this() {
         voteCount = parcel.readValue(Int::class.java.classLoader) as? Int
@@ -75,6 +76,7 @@ class Movie() : Parcelable {
         releaseDate = parcel.readString()
         genreString = parcel.readString()
         contentType = parcel.readInt()
+        tableName = parcel.readValue(Int::class.java.classLoader) as? Int
     }
 
 
@@ -141,6 +143,7 @@ class Movie() : Parcelable {
         parcel.writeString(releaseDate)
         parcel.writeString(genreString)
         parcel.writeInt(contentType)
+        parcel.writeValue(tableName)
     }
 
     override fun describeContents(): Int {

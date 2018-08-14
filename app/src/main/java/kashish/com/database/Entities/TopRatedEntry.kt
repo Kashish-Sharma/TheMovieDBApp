@@ -2,6 +2,7 @@ package kashish.com.database.Entities
 
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.PrimaryKey
+import kashish.com.utils.Constants.Companion.TOP_RATED
 import java.util.*
 
 /**
@@ -29,4 +30,6 @@ class TopRatedEntry {
     var totalPages: Int? = null
     var genreString: String? = ""
     var timeAdded: Date? = null
+    var tableName: Int = TOP_RATED
+
 }

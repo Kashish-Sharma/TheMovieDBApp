@@ -11,7 +11,7 @@ import kashish.com.database.Entities.SearchEntry
 @Dao
  interface NowShowingDao {
 
-    @Query("SELECT * FROM nowshowing")
+    @Query("SELECT * FROM nowshowing ORDER BY timeAdded ASC")
     fun loadAllNowShowing(): LiveData<List<NowShowingEntry>>
 
     @Query("SELECT * FROM nowshowing WHERE movieId = :id ORDER BY timeAdded")
