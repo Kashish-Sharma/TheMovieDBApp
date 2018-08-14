@@ -10,8 +10,8 @@ import kashish.com.database.Entities.TopRatedEntry
 @Dao
 interface TopRatedDao {
 
-    @Query("SELECT * FROM toprated ORDER BY popularity DESC")
-    fun loadAllToprated(): LiveData<MutableList<TopRatedEntry>>
+    @Query("SELECT * FROM toprated ORDER BY voteCount DESC")
+    fun loadAllToprated(): LiveData<List<TopRatedEntry>>
 
     @Query("SELECT * FROM toprated WHERE movieId = :id ORDER BY timeAdded")
     fun checkIfToprated(id: Int):Boolean

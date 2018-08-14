@@ -100,8 +100,6 @@ class UpcomingMoviesFragment : Fragment(), OnMovieClickListener {
         mMovieAdapter = NowShowingAdapter(this,mSharedPreferences)
         mRecyclerView.adapter = mMovieAdapter
 
-        Toast.makeText(context,"Started",Toast.LENGTH_SHORT).show()
-
         viewModel.upcoming.observe(this, Observer<List<UpcomingEntry>> {
             Log.i("asdfghjkjhgfdfghj", "list: ${it?.size}")
             showEmptyList(it?.size == 0)
