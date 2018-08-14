@@ -14,8 +14,7 @@ import java.util.*
 @Entity(tableName = "favourites")
 class FavouritesEntry {
 
-    @PrimaryKey(autoGenerate = true)
-    var id: Int? = null
+    @PrimaryKey
     var movieId: Int? = null
     var voteCount: Int? = null
     var video: Boolean? = null
