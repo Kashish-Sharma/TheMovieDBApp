@@ -42,6 +42,7 @@ import kashish.com.requestmodels.MovieCreditRequest
 import kashish.com.requestmodels.MovieReviewsRequest
 import kashish.com.requestmodels.MovieVideosRequest
 import kashish.com.network.NetworkService
+import kashish.com.utils.Constants
 import kashish.com.utils.Helpers
 import kashish.com.utils.Helpers.buildImdbUrl
 import kashish.com.utils.Helpers.buildWikiUrl
@@ -501,6 +502,7 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
             movieEntry.releaseDate = movie.releaseDate
             movieEntry.genreString = movie.genreString
             movieEntry.timeAdded = Date()
+            movieEntry.tableName = Constants.FAVOURITES
 
             if (mAddToFavourite.isChecked){
                 AppExecutors.getInstance().diskIO().execute({

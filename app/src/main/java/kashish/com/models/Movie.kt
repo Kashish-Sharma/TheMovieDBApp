@@ -80,28 +80,6 @@ class Movie() : Parcelable {
     }
 
 
-    /**
-     * No args constructor for use in serialization
-     *
-     */
-
-    /**
-     *
-     * @param genreIds
-     * @param id
-     * @param title
-     * @param releaseDate
-     * @param overview
-     * @param posterPath
-     * @param originalTitle
-     * @param voteAverage
-     * @param originalLanguage
-     * @param adult
-     * @param backdropPath
-     * @param voteCount
-     * @param video
-     * @param popularity
-     */
     constructor(voteCount: Int?, id: Int?, video: Boolean?,
                 voteAverage: Float?, title: String, popularity: Float?,
                 posterPath: String, originalLanguage: String,
