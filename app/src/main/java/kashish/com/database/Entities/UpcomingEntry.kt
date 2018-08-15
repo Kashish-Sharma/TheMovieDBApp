@@ -11,8 +11,7 @@ import java.util.*
 @Entity(tableName = "upcoming")
 class UpcomingEntry {
 
-    @PrimaryKey(autoGenerate = true)
-    var id: Int? = null
+    @PrimaryKey
     var movieId: Int? = null
     var voteCount: Int? = null
     var video: Boolean? = null

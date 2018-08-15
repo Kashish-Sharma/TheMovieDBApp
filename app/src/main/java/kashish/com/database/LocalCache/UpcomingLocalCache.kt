@@ -1,6 +1,7 @@
 package kashish.com.database.LocalCache
 
 import android.arch.lifecycle.LiveData
+import android.arch.paging.DataSource
 import android.util.Log
 import kashish.com.database.Dao.UpcomingDao
 import java.util.concurrent.Executor
@@ -25,7 +26,7 @@ class UpcomingLocalCache(
         }
     }
 
-    fun getAllUpcoming(): LiveData<List<UpcomingEntry>> {
+    fun getAllUpcoming(): DataSource.Factory<Int, UpcomingEntry> {
         return upcomingDao.loadAllUpcoming()
     }
 }

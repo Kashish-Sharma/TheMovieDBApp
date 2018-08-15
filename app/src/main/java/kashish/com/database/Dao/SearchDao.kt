@@ -1,6 +1,7 @@
 package kashish.com.database.Dao
 
 import android.arch.lifecycle.LiveData
+import android.arch.paging.DataSource
 import android.arch.persistence.room.*
 import kashish.com.database.Entities.SearchEntry
 
@@ -26,7 +27,7 @@ public interface SearchDao {
     fun deleteSearch(searchEntry: SearchEntry)
 
     @Query("SELECT * FROM search WHERE (title LIKE :queryString) ORDER BY timeAdded ASC")
-    fun searchesByName(queryString: String): LiveData<List<SearchEntry>>
+    fun searchesByName(queryString: String): DataSource.Factory<Int, SearchEntry>
 
     @Query("DELETE FROM search")
     fun deleteAll()

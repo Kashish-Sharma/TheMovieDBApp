@@ -4,6 +4,7 @@ import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.Transformations
 import android.arch.lifecycle.ViewModel
+import android.arch.paging.PagedList
 import android.util.Log
 import kashish.com.data.NowShowingRepository
 import kashish.com.database.DatabaseResults.NowShowingResults
@@ -23,19 +24,13 @@ class NowShowingViewModel(private val repository: NowShowingRepository ) : ViewM
         repository.nowShowing(it)
     })
 
-    val nowshowing: LiveData<List<NowShowingEntry>> = Transformations.switchMap(nowShowingResult,
+    val nowshowing: LiveData<PagedList<NowShowingEntry>> = Transformations.switchMap(nowShowingResult,
             { it -> it.data })
     val networkErrors: LiveData<String> = Transformations.switchMap(nowShowingResult,
             { it -> it.networkErrors })
 
     fun getNowShowing(doReload: Boolean) {
         queryLiveData.value = doReload
-    }
-
-    fun listScrolled(visibleItemCount: Int, lastVisibleItemPosition: Int, totalItemCount: Int) {
-        if (visibleItemCount + lastVisibleItemPosition + VISIBLE_THRESHOLD >= totalItemCount) {
-            repository.requestMoreNowShowing(false)
-        }
     }
 
 }

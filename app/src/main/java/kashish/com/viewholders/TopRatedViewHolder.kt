@@ -1,6 +1,5 @@
 package kashish.com.viewholders
 
-import android.content.Context
 import android.content.SharedPreferences
 import android.support.v7.widget.RecyclerView
 import android.view.View
@@ -10,24 +9,24 @@ import android.widget.RatingBar
 import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
 import kashish.com.R
-import kashish.com.database.Entities.PopularEntry
-import kashish.com.database.Entities.UpcomingEntry
-import kashish.com.interfaces.OnMovieClickListener
+import kashish.com.database.Entities.TopRatedEntry
 import kashish.com.models.Movie
 import kashish.com.utils.Constants
 import kashish.com.utils.DateUtils
-import kashish.com.utils.Helpers.buildImageUrl
+import kashish.com.utils.Helpers
+import android.content.Context
+import kashish.com.interfaces.OnMovieClickListener
 import kotlinx.android.synthetic.main.movie_single_item.view.*
 
 /**
- * Created by Kashish on 14-08-2018.
+ * Created by Kashish on 15-08-2018.
  */
-class UpcomingViewHolder(itemView: View?,
-                         val context: Context,
-                         val listener: OnMovieClickListener) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
+class TopRatedViewHolder(itemView: View?,
+                        val context: Context,
+                        val listener: OnMovieClickListener) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
 
     var movieTitle: TextView
     var movieRating: RatingBar
@@ -36,7 +35,7 @@ class UpcomingViewHolder(itemView: View?,
     var movieReleaseDate: TextView
     var moviePoster: ImageView
     var movieDetails: LinearLayout
-    private var movie: UpcomingEntry? = null
+    private var movie: TopRatedEntry? = null
 
     init{
         movieTitle = itemView!!.findViewById(R.id.single_item_movie_title)
@@ -51,7 +50,7 @@ class UpcomingViewHolder(itemView: View?,
 
     }
 
-    fun bindNowShowingData(movie: UpcomingEntry?, mSharedPreferences: SharedPreferences) {
+    fun bindPopularData(movie: TopRatedEntry?, mSharedPreferences: SharedPreferences) {
         if (movie == null) {
             return
         } else {
@@ -67,17 +66,17 @@ class UpcomingViewHolder(itemView: View?,
 
 
             if (mSharedPreferences.getBoolean(context.getString(R.string.pref_cache_data_key),true)){
-                Glide.with(context).load(buildImageUrl(movie.posterPath!!)).thumbnail(0.05f)
-                        .transition(withCrossFade()).into(moviePoster)
+                Glide.with(context).load(Helpers.buildImageUrl(movie.posterPath!!)).thumbnail(0.05f)
+                        .transition(DrawableTransitionOptions.withCrossFade()).into(moviePoster)
             } else{
-                Glide.with(context).load(buildImageUrl(movie.posterPath!!)).thumbnail(0.05f)
+                Glide.with(context).load(Helpers.buildImageUrl(movie.posterPath!!)).thumbnail(0.05f)
                         .apply(RequestOptions().diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true))
-                        .transition(withCrossFade()).into(moviePoster)
+                        .transition(DrawableTransitionOptions.withCrossFade()).into(moviePoster)
             }
         }
     }
 
-    private fun convertEntryToMovieList(movie: UpcomingEntry): Movie {
+    private fun convertEntryToMovieList(movie: TopRatedEntry): Movie {
         val passMovie = Movie()
         passMovie.id = movie.movieId
         passMovie.voteCount = movie.voteCount
@@ -97,6 +96,7 @@ class UpcomingViewHolder(itemView: View?,
         passMovie.tableName = Constants.TOP_RATED
         return passMovie
     }
+
 
     override fun onClick(p0: View?) {
         val position:Int = adapterPosition

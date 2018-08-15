@@ -37,7 +37,7 @@ class NowShowingViewHolder(itemView: View?,
     var movieReleaseDate: TextView
     var moviePoster: ImageView
     var movieDetails: LinearLayout
-    private var movie: Movie? = null
+    private var movie: NowShowingEntry? = null
 
     init{
         movieTitle = itemView!!.findViewById(R.id.single_item_movie_title)
@@ -52,7 +52,7 @@ class NowShowingViewHolder(itemView: View?,
 
     }
 
-    fun bindNowShowingData(movie: Movie?, mSharedPreferences: SharedPreferences) {
+    fun bindNowShowingData(movie: NowShowingEntry?, mSharedPreferences: SharedPreferences) {
         if (movie == null) {
             return
         } else {
@@ -78,11 +78,32 @@ class NowShowingViewHolder(itemView: View?,
         }
     }
 
+    private fun convertEntryToMovieList(movie: NowShowingEntry): Movie{
+        val passMovie = Movie()
+        passMovie.id = movie.movieId
+        passMovie.voteCount = movie.voteCount
+        passMovie.video = movie.video
+        passMovie.voteAverage = movie.voteAverage
+        passMovie.title = movie.title
+        passMovie.popularity = movie.popularity
+        passMovie.posterPath = movie.posterPath!!
+        passMovie.originalLanguage = movie.originalLanguage
+        passMovie.originalTitle = movie.originalTitle
+        passMovie.backdropPath = movie.backdropPath!!
+        passMovie.adult = movie.adult
+        passMovie.overview = movie.overview
+        passMovie.releaseDate = movie.releaseDate
+        passMovie.genreString = movie.genreString!!
+        passMovie.contentType = Constants.CONTENT_MOVIE
+        passMovie.tableName = Constants.SEARCHES
+        return passMovie
+    }
+
 
     override fun onClick(p0: View?) {
         val position:Int = adapterPosition
         if (position!= RecyclerView.NO_POSITION){
-            listener.onMovieClickListener(movie!!)
+            listener.onMovieClickListener(convertEntryToMovieList(movie!!))
         }
     }
 

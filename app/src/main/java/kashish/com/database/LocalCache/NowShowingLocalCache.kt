@@ -1,6 +1,7 @@
 package kashish.com.database.LocalCache
 
 import android.arch.lifecycle.LiveData
+import android.arch.paging.DataSource
 import android.util.Log
 import kashish.com.database.Dao.NowShowingDao
 import kashish.com.database.Entities.NowShowingEntry
@@ -25,7 +26,7 @@ class NowShowingLocalCache(
         }
     }
 
-    fun getAllNowShowing(): LiveData<List<NowShowingEntry>> {
+    fun getAllNowShowing(): DataSource.Factory<Int, NowShowingEntry> {
         return nowShowingDao.loadAllNowShowing()
     }
 }

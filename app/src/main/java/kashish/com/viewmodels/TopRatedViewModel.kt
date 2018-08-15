@@ -4,6 +4,7 @@ import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.Transformations
 import android.arch.lifecycle.ViewModel
+import android.arch.paging.PagedList
 import kashish.com.data.TopRatedRepository
 import kashish.com.database.DatabaseResults.TopRatedResults
 import kashish.com.database.Entities.TopRatedEntry
@@ -22,19 +23,13 @@ class TopRatedViewModel(private val repository: TopRatedRepository ) : ViewModel
         repository.topRated(it)
     })
 
-    val topRated: LiveData<List<TopRatedEntry>> = Transformations.switchMap(nowShowingResult,
+    val topRated: LiveData<PagedList<TopRatedEntry>> = Transformations.switchMap(nowShowingResult,
             { it -> it.data })
     val networkErrors: LiveData<String> = Transformations.switchMap(nowShowingResult,
             { it -> it.networkErrors })
 
     fun getTopRated(doReload: Boolean) {
         queryLiveData.value = doReload
-    }
-
-    fun listScrolled(visibleItemCount: Int, lastVisibleItemPosition: Int, totalItemCount: Int) {
-        if (visibleItemCount + lastVisibleItemPosition + VISIBLE_THRESHOLD >= totalItemCount) {
-            repository.requestMoreTopRated(false)
-        }
     }
 
 }

@@ -1,6 +1,8 @@
 package kashish.com.database.LocalCache
 
 import android.arch.lifecycle.LiveData
+import android.arch.paging.DataSource
+import android.arch.paging.PagedList
 import android.util.Log
 import kashish.com.database.Dao.TopRatedDao
 import kashish.com.database.Entities.TopRatedEntry
@@ -25,7 +27,7 @@ class TopRatedLocalCache(
         }
     }
 
-    fun getAllTopRated(): LiveData<List<TopRatedEntry>> {
+    fun getAllTopRated(): DataSource.Factory<Int, TopRatedEntry> {
         return topRatedDao.loadAllToprated()
     }
 }

@@ -1,6 +1,7 @@
 package kashish.com.database.Dao
 
 import android.arch.lifecycle.LiveData
+import android.arch.paging.DataSource
 import android.arch.persistence.room.*
 import kashish.com.database.Entities.TopRatedEntry
 
@@ -10,8 +11,8 @@ import kashish.com.database.Entities.TopRatedEntry
 @Dao
 interface TopRatedDao {
 
-    @Query("SELECT * FROM toprated ORDER BY voteCount DESC")
-    fun loadAllToprated(): LiveData<List<TopRatedEntry>>
+    @Query("SELECT * FROM toprated ORDER BY timeAdded ASC")
+    fun loadAllToprated(): DataSource.Factory<Int, TopRatedEntry>
 
     @Query("SELECT * FROM toprated WHERE movieId = :id ORDER BY timeAdded")
     fun checkIfToprated(id: Int):Boolean

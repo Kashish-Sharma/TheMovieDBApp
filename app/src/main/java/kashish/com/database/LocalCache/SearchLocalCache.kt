@@ -1,6 +1,7 @@
 package kashish.com.database.LocalCache
 
 import android.arch.lifecycle.LiveData
+import android.arch.paging.DataSource
 import android.util.Log
 import kashish.com.database.Entities.SearchEntry
 import kashish.com.database.Dao.SearchDao
@@ -25,7 +26,7 @@ class SearchLocalCache(
         }
     }
 
-    fun searchesByName(name: String): LiveData<List<SearchEntry>> {
+    fun searchesByName(name: String): DataSource.Factory<Int, SearchEntry> {
         // appending '%' so we can allow other characters to be before and after the query string
         val query = "%${name.replace(' ', '%')}%"
         return searchDao.searchesByName(query)

@@ -3,6 +3,7 @@ package kashish.com.ui.Activities
 import android.app.SearchManager;
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
+import android.arch.paging.PagedList
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -22,6 +23,7 @@ import android.widget.Toast
 import kashish.com.Injection
 import kashish.com.R
 import kashish.com.adapters.NowShowingAdapter
+import kashish.com.adapters.SearchAdapter
 import kashish.com.database.AppDatabase
 import kashish.com.database.AppExecutors
 import kashish.com.database.Entities.SearchEntry
@@ -39,7 +41,7 @@ class SearchActivity : AppCompatActivity(), OnMovieClickListener, SharedPreferen
     private val TAG: String = SearchActivity::class.simpleName.toString()
 
     private lateinit var viewModel: SearchViewModel
-    private lateinit var mSearchAdapter: NowShowingAdapter
+    private lateinit var mSearchAdapter: SearchAdapter
 
     private lateinit var emptyList: TextView
     private lateinit var mSearchRecyclerView : RecyclerView
@@ -64,7 +66,6 @@ class SearchActivity : AppCompatActivity(), OnMovieClickListener, SharedPreferen
         initViews()
         setToolbar()
         initSearchRecyclerView()
-        setupScrollListener()
 
     }
 
@@ -81,31 +82,19 @@ class SearchActivity : AppCompatActivity(), OnMovieClickListener, SharedPreferen
         viewModel = ViewModelProviders.of(this, Injection.provideSearchViewModelFactory(this))
                 .get(SearchViewModel::class.java)
 
-        mSearchAdapter = NowShowingAdapter(this,mSharedPreferences)
+        mSearchAdapter = SearchAdapter(this,mSharedPreferences)
         mSearchRecyclerView.adapter = mSearchAdapter
         Toast.makeText(this,"Started",Toast.LENGTH_SHORT).show()
-        viewModel.searches.observe(this, Observer<List<SearchEntry>> {
+        viewModel.searches.observe(this, Observer<PagedList<SearchEntry>> {
             Log.d("Activity", "list: ${it?.size}")
             showEmptyList(it?.size == 0)
-            mSearchAdapter.submitList(convertEntryToMovieList(it!!))
+            mSearchAdapter.submitList(it!!)
         })
         viewModel.networkErrors.observe(this, Observer<String> {
             Toast.makeText(this, "\uD83D\uDE28 Wooops ${it}", Toast.LENGTH_LONG).show()
         })
     }
 
-    private fun setupScrollListener() {
-        mSearchRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                val totalItemCount = mGridLayoutManager.itemCount
-                val visibleItemCount = mGridLayoutManager.childCount
-                val lastVisibleItem = mGridLayoutManager.findLastVisibleItemPosition()
-
-                viewModel.listScrolled(visibleItemCount, lastVisibleItem, totalItemCount)
-            }
-        })
-    }
 
     private fun showEmptyList(show: Boolean) {
         if (show) {

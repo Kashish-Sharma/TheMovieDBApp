@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
 apply plugin: 'kotlin-android'
-
+apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android-extensions'
 
 android {
@@ -28,6 +28,7 @@ dependencies {
     def lifecycle_version = "1.1.1"
     def retrofitVersion = "2.4.0"
     def okhttpLoggingInterceptorVersion = "3.9.1"
+    def paging_version = "1.0.1"
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
@@ -38,6 +39,9 @@ dependencies {
     implementation 'com.android.support:preference-v7:27.1.1'
     implementation 'com.github.bumptech.glide:glide:4.7.1'
     kapt 'com.github.bumptech.glide:compiler:4.7.1'
+
+    //Paging
+    implementation "android.arch.paging:runtime:$paging_version"
 
     //Room
     implementation "android.arch.persistence.room:runtime:$room_version"

@@ -1,6 +1,7 @@
 package kashish.com.database.Dao
 
 import android.arch.lifecycle.LiveData
+import android.arch.paging.DataSource
 import android.arch.persistence.room.*
 import kashish.com.database.Entities.NowShowingEntry
 import kashish.com.database.Entities.SearchEntry
@@ -12,7 +13,7 @@ import kashish.com.database.Entities.SearchEntry
  interface NowShowingDao {
 
     @Query("SELECT * FROM nowshowing ORDER BY timeAdded ASC")
-    fun loadAllNowShowing(): LiveData<List<NowShowingEntry>>
+    fun loadAllNowShowing(): DataSource.Factory<Int, NowShowingEntry>
 
     @Query("SELECT * FROM nowshowing WHERE movieId = :id ORDER BY timeAdded")
     fun checkIfNowShowing(id: Int):Boolean
