@@ -391,7 +391,7 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
 
         })
     }
-    
+
 
     private fun setOnClickListenersOnWikiImdnb(){
         mWikipediaBtn.setOnClickListener(View.OnClickListener {
