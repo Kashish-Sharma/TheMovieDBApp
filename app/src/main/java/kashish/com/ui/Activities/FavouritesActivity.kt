@@ -16,6 +16,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.ProgressBar
 import kashish.com.R
+import kashish.com.adapters.FavouritesAdapter
 import kashish.com.adapters.MovieAdapter
 import kashish.com.adapters.NowShowingAdapter
 import kashish.com.database.Entities.FavouritesEntry
@@ -32,7 +33,7 @@ class FavouritesActivity : AppCompatActivity(), OnMovieClickListener, SharedPref
     private val GRID_COLUMNS_LANDSCAPE = 2
     private val TAG: String = SimilarMoviesActivity::class.simpleName.toString()
 
-    lateinit var mFavouriteAdapter: NowShowingAdapter
+    lateinit var mFavouriteAdapter: FavouritesAdapter
     var favouriteData: MutableList<Movie> = mutableListOf()
     private lateinit var mFavouriteRecyclerView : RecyclerView
     private lateinit var mGridLayoutManager: GridLayoutManager
@@ -59,12 +60,12 @@ class FavouritesActivity : AppCompatActivity(), OnMovieClickListener, SharedPref
         initViews()
         setToolbar()
         initFavouriteRecyclerView()
-        //fetchFavouriteMovie()
+        fetchFavouriteMovie()
     }
 
     private fun initFavouriteRecyclerView(){
         configureRecyclerAdapter(resources.configuration.orientation)
-        mFavouriteAdapter = NowShowingAdapter(this,mSharedPreferences)
+        mFavouriteAdapter = FavouritesAdapter(this,mSharedPreferences)
         mFavouriteRecyclerView.setAdapter(mFavouriteAdapter)
     }
 
@@ -76,15 +77,15 @@ class FavouritesActivity : AppCompatActivity(), OnMovieClickListener, SharedPref
         favouriteviewModel = ViewModelProviders.of(this).get(FavouritesViewModel::class.java)
     }
 
-//    private fun fetchFavouriteMovie(){
-//
-//        favouriteviewModel.getMovies().observe(this, object : Observer<MutableList<FavouritesEntry>>{
-//            override fun onChanged(t: MutableList<FavouritesEntry>?) {
-//                mFavouriteAdapter.submitList(convertEntryToMovieList(t!!))
-//            }
-//        })
-//        Log.d("FavouritesViewModelTAG","Retreiving updates from livedata")
-//    }
+    private fun fetchFavouriteMovie(){
+
+        favouriteviewModel.getMovies().observe(this, object : Observer<MutableList<FavouritesEntry>>{
+            override fun onChanged(t: MutableList<FavouritesEntry>?) {
+                mFavouriteAdapter.submitList(t!!)
+            }
+        })
+        Log.d("FavouritesViewModelTAG","Retreiving updates from livedata")
+    }
 
     private fun convertEntryToMovieList(list: List<FavouritesEntry>): MutableList<Movie>{
         val movieList: MutableList<Movie> = mutableListOf()
