@@ -49,11 +49,9 @@ class NowShowingBoundaryCallbacks(
     }
 
     private fun requestAndSaveNowShowingData(doReload: Boolean) {
-        Log.i("ajsdbjabdbasdbiasd","Requested")
-        if (isRequestInProgress){
-            Log.i("ajsdbjabdbasdbiasd","Returned")
-            return
-        }
+
+        if (isRequestInProgress) return
+
 
         isRequestInProgress = true
 

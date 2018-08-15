@@ -1,5 +1,8 @@
 package kashish.com.ui.Activities
 
+import android.arch.lifecycle.LiveData
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
@@ -23,6 +26,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
+import kashish.com.Injection
 import kashish.com.R
 import kashish.com.adapters.MovieReviewAdapter
 import kashish.com.utils.DateUtils
@@ -47,6 +51,8 @@ import kashish.com.utils.Helpers
 import kashish.com.utils.Helpers.buildImdbUrl
 import kashish.com.utils.Helpers.buildWikiUrl
 import kashish.com.utils.Urls
+import kashish.com.viewmodels.MovieDetailsViewModel
+import kashish.com.viewmodels.NowShowingViewModel
 import retrofit2.Call
 import retrofit2.Callback
 import java.util.*
@@ -119,20 +125,18 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
     private lateinit var mTrailerRecyclerView : RecyclerView
     private lateinit var mTrailerProgressBar : ProgressBar
 
-
+    //End Buttons
     private lateinit var mSimilarMoviesBtn: TextView
     private lateinit var mWikipediaBtn : TextView
     private lateinit var mImdbBtn : TextView
 
-    //Database
-    private val EXTRA_MOVIE_ID: String = "extraMovieId"
-    private val INSTANCE_MOVIE_ID: String = "instanceMovieId"
     companion object {
         private val DEFAULT_TASK_ID: Int = -1
     }
     private var mMovieId = DEFAULT_TASK_ID
     private lateinit var mDatabase: AppDatabase
     private lateinit var networkService: NetworkService
+    private lateinit var detailsViewModel: MovieDetailsViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
@@ -159,7 +163,7 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
 
         fetchMovieDetails()
         fetchMovieReviews()
-        fetchMovieCast()
+        fetchMovieCredits()
         setRatingsData()
         setOverViewData()
         setOnClickListenersOnWikiImdnb()
@@ -258,25 +262,28 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
         mDatabase = AppDatabase.getInstance(applicationContext)
         networkService = NetworkService.instance
 
+        detailsViewModel = ViewModelProviders.of(this, Injection.provideMovieDetailsRepository())
+                .get(MovieDetailsViewModel::class.java)
+
     }
     private fun initReviewRecyclerView(){
         mLinearLayoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         mReviewRecyclerView.setLayoutManager(mLinearLayoutManager)
-        mReviewReviewAdapter = MovieReviewAdapter(data,this)
+        mReviewReviewAdapter = MovieReviewAdapter(this)
         mReviewRecyclerView.setAdapter(mReviewReviewAdapter)
         mReviewSnapHelper.attachToRecyclerView(mReviewRecyclerView)
     }
     private fun initCastRecyclerView(){
         mLinearLayoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         mCastRecyclerView.setLayoutManager(mLinearLayoutManager)
-        mCastAdapter = CastAdapter(castData,mSharedPreferences)
+        mCastAdapter = CastAdapter(mSharedPreferences)
         mCastRecyclerView.setAdapter(mCastAdapter)
         mCastSnapHelper.attachToRecyclerView(mCastRecyclerView)
     }
     private fun initCrewRecyclerView(){
         mLinearLayoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         mCrewRecyclerView.setLayoutManager(mLinearLayoutManager)
-        mCrewAdapter = CrewAdapter(crewData,mSharedPreferences)
+        mCrewAdapter = CrewAdapter(mSharedPreferences)
         mCrewRecyclerView.setAdapter(mCrewAdapter)
         mCrewSnapHelper.attachToRecyclerView(mCrewRecyclerView)
     }
@@ -321,17 +328,9 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
 
 
     private fun fetchMovieDetails(){
-        val call: Call<MovieDetail> = networkService.tmdbApi.getDetailMovie(movie.id.toString(),
-                Urls.TMDB_API_KEY,"videos")
-
-        call.enqueue(object : Callback<MovieDetail>{
-            override fun onFailure(call: Call<MovieDetail>?, t: Throwable?) {
-                Log.i(TAG,t!!.message+" is the error")
-                mTrailerProgressBar.visibility = View.GONE
-            }
-
-            override fun onResponse(call: Call<MovieDetail>?, response: retrofit2.Response<MovieDetail>?) {
-                movieDetail = response!!.body()!!
+        detailsViewModel.getDetails(movieId = movie.id.toString()).observe(this , object: LiveData<MovieDetail>(), Observer<MovieDetail> {
+            override fun onChanged(t: MovieDetail?) {
+                movieDetail = t!!
 
                 setRuntimeAndBudget(movieDetail.runtime, movieDetail.budget)
 
@@ -351,81 +350,48 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
                 }
 
             }
+
         })
-
-
     }
+
     private fun fetchMovieReviews(){
-        val call: Call<MovieReviewsRequest> = networkService.tmdbApi
-                .getMovieReviews(movie.id!!.toLong(), Urls.TMDB_API_KEY)
-        call.enqueue(object : Callback<MovieReviewsRequest> {
-            override fun onFailure(call: Call<MovieReviewsRequest>?, t: Throwable?) {
-            Log.i(TAG,t!!.message+" is the error")
-            mReviewProgressBar.visibility = View.GONE
-            }
-
-            override fun onResponse(call: Call<MovieReviewsRequest>?, response: retrofit2.Response<MovieReviewsRequest>?) {
-
-                val movieReviews: MovieReviewsRequest = response!!.body()!!
-
-                if (movieReviews.reviews!!.isEmpty()){
+        detailsViewModel.getReviews(movieId = movie.id!!.toLong()).observe(this , object: LiveData<MovieReviewsRequest>(), Observer<MovieReviewsRequest> {
+            override fun onChanged(t: MovieReviewsRequest?) {
+                if (t!!.reviews!!.isEmpty()){
                     mReviewProgressBar.visibility = View.GONE
                 } else{
-                    for (i in 0 until movieReviews.reviews!!.size) {
-                        val review: MovieReview = movieReviews.reviews!!.get(i)
-                        data.add(review)
-                    }
-                    mReviewReviewAdapter.notifyItemRangeInserted(data.size - movieReviews.reviews!!.size,movieReviews.reviews!!.size)
+                    val movieReviews: MovieReviewsRequest = t
+                    mReviewReviewAdapter.submitList(movieReviews.reviews)
                     mReviewProgressBar.visibility = View.GONE
                 }
-
             }
 
         })
     }
-    private fun fetchMovieCast(){
-        val call: Call<MovieCreditRequest> = networkService.tmdbApi
-                .getMovieCredits(movie.id!!.toLong(), Urls.TMDB_API_KEY)
-        call.enqueue(object: Callback<MovieCreditRequest>{
-            override fun onFailure(call: Call<MovieCreditRequest>?, t: Throwable?) {
-            Log.i(TAG,t!!.message+" is the error")
-            mCrewProgressBar.visibility = View.GONE
-            mCastProgressBar.visibility = View.GONE            }
-
-            override fun onResponse(call: Call<MovieCreditRequest>?, response: retrofit2.Response<MovieCreditRequest>?) {
-                val movieCreditRequest: MovieCreditRequest = response!!.body()!!
-
-                val crewResults: List<Crew> = movieCreditRequest.crewResult!!
-                val castResults: List<Cast> = movieCreditRequest.castResult!!
-
-                if (crewResults.isEmpty()) mCrewProgressBar.visibility = View.GONE
-                else{
-                    for (i in 0 until crewResults.size) {
-                        val crew: Crew = crewResults[i]
-                        if (crew.profilePath==null) crew.profilePath = "asdfghj"
-                        crewData.add(crew)
-                    }
-                    mCrewAdapter.notifyItemRangeInserted(crewData.size - crewResults.size,crewResults.size)
-                    mCrewProgressBar.visibility = View.GONE
-                }
 
 
-                if (castResults.isEmpty()) mCastProgressBar.visibility = View.GONE
-                else{
-                    for (i in 0 until castResults.size) {
-                        val cast: Cast = castResults[i]
-                        if (cast.profilePath==null) cast.profilePath = "asdfghj"
-                        castData.add(cast)
-                    }
-                    mCastAdapter.notifyItemRangeInserted(castData.size - castResults.size,castResults.size)
+    private fun fetchMovieCredits(){
+        detailsViewModel.getCredits(movieId = movie.id!!.toLong()).observe(this , object: LiveData<MovieCreditRequest>(), Observer<MovieCreditRequest> {
+            override fun onChanged(t: MovieCreditRequest?) {
+                if (t!!.castResult!!.isEmpty()){
+                    mCastProgressBar.visibility = View.GONE
+                } else{
+                    mCastAdapter.submitList(t.castResult)
                     mCastProgressBar.visibility = View.GONE
                 }
 
+                if (t.crewResult!!.isEmpty()){
+                    mCrewProgressBar.visibility = View.GONE
+                } else{
+                    mCrewAdapter.submitList(t.crewResult)
+                    mCrewProgressBar.visibility = View.GONE
+                }
+
             }
 
         })
     }
-
+    
 
     private fun setOnClickListenersOnWikiImdnb(){
         mWikipediaBtn.setOnClickListener(View.OnClickListener {
