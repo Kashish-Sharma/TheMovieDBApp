@@ -20,17 +20,13 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.Activities.DetailActivity"
-            android:screenOrientation="portrait" />
+            android:name=".ui.Activities.DetailActivity" />
         <activity
-            android:name=".ui.Activities.SimilarMoviesActivity"
-            android:screenOrientation="portrait" />
+            android:name=".ui.Activities.SimilarMoviesActivity" />
         <activity
-            android:name=".ui.Activities.SettingsActivity"
-            android:screenOrientation="portrait" />
+            android:name=".ui.Activities.SettingsActivity" />
         <activity
-            android:name=".ui.Activities.FavouritesActivity"
-            android:screenOrientation="portrait" />
+            android:name=".ui.Activities.FavouritesActivity" />
         <activity android:name=".ui.Activities.SearchActivity"
             android:launchMode="singleTop">
             <intent-filter>

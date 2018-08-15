@@ -74,4 +74,10 @@ object Injection {
         return ViewModelTopRatedFactory(provideTopRatedRepository(context))
     }
 
+    //Details
+    fun provideMovieDetailsRepository(): ViewModelProvider.Factory{
+        val movieDetailsrepo = MovieDetailsRepository()
+        return ViewModelDetailFactory(movieDetailsrepo)
+    }
+
 }
