@@ -9,6 +9,7 @@
     tools:context="kashish.com.ui.Activities.SearchActivity">
 
     <android.support.v7.widget.RecyclerView
+        android:scrollbars="vertical"
         android:id="@+id/activity_search_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

@@ -10,7 +10,7 @@ import kashish.com.database.Entities.FavouritesEntry
  */
 
 @Dao
-public interface FavouritesDao {
+    interface FavouritesDao {
 
     @Query("SELECT * FROM favourites ORDER BY timeAdded DESC")
     fun loadAllFavourites(): LiveData<MutableList<FavouritesEntry>>

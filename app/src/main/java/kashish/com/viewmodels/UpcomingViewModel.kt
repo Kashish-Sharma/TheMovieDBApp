@@ -4,6 +4,7 @@ import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.Transformations
 import android.arch.lifecycle.ViewModel
+import android.arch.paging.PagedList
 import kashish.com.data.UpcomingRepository
 import kashish.com.database.DatabaseResults.UpcomingResults
 import kashish.com.database.Entities.UpcomingEntry
@@ -22,19 +23,13 @@ class UpcomingViewModel(private val repository: UpcomingRepository) : ViewModel(
         repository.upcoming(it)
     })
 
-    val upcoming: LiveData<List<UpcomingEntry>> = Transformations.switchMap(upcomingResult,
+    val upcoming: LiveData<PagedList<UpcomingEntry>> = Transformations.switchMap(upcomingResult,
             { it -> it.data })
     val networkErrors: LiveData<String> = Transformations.switchMap(upcomingResult,
             { it -> it.networkErrors })
 
     fun getUpcoming(doReload: Boolean) {
         queryLiveData.value = doReload
-    }
-
-    fun listScrolled(visibleItemCount: Int, lastVisibleItemPosition: Int, totalItemCount: Int) {
-        if (visibleItemCount + lastVisibleItemPosition + VISIBLE_THRESHOLD >= totalItemCount) {
-            repository.requestMoreUpcoming(false)
-        }
     }
 
 }

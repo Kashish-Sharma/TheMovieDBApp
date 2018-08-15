@@ -1,6 +1,7 @@
 package kashish.com.database.LocalCache
 
 import android.arch.lifecycle.LiveData
+import android.arch.paging.DataSource
 import android.util.Log
 import kashish.com.database.Dao.NowShowingDao
 import kashish.com.database.Dao.PopularDao
@@ -26,7 +27,7 @@ class PopularLocalCache(
         }
     }
 
-    fun getAllPopular(): LiveData<List<PopularEntry>> {
+    fun getAllPopular(): DataSource.Factory<Int, PopularEntry> {
         return popularDao.loadAllPopular()
     }
 }

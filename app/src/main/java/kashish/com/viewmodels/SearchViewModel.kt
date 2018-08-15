@@ -4,6 +4,7 @@ import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.Transformations
 import android.arch.lifecycle.ViewModel
+import android.arch.paging.PagedList
 import android.util.Log
 import kashish.com.data.SearchRepository
 import kashish.com.database.DatabaseResults.SearchResults
@@ -23,7 +24,7 @@ class SearchViewModel(private val repository: SearchRepository) : ViewModel() {
         repository.search(it)
     })
 
-    val searches: LiveData<List<SearchEntry>> = Transformations.switchMap(searchResult,
+    val searches: LiveData<PagedList<SearchEntry>> = Transformations.switchMap(searchResult,
             { it -> it.data })
     val networkErrors: LiveData<String> = Transformations.switchMap(searchResult,
             { it -> it.networkErrors })
@@ -35,14 +36,6 @@ class SearchViewModel(private val repository: SearchRepository) : ViewModel() {
         queryLiveData.postValue(queryString)
     }
 
-    fun listScrolled(visibleItemCount: Int, lastVisibleItemPosition: Int, totalItemCount: Int) {
-        if (visibleItemCount + lastVisibleItemPosition + VISIBLE_THRESHOLD >= totalItemCount) {
-            val immutableQuery = lastQueryValue()
-            if (immutableQuery != null) {
-                repository.requestMoreSearches(immutableQuery)
-            }
-        }
-    }
 
     /**
      * Get the last query value.

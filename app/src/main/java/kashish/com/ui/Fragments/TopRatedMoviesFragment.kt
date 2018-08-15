@@ -3,6 +3,7 @@ package kashish.com.ui.Fragments
 
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
+import android.arch.paging.PagedList
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.res.Configuration
@@ -24,6 +25,7 @@ import kashish.com.Injection
 import kashish.com.R
 import kashish.com.adapters.MovieAdapter
 import kashish.com.adapters.NowShowingAdapter
+import kashish.com.adapters.TopRatedAdapter
 import kashish.com.database.AppDatabase
 import kashish.com.database.AppExecutors
 import kashish.com.database.Entities.TopRatedEntry
@@ -63,7 +65,7 @@ class TopRatedMoviesFragment : Fragment(), OnMovieClickListener {
     private lateinit var mDatabase: AppDatabase
 
 
-    lateinit var mMovieAdapter: NowShowingAdapter
+    lateinit var mMovieAdapter: TopRatedAdapter
     lateinit var data:MutableList<Movie>
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -73,9 +75,8 @@ class TopRatedMoviesFragment : Fragment(), OnMovieClickListener {
 
         initViews()
         initRecyclerView()
-        getTopRatedData(true)
+        getTopRatedData(false)
         setSwipeRefreshLayoutListener()
-        setupScrollListener()
 
         return mMainView
     }
@@ -96,14 +97,14 @@ class TopRatedMoviesFragment : Fragment(), OnMovieClickListener {
         viewModel = ViewModelProviders.of(this, Injection.provideTopRatedViewModelFactory(context!!))
                 .get(TopRatedViewModel::class.java)
 
-        mMovieAdapter = NowShowingAdapter(this,mSharedPreferences)
+        mMovieAdapter = TopRatedAdapter(this,mSharedPreferences)
         mRecyclerView.adapter = mMovieAdapter
 
 
-        viewModel.topRated.observe(this, Observer<List<TopRatedEntry>> {
+        viewModel.topRated.observe(this, Observer<PagedList<TopRatedEntry>> {
             Log.i("asdfghjkjhgfdfghj", "list: ${it?.size}")
             showEmptyList(it?.size == 0)
-            mMovieAdapter.submitList(convertEntryToMovieList(it!!))
+            mMovieAdapter.submitList(it!!)
         })
         viewModel.networkErrors.observe(this, Observer<String> {
             Toast.makeText(context, "\uD83D\uDE28 Wooops ${it}", Toast.LENGTH_LONG).show()
@@ -139,18 +140,6 @@ class TopRatedMoviesFragment : Fragment(), OnMovieClickListener {
         }
     }
 
-    private fun setupScrollListener() {
-        mRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                val totalItemCount = mGridLayoutManager.itemCount
-                val visibleItemCount = mGridLayoutManager.childCount
-                val lastVisibleItem = mGridLayoutManager.findLastVisibleItemPosition()
-
-                viewModel.listScrolled(visibleItemCount, lastVisibleItem, totalItemCount)
-            }
-        })
-    }
 
     private fun convertEntryToMovieList(list: List<TopRatedEntry>): MutableList<Movie>{
         val movieList: MutableList<Movie> = mutableListOf()

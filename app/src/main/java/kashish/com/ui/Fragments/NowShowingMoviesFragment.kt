@@ -3,6 +3,7 @@ package kashish.com.ui.Fragments
 
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
+import android.arch.paging.PagedList
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.res.Configuration
@@ -74,7 +75,6 @@ class NowShowingMoviesFragment : Fragment(), OnMovieClickListener {
         initViews()
         initRecyclerView()
         setSwipeRefreshLayoutListener()
-        setupScrollListener()
         getNowShowingData(false)
 
         return mMainView
@@ -99,10 +99,10 @@ class NowShowingMoviesFragment : Fragment(), OnMovieClickListener {
         mRecyclerView.adapter = mMovieAdapter
 
 
-        viewModel.nowshowing.observe(this, Observer<List<NowShowingEntry>> {
+        viewModel.nowshowing.observe(this, Observer<PagedList<NowShowingEntry>> {
             Log.i("asdfghjkjhgfdfghj", "list: ${it?.size}")
             showEmptyList(it?.size == 0)
-            mMovieAdapter.submitList(convertEntryToMovieList(it!!))
+            mMovieAdapter.submitList(it!!)
         })
         viewModel.networkErrors.observe(this, Observer<String> {
             Toast.makeText(context, "\uD83D\uDE28 Wooops ${it}", Toast.LENGTH_LONG).show()
@@ -134,19 +134,6 @@ class NowShowingMoviesFragment : Fragment(), OnMovieClickListener {
             emptyList.visibility = View.GONE
             mRecyclerView.visibility = View.VISIBLE
         }
-    }
-
-    private fun setupScrollListener() {
-        mRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                val totalItemCount = mGridLayoutManager.itemCount
-                val visibleItemCount = mGridLayoutManager.childCount
-                val lastVisibleItem = mGridLayoutManager.findLastVisibleItemPosition()
-
-                viewModel.listScrolled(visibleItemCount, lastVisibleItem, totalItemCount)
-            }
-        })
     }
 
     private fun convertEntryToMovieList(list: List<NowShowingEntry>): MutableList<Movie>{

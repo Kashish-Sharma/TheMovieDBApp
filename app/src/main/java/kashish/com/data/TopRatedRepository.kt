@@ -1,6 +1,8 @@
 package kashish.com.data
 
 import android.arch.lifecycle.MutableLiveData
+import android.arch.paging.LivePagedListBuilder
+import kashish.com.boundaryCallbacks.TopRatedBoundaryCallbacks
 import kashish.com.database.DatabaseResults.TopRatedResults
 import kashish.com.database.Entities.TopRatedEntry
 import kashish.com.database.LocalCache.TopRatedLocalCache
@@ -16,78 +18,25 @@ class TopRatedRepository(
         private val service: NetworkService,
         private val topRatedCache: TopRatedLocalCache
 ) {
-    // keep the last requested page. When the request is successful, increment the page number.
-    private var lastTopRatedRequestedPage = 1
-    // LiveData of network errors.
-    private val networkTopRatedErrors = MutableLiveData<String>()
-    // avoid triggering multiple requests in the same time
-    private var isRequestInProgress = false
+
     fun topRated(doReload: Boolean): TopRatedResults {
-        lastTopRatedRequestedPage = 1
-        requestMoreTopRated(doReload)
-        // Get data from the local cache
-        val data = topRatedCache.getAllTopRated()
-        return TopRatedResults(data, networkTopRatedErrors)
+
+        val dataSourceFactory = topRatedCache.getAllTopRated()
+
+        val boundaryCallback = TopRatedBoundaryCallbacks(doReload, service, topRatedCache)
+        val networkErrors = boundaryCallback.networkErrors
+        // Get the paged list
+        val data = LivePagedListBuilder(dataSourceFactory, DATABASE_PAGE_SIZE)
+                .setBoundaryCallback(boundaryCallback)
+                .build()
+        return TopRatedResults(data, networkErrors)
     }
-    fun requestMoreTopRated(doReload: Boolean) {
-        requestAndSaveTopRatedData(doReload)
+
+
+    companion object {
+        private const val NETWORK_PAGE_SIZE = 50
+        private const val DATABASE_PAGE_SIZE = 20
     }
-    private fun requestAndSaveTopRatedData(doReload: Boolean) {
-        if (isRequestInProgress) return
 
-        if (doReload){
-            lastTopRatedRequestedPage = 1
-        }
-
-
-        isRequestInProgress = true
-
-        getTopRatedMovies(service,"en-US",
-                lastTopRatedRequestedPage,
-                "US|IN|UK",
-                { movierequest ->
-                    val topRatedEntryList: MutableList<TopRatedEntry> = mutableListOf()
-                    for (i in 0 until movierequest.results!!.size){
-                        val topRatedEntry = TopRatedEntry()
-                        val movie =  movierequest.results!![i]
-                        topRatedEntry.movieId = movie.id
-                        topRatedEntry.voteCount = movie.voteCount
-                        topRatedEntry.video = movie.video
-                        topRatedEntry.voteAverage = movie.voteAverage
-                        topRatedEntry.title = movie.title
-                        topRatedEntry.popularity = movie.popularity
-                        topRatedEntry.posterPath = movie.posterPath
-                        topRatedEntry.originalLanguage = movie.originalLanguage
-                        topRatedEntry.originalTitle = movie.originalTitle
-                        topRatedEntry.genreIds = movie.genreString
-                        topRatedEntry.backdropPath = movie.backdropPath
-                        topRatedEntry.adult = movie.adult
-                        topRatedEntry.overview = movie.overview
-                        topRatedEntry.releaseDate = movie.releaseDate
-                        for (j in 0 until movie.genreIds!!.size) {
-                            if(j==movie.genreIds!!.size-1)
-                                movie.genreString += Constants.getGenre(movie.genreIds!!.get(j))
-                            else
-                                movie.genreString += Constants.getGenre(movie.genreIds!!.get(j))+", "
-                        }
-                        topRatedEntry.genreString = movie.genreString
-                        topRatedEntry.contentType = Constants.CONTENT_SIMILAR
-                        topRatedEntry.timeAdded = Date()
-
-                        if (topRatedEntry.backdropPath.isNullOrEmpty()) topRatedEntry.backdropPath = Constants.RANDOM_PATH
-                        if (topRatedEntry.posterPath.isNullOrEmpty()) topRatedEntry.posterPath = Constants.RANDOM_PATH
-                        topRatedEntryList.add(topRatedEntry)
-                    }
-                    topRatedCache.insert(topRatedEntryList,{
-                        lastTopRatedRequestedPage++
-                        isRequestInProgress = false
-                    })
-                }, {
-            error ->
-            networkTopRatedErrors.postValue(error)
-            isRequestInProgress = false
-        })
-
-    }
 
 }

@@ -1,6 +1,8 @@
 package kashish.com.database.Dao
 
 import android.arch.lifecycle.LiveData
+import android.arch.paging.DataSource
+import android.arch.paging.PagedList
 import android.arch.persistence.room.*
 import kashish.com.database.Entities.PopularEntry
 
@@ -11,7 +13,7 @@ import kashish.com.database.Entities.PopularEntry
 interface PopularDao {
 
     @Query("SELECT * FROM popular ORDER BY popularity DESC")
-    fun loadAllPopular(): LiveData<List<PopularEntry>>
+    fun loadAllPopular(): DataSource.Factory<Int, PopularEntry>
 
     @Query("SELECT * FROM popular WHERE movieId = :id ORDER BY timeAdded")
     fun checkIfPopular(id: Int):Boolean

@@ -59,7 +59,7 @@ class FavouritesActivity : AppCompatActivity(), OnMovieClickListener, SharedPref
         initViews()
         setToolbar()
         initFavouriteRecyclerView()
-        fetchFavouriteMovie()
+        //fetchFavouriteMovie()
     }
 
     private fun initFavouriteRecyclerView(){
@@ -76,15 +76,15 @@ class FavouritesActivity : AppCompatActivity(), OnMovieClickListener, SharedPref
         favouriteviewModel = ViewModelProviders.of(this).get(FavouritesViewModel::class.java)
     }
 
-    private fun fetchFavouriteMovie(){
-
-        favouriteviewModel.getMovies().observe(this, object : Observer<MutableList<FavouritesEntry>>{
-            override fun onChanged(t: MutableList<FavouritesEntry>?) {
-                mFavouriteAdapter.submitList(convertEntryToMovieList(t!!))
-            }
-        })
-        Log.d("FavouritesViewModelTAG","Retreiving updates from livedata")
-    }
+//    private fun fetchFavouriteMovie(){
+//
+//        favouriteviewModel.getMovies().observe(this, object : Observer<MutableList<FavouritesEntry>>{
+//            override fun onChanged(t: MutableList<FavouritesEntry>?) {
+//                mFavouriteAdapter.submitList(convertEntryToMovieList(t!!))
+//            }
+//        })
+//        Log.d("FavouritesViewModelTAG","Retreiving updates from livedata")
+//    }
 
     private fun convertEntryToMovieList(list: List<FavouritesEntry>): MutableList<Movie>{
         val movieList: MutableList<Movie> = mutableListOf()

@@ -31,7 +31,7 @@ class SearchViewHolder(itemView: View?,
     var moreTitle: TextView
     var moreSubtitle: TextView
     var morePoster: ImageView
-    private var movie: Movie? = null
+    private var movie: SearchEntry? = null
 
     init {
         moreTitle = itemView!!.findViewById(R.id.item_more_name)
@@ -41,7 +41,7 @@ class SearchViewHolder(itemView: View?,
         itemView.setOnClickListener(this)
     }
 
-    fun bindSearchData(movie: Movie?, mSharedPreferences:SharedPreferences) {
+    fun bindSearchData(movie: SearchEntry?, mSharedPreferences:SharedPreferences) {
         if (movie == null) {
             return
         } else {
@@ -60,12 +60,31 @@ class SearchViewHolder(itemView: View?,
         }
     }
 
-
+    private fun convertEntryToMovieList(movie: SearchEntry): Movie{
+            val passMovie = Movie()
+            passMovie.id = movie.movieId
+            passMovie.voteCount = movie.voteCount
+            passMovie.video = movie.video
+            passMovie.voteAverage = movie.voteAverage
+            passMovie.title = movie.title
+            passMovie.popularity = movie.popularity
+            passMovie.posterPath = movie.posterPath!!
+            passMovie.originalLanguage = movie.originalLanguage
+            passMovie.originalTitle = movie.originalTitle
+            passMovie.backdropPath = movie.backdropPath!!
+            passMovie.adult = movie.adult
+            passMovie.overview = movie.overview
+            passMovie.releaseDate = movie.releaseDate
+            passMovie.genreString = movie.genreString!!
+            passMovie.contentType = Constants.CONTENT_MOVIE
+            passMovie.tableName = Constants.SEARCHES
+        return passMovie
+    }
 
     override fun onClick(p0: View?) {
         val position: Int = adapterPosition
         if (position != RecyclerView.NO_POSITION) {
-            listener.onMovieClickListener(movie!!)
+            listener.onMovieClickListener(convertEntryToMovieList(movie!!))
         }
     }
 }
