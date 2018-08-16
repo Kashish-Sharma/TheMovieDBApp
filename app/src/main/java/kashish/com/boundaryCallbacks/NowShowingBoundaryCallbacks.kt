@@ -85,7 +85,7 @@ class NowShowingBoundaryCallbacks(
                         }
                         nowShowingEntry.genreString = movie.genreString
                         nowShowingEntry.contentType = Constants.CONTENT_SIMILAR
-                        nowShowingEntry.timeAdded = Date()
+                        nowShowingEntry.timeAdded = Date().time
 
                         if (nowShowingEntry.backdropPath.isNullOrEmpty()) nowShowingEntry.backdropPath = Constants.RANDOM_PATH
                         if (nowShowingEntry.posterPath.isNullOrEmpty()) nowShowingEntry.posterPath = Constants.RANDOM_PATH

@@ -83,7 +83,7 @@ class PopularBoundaryCallbacks(
                         }
                         popularEntry.genreString = movie.genreString
                         popularEntry.contentType = Constants.CONTENT_SIMILAR
-                        popularEntry.timeAdded = Date()
+                        popularEntry.timeAdded = Date().time
 
                         if (popularEntry.backdropPath.isNullOrEmpty()) popularEntry.backdropPath = Constants.RANDOM_PATH
                         if (popularEntry.posterPath.isNullOrEmpty()) popularEntry.posterPath = Constants.RANDOM_PATH

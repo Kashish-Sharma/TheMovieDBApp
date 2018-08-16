@@ -75,8 +75,8 @@ class MovieAdapter(movieList: List<Movie>,listener: OnMovieClickListener,private
 
                 movieViewHolder.movieTitle.setText(movie.title)
                 movieViewHolder.movieRating.rating = movie.voteAverage!!.div(2)
-                movieViewHolder.moviePopularity.setText("Popularity: ".plus(movie.popularity.toString()))
-                movieViewHolder.movieReleaseDate.setText("Release date: ".plus(DateUtils.getStringDate(movie.releaseDate!!)))
+                movieViewHolder.movieReleaseDate.text = "Release date: ".plus(DateUtils.getStringDate(movie.releaseDate!!))
+                movieViewHolder.movieOverview.text = movie.overview
 
                 movieViewHolder.itemView.single_item_movie_type.setText("Genre: "+movie.genreString)
 

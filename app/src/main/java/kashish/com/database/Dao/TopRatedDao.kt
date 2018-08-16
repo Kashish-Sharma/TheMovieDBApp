@@ -11,7 +11,7 @@ import kashish.com.database.Entities.TopRatedEntry
 @Dao
 interface TopRatedDao {
 
-    @Query("SELECT * FROM toprated ORDER BY voteCount DESC")
+    @Query("SELECT * FROM toprated ORDER BY timeAdded ASC")
     fun loadAllToprated(): DataSource.Factory<Int, TopRatedEntry>
 
     @Query("SELECT * FROM toprated WHERE movieId = :id ORDER BY timeAdded")

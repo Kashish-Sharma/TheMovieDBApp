@@ -83,7 +83,7 @@ class UpcomingBoundaryCallback(
                         }
                         upcomingEntry.genreString = movie.genreString
                         upcomingEntry.contentType = Constants.CONTENT_SIMILAR
-                        upcomingEntry.timeAdded = Date()
+                        upcomingEntry.timeAdded = Date().time
 
                         if (upcomingEntry.backdropPath.isNullOrEmpty()) upcomingEntry.backdropPath = Constants.RANDOM_PATH
                         if (upcomingEntry.posterPath.isNullOrEmpty()) upcomingEntry.posterPath = Constants.RANDOM_PATH

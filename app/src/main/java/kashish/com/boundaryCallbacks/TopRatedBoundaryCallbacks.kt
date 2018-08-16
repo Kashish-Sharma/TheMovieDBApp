@@ -84,7 +84,7 @@ class TopRatedBoundaryCallbacks(
                         }
                         topRatedEntry.genreString = movie.genreString
                         topRatedEntry.contentType = Constants.CONTENT_SIMILAR
-                        topRatedEntry.timeAdded = Date()
+                        topRatedEntry.timeAdded = Date().time
 
                         if (topRatedEntry.backdropPath.isNullOrEmpty()) topRatedEntry.backdropPath = Constants.RANDOM_PATH
                         if (topRatedEntry.posterPath.isNullOrEmpty()) topRatedEntry.posterPath = Constants.RANDOM_PATH

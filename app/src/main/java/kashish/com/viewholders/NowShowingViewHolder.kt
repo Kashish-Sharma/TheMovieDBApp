@@ -33,20 +33,20 @@ class NowShowingViewHolder(itemView: View?,
     var movieTitle: TextView
     var movieRating: RatingBar
     var movieType: TextView
-    var moviePopularity: TextView
     var movieReleaseDate: TextView
     var moviePoster: ImageView
+    var movieOverView: TextView
     var movieDetails: LinearLayout
     private var movie: NowShowingEntry? = null
 
     init{
         movieTitle = itemView!!.findViewById(R.id.single_item_movie_title)
         movieRating = itemView.findViewById(R.id.single_item_movie_rating)
-        moviePopularity = itemView.findViewById(R.id.single_item_movie_popularity)
         movieType = itemView.findViewById(R.id.single_item_movie_type)
         movieReleaseDate = itemView.findViewById(R.id.single_item_movie_release_date)
         moviePoster = itemView.findViewById(R.id.single_item_movie_image)
         movieDetails = itemView.findViewById(R.id.single_item_movie_details)
+        movieOverView = itemView.findViewById(R.id.single_item_movie_overview)
 
         itemView.setOnClickListener(this)
 
@@ -61,10 +61,10 @@ class NowShowingViewHolder(itemView: View?,
 
             movieTitle.setText(movie.title)
             movieRating.rating = movie.voteAverage!!.div(2)
-            moviePopularity.setText("Popularity: ".plus(movie.popularity.toString()))
             movieReleaseDate.setText("Release date: ".plus(DateUtils.getStringDate(movie.releaseDate!!)))
 
             itemView.single_item_movie_type.setText("Genre: "+movie.genreString)
+            movieOverView.text = movie.overview
 
 
             if (mSharedPreferences.getBoolean(context.getString(R.string.pref_cache_data_key),true)){
