@@ -32,6 +32,6 @@ class FavouritesEntry {
     var contentType: Int? = null
     var totalPages: Int? = null
     var genreString: String? = ""
-    var timeAdded: Date? = null
+    var timeAdded: Long? = null
     var tableName: Int = FAVOURITES
 }

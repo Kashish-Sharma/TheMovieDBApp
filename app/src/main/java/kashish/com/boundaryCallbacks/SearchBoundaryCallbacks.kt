@@ -80,7 +80,7 @@ class SearchBoundaryCallbacks(
                 }
                 searchEntry.genreString = movie.genreString
                 searchEntry.contentType = Constants.CONTENT_SIMILAR
-                searchEntry.timeAdded = Date()
+                searchEntry.timeAdded = Date().time
 
                 if (searchEntry.backdropPath.isNullOrEmpty()) searchEntry.backdropPath = Constants.RANDOM_PATH
                 if (searchEntry.posterPath.isNullOrEmpty()) searchEntry.posterPath = Constants.RANDOM_PATH

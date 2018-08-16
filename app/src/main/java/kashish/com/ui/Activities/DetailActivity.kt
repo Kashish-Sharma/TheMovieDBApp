@@ -467,7 +467,7 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
             movieEntry.overview = movie.overview
             movieEntry.releaseDate = movie.releaseDate
             movieEntry.genreString = movie.genreString
-            movieEntry.timeAdded = Date()
+            movieEntry.timeAdded = Date().time
             movieEntry.tableName = Constants.FAVOURITES
 
             if (mAddToFavourite.isChecked){
