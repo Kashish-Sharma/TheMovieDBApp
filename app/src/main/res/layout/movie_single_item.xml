@@ -45,7 +45,7 @@
                 android:ellipsize="end"
                 android:maxLength="40"
                 android:singleLine="true"
-                android:text="The Maze Runner"
+                android:text=""
                 android:textColor="?attr/titleColor"
                 android:textSize="18sp" />
 
