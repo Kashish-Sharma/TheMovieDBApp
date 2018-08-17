@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout
+    android:paddingStart="6dp"
+    android:paddingEnd="6dp"
     android:id="@+id/single_movie_root"
     android:orientation="horizontal"
     xmlns:android="http://schemas.android.com/apk/res/android"
