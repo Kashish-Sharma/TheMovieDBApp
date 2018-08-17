@@ -11,6 +11,7 @@ import android.widget.ListAdapter
 import kashish.com.R
 import kashish.com.database.Entities.FavouritesEntry
 import kashish.com.interfaces.OnMovieClickListener
+import kashish.com.models.Movie
 import kashish.com.viewholders.FavouritesViewHolder
 
 /**
@@ -37,6 +38,9 @@ class FavouritesAdapter(private val listener: OnMovieClickListener,
         }
     }
 
+    fun getMovie(position: Int): FavouritesEntry? {
+        return getItem(position)
+    }
 
     companion object {
         private val REPO_COMPARATOR = object : DiffUtil.ItemCallback<FavouritesEntry>() {

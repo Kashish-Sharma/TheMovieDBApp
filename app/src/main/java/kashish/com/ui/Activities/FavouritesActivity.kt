@@ -26,6 +26,10 @@ import kashish.com.models.Movie
 import kashish.com.utils.Constants
 import kashish.com.utils.Constants.Companion.CONTENT_MOVIE
 import kashish.com.viewmodels.FavouritesViewModel
+import kashish.com.database.AppExecutors
+import android.support.v7.widget.helper.ItemTouchHelper
+import kashish.com.database.AppDatabase
+
 
 class FavouritesActivity : AppCompatActivity(), OnMovieClickListener, SharedPreferences.OnSharedPreferenceChangeListener  {
 
@@ -34,12 +38,15 @@ class FavouritesActivity : AppCompatActivity(), OnMovieClickListener, SharedPref
     private val TAG: String = SimilarMoviesActivity::class.simpleName.toString()
 
     lateinit var mFavouriteAdapter: FavouritesAdapter
-    var favouriteData: MutableList<Movie> = mutableListOf()
     private lateinit var mFavouriteRecyclerView : RecyclerView
     private lateinit var mGridLayoutManager: GridLayoutManager
 
     private lateinit var mSharedPreferences: SharedPreferences
     private lateinit var favouriteviewModel: FavouritesViewModel
+
+    //Database
+    private lateinit var mDatabase: AppDatabase
+
 
     //Toolbar
     private lateinit var mToolbar: Toolbar
@@ -61,6 +68,7 @@ class FavouritesActivity : AppCompatActivity(), OnMovieClickListener, SharedPref
         setToolbar()
         initFavouriteRecyclerView()
         fetchFavouriteMovie()
+        removeFavouriteOnSwipe()
     }
 
     private fun initFavouriteRecyclerView(){
@@ -73,6 +81,7 @@ class FavouritesActivity : AppCompatActivity(), OnMovieClickListener, SharedPref
         mToolbar = findViewById(R.id.activity_favourites_toolbar)
         mFavouriteRecyclerView = findViewById(R.id.activity_favourites_movies_recycler_view)
         mSharedPreferences.registerOnSharedPreferenceChangeListener(this)
+        mDatabase = AppDatabase.getInstance(applicationContext)
 
         favouriteviewModel = ViewModelProviders.of(this).get(FavouritesViewModel::class.java)
     }
@@ -87,37 +96,27 @@ class FavouritesActivity : AppCompatActivity(), OnMovieClickListener, SharedPref
         Log.d("FavouritesViewModelTAG","Retreiving updates from livedata")
     }
 
-    private fun convertEntryToMovieList(list: List<FavouritesEntry>): MutableList<Movie>{
-        val movieList: MutableList<Movie> = mutableListOf()
-        for(i in 0 until list.size)
-        {       val movie = list.get(i)
-            val passMovie = Movie()
-            passMovie.id = movie.movieId
-            passMovie.voteCount = movie.voteCount
-            passMovie.video = movie.video
-            passMovie.voteAverage = movie.voteAverage
-            passMovie.title = movie.title
-            passMovie.popularity = movie.popularity
-            passMovie.posterPath = movie.posterPath!!
-            passMovie.originalLanguage = movie.originalLanguage
-            passMovie.originalTitle = movie.originalTitle
-            passMovie.backdropPath = movie.backdropPath!!
-            passMovie.adult = movie.adult
-            passMovie.overview = movie.overview
-            passMovie.releaseDate = movie.releaseDate
-            passMovie.genreString = movie.genreString!!
-            passMovie.contentType = Constants.CONTENT_MOVIE
-            passMovie.tableName = Constants.NOWSHOWING
-            movieList.add(passMovie)
-        }
-        return movieList
-    }
-
-
     private fun setToolbar(){
         mToolbar.title = "Favourites"
         setSupportActionBar(mToolbar)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+    }
+
+    private fun removeFavouriteOnSwipe(){
+        ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+            override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
+                return false
+            }
+
+            // Called when a user swipes left or right on a ViewHolder
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, swipeDir: Int) {
+                // Here is where you'll implement swipe to delete
+                AppExecutors.getInstance().diskIO().execute {
+                    val position = viewHolder.adapterPosition
+                    mDatabase.favouritesDao().deleteFavourite(mFavouriteAdapter.getMovie(position)!!)
+                }
+            }
+        }).attachToRecyclerView(mFavouriteRecyclerView)
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
@@ -139,7 +138,6 @@ class FavouritesActivity : AppCompatActivity(), OnMovieClickListener, SharedPref
         mGridLayoutManager = GridLayoutManager(this, if (isPortrait) GRID_COLUMNS_PORTRAIT else GRID_COLUMNS_LANDSCAPE)
         mFavouriteRecyclerView.setLayoutManager(mGridLayoutManager)
     }
-
 
     override fun onMovieClickListener(movie: Movie) {
         val detailIntent = Intent(this, DetailActivity::class.java)
