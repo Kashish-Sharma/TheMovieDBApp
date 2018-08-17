@@ -53,7 +53,7 @@ class SearchRepository(
 
     companion object {
         private const val NETWORK_PAGE_SIZE = 50
-        private const val DATABASE_PAGE_SIZE = 20
+        private const val DATABASE_PAGE_SIZE = 60
     }
 
 }
