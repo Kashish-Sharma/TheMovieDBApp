@@ -7,25 +7,37 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.preference.PreferenceManager
+import android.support.design.widget.AppBarLayout
+import android.support.design.widget.CollapsingToolbarLayout
+import android.support.v4.content.ContextCompat
 import android.support.v4.widget.SwipeRefreshLayout
+import android.support.v7.app.ActionBar
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
 import android.util.Log
-import android.widget.AbsListView
 import kashish.com.R
 import kashish.com.adapters.MovieAdapter
 import kashish.com.interfaces.OnMovieClickListener
 import kashish.com.models.Movie
 import kashish.com.utils.Constants
 import android.view.MenuItem
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.bumptech.glide.request.RequestOptions
+import kashish.com.database.AppDatabase
+import kashish.com.database.AppExecutors
+import kashish.com.database.Entities.FavouritesEntry
 import kashish.com.requestmodels.MovieRequest
 import kashish.com.network.NetworkService
+import kashish.com.utils.DateUtils
+import kashish.com.utils.Helpers
 import kashish.com.utils.Urls
 import retrofit2.Call
 import retrofit2.Callback
+import java.util.*
 
 
 class SimilarMoviesActivity : AppCompatActivity(), OnMovieClickListener, SharedPreferences.OnSharedPreferenceChangeListener {
@@ -47,15 +59,19 @@ class SimilarMoviesActivity : AppCompatActivity(), OnMovieClickListener, SharedP
     private var pageNumber:Int = 1
     private var doPagination:Boolean = true
     private var isScrolling:Boolean = false
-    private  var currentItem:Int = -1
-    private  var totalItem:Int = -1
-    private  var scrolledOutItem:Int = -1
     private var isLoading: Boolean = false
 
-    //Toolbar
+    //Collapsing Toolbar
+    private lateinit var mCollapsingToolbar: CollapsingToolbarLayout
+    private lateinit var mActionBar: ActionBar
     private lateinit var mToolbar: Toolbar
-    private lateinit var mToolbarTitle:TextView
-    private lateinit var mToolbarSubtitle:TextView
+    private lateinit var mAppBarLayout: AppBarLayout
+    private lateinit var mBackdropImageView: ImageView
+    private lateinit var mAddToFavourite: CheckBox
+    private lateinit var mToolbarMovieTitle: TextView
+
+    //Database
+    private lateinit var mDatabase: AppDatabase
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -70,28 +86,30 @@ class SimilarMoviesActivity : AppCompatActivity(), OnMovieClickListener, SharedP
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_similar_movies)
+        Helpers.setUpTransparentStatusBar(window)
 
         getMovie()
         initViews()
-        setToolbar()
+        initToolBar()
+        setupCollapsingToolbar()
         initContentList()
         initSimilarRecyclerView()
         delayByfewSeconds()
         setRecyclerViewScrollListener()
         setSwipeRefreshLayoutListener()
+        setFavouriteOnClickListener()
 
     }
 
     private fun initViews(){
-        mToolbar = findViewById(R.id.activity_similar_toolbar)
-        mToolbarSubtitle = mToolbar.findViewById(R.id.similar_toolbar_subtitle)
-        mToolbarTitle = mToolbar.findViewById(R.id.similar_toolbar_title)
+
         mSimilarRecyclerView = findViewById(R.id.activity_similar_recycler_view)
         mSimilarSwipeToRefresh = findViewById(R.id.activity_similar_swipe_to_refresh)
 
         similarData = mutableListOf()
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
         networkService = NetworkService.instance
+        mDatabase = AppDatabase.getInstance(applicationContext)
     }
 
     private fun initSimilarRecyclerView(){
@@ -166,6 +184,44 @@ class SimilarMoviesActivity : AppCompatActivity(), OnMovieClickListener, SharedP
         })
     }
 
+    private fun initToolBar(){
+        mCollapsingToolbar = findViewById(R.id.activity_similar_collapsing_layout)
+        mToolbar = findViewById(R.id.activity_similar_toolbar)
+        mAppBarLayout = findViewById(R.id.activity_similar_app_bar_layout)
+        mBackdropImageView = findViewById(R.id.activity_similar_backdrop_image)
+
+        mToolbarMovieTitle = findViewById(R.id.activity_similar_movie_title)
+        mAddToFavourite = findViewById(R.id.activity_similar_add_to_favourite)
+
+        setSupportActionBar(mToolbar)
+        mActionBar = supportActionBar!!
+        mActionBar.setDisplayHomeAsUpEnabled(true)
+    }
+
+    private fun setupCollapsingToolbar(){
+        mSharedPreferences.registerOnSharedPreferenceChangeListener(this)
+
+        if (mSharedPreferences.getBoolean(getString(R.string.pref_cache_data_key),true)){
+            Glide.with(this).load(Helpers.buildBackdropImageUrl(movie.backdropPath!!))
+                    .transition(DrawableTransitionOptions.withCrossFade()).into(mBackdropImageView)
+        } else{
+            Glide.with(this).load(Helpers.buildBackdropImageUrl(movie.backdropPath!!))
+                    .apply(RequestOptions().diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true))
+                    .transition(DrawableTransitionOptions.withCrossFade()).into(mBackdropImageView)
+        }
+
+
+        mToolbarMovieTitle.setText(movie.title)
+
+        //Checking if already added to favourite
+        AppExecutors.getInstance().diskIO().execute(Runnable {
+            val isCheck = mDatabase.favouritesDao().checkIfFavourite(movie.id!!)
+            runOnUiThread(Runnable {
+                mAddToFavourite.isChecked = isCheck
+            })
+        })
+
+    }
 
     private fun addProgressBarInList() {
         val progressBarContent = Movie()
@@ -234,13 +290,42 @@ class SimilarMoviesActivity : AppCompatActivity(), OnMovieClickListener, SharedP
         similarData.clear()
         mSimilarAdapter.notifyItemRangeRemoved(0, size)
     }
+    private fun setFavouriteOnClickListener(){
+        mAddToFavourite.setOnClickListener({
+            val movieEntry = FavouritesEntry()
+            movieEntry.movieId = movie.id
+            movieEntry.voteCount = movie.voteCount
+            movieEntry.video = movie.video
+            movieEntry.voteAverage = movie.voteAverage
+            movieEntry.title = movie.title
+            movieEntry.popularity = movie.popularity
+            movieEntry.posterPath = movie.posterPath
+            movieEntry.originalLanguage = movie.originalLanguage
+            movieEntry.originalTitle = movie.originalTitle
+            movieEntry.genreIds = movie.genreString
+            movieEntry.backdropPath = movie.backdropPath
+            movieEntry.adult = movie.adult
+            movieEntry.overview = movie.overview
+            movieEntry.releaseDate = movie.releaseDate
+            movieEntry.genreString = movie.genreString
+            movieEntry.timeAdded = Date().time
+            movieEntry.tableName = Constants.FAVOURITES
 
-    private fun setToolbar(){
-        mToolbarTitle.setText(movie.title)
-        mToolbarSubtitle.setText("Similar movies")
-        setSupportActionBar(mToolbar)
-        supportActionBar!!.setDisplayShowTitleEnabled(false)
-        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+            if (mAddToFavourite.isChecked){
+                AppExecutors.getInstance().diskIO().execute({
+                    kotlin.run {
+                        mDatabase.favouritesDao().insertFavourite(movieEntry)
+                    }
+                })
+                Toast.makeText(this,"Added", Toast.LENGTH_SHORT).show()
+            } else{
+                AppExecutors.getInstance().diskIO().execute({
+                    kotlin.run {
+                        mDatabase.favouritesDao().deleteFavourite(movieEntry)
+                    }
+                })
+            }
+        })
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
@@ -265,9 +350,9 @@ class SimilarMoviesActivity : AppCompatActivity(), OnMovieClickListener, SharedP
 
 
     override fun onMovieClickListener(movie: Movie) {
-        val detailIntent = Intent(this, DetailActivity::class.java)
-        detailIntent.putExtra("movie",movie)
-        startActivity(detailIntent)
+        val similarIntent = Intent(this, DetailActivity::class.java)
+        similarIntent.putExtra("movie",movie)
+        startActivity(similarIntent)
     }
 
     private fun restartActivity(){

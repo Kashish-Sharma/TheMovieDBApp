@@ -21,6 +21,7 @@
             android:layout_height="150dp"
             android:fitsSystemWindows="true"
             app:contentScrim="?colorPrimary"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
             app:title=" ">
 
             <RelativeLayout

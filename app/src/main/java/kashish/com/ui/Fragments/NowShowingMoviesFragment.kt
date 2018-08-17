@@ -103,9 +103,16 @@ class NowShowingMoviesFragment : Fragment(), OnMovieClickListener {
             Log.i("asdfghjkjhgfdfghj", "list: ${it?.size}")
             showEmptyList(it?.size == 0)
             mMovieAdapter.submitList(it!!)
+
+//            if (it.size!=0){
+//                for (i in 0 until it.size){
+//                    Log.i("TableResults","Name: " + it[i]?.title)
+//                }
+//            }
+
         })
         viewModel.networkErrors.observe(this, Observer<String> {
-            Toast.makeText(context, "\uD83D\uDE28 Wooops ${it}", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, "\uD83D\uDE28 Wooops ${it}", Toast.LENGTH_LONG).show()
         })
     }
     private fun setSwipeRefreshLayoutListener() {
