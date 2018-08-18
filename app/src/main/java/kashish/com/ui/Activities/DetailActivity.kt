@@ -155,6 +155,7 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
         initToolBar()
         initViews()
         setupCollapsingToolbar()
+        isMovieFavourite()
 
         initReviewRecyclerView()
         initCastRecyclerView()
@@ -208,7 +209,9 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
 
         mToolbarMovieTitle.setText(movie.title)
         mToolbarMovieDate.setText(DateUtils.getStringDate(movie.releaseDate!!))
+    }
 
+    private fun isMovieFavourite(){
         //Checking if already added to favourite
         AppExecutors.getInstance().diskIO().execute(Runnable {
             val isCheck = mDatabase.favouritesDao().checkIfFavourite(movie.id!!)
@@ -216,7 +219,6 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
                 mAddToFavourite.isChecked = isCheck
             })
         })
-
     }
 
     private fun initViews(){
@@ -294,6 +296,8 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
         mTrailerRecyclerView.setAdapter(mTrailerAdapter)
         mTrailerSnapHelper.attachToRecyclerView(mTrailerRecyclerView)
     }
+
+
     private fun setRatingsData(){
         if (movie.adult!!) mAdult.setText("adult: true")
         else mAdult.setText("adult: false")
@@ -309,6 +313,8 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
         mDetailGenre.setText(movie.genreString)
         mDetailRatingBar.rating = movie.voteAverage!!.div(2)
     }
+
+
     private fun setRuntimeAndBudget(runtime: Int, budget: Int){
 
         if (runtime == 0) mRunTimeTextView.setText("runtime: unavailable")
@@ -353,7 +359,6 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
 
         })
     }
-
     private fun fetchMovieReviews(){
         detailsViewModel.getReviews(movieId = movie.id!!.toLong()).observe(this , object: LiveData<MovieReviewsRequest>(), Observer<MovieReviewsRequest> {
             override fun onChanged(t: MovieReviewsRequest?) {
@@ -368,8 +373,6 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
 
         })
     }
-
-
     private fun fetchMovieCredits(){
         detailsViewModel.getCredits(movieId = movie.id!!.toLong()).observe(this , object: LiveData<MovieCreditRequest>(), Observer<MovieCreditRequest> {
             override fun onChanged(t: MovieCreditRequest?) {
@@ -431,7 +434,6 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
             })
 
     }
-    //Showing bottom sheet onClick review read more
     private fun showReviewReadMoreBottomSheet(review: MovieReview){
         val view = layoutInflater.inflate(R.layout.review_read_more_bottom_sheet_layout, null)
         mReviewReadMoreBottomSheet = BottomSheetDialog(this)
@@ -490,6 +492,7 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
         this.recreate()
     }
 
+
     override fun onReviewReadMoreClickListener(review: MovieReview) {
         showReviewReadMoreBottomSheet(review)
     }
@@ -503,6 +506,11 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
             restartActivity()
     }
 
+
+    override fun onResume() {
+        super.onResume()
+        isMovieFavourite()
+    }
     override fun onDestroy() {
         super.onDestroy()
         PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this)
