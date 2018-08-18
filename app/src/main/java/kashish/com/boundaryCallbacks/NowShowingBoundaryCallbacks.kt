@@ -15,7 +15,7 @@ import java.util.*
  * Created by Kashish on 15-08-2018.
  */
 class NowShowingBoundaryCallbacks(
-        private val doReload: Boolean,
+        private val region: String,
         private val service: NetworkService,
         private val cache: NowShowingLocalCache) : PagedList.BoundaryCallback<NowShowingEntry>() {
 
@@ -40,15 +40,15 @@ class NowShowingBoundaryCallbacks(
 
     override fun onZeroItemsLoaded() {
         Log.d("NowshowingCallback", "onZeroItemsLoaded")
-        requestAndSaveNowShowingData(doReload)
+        requestAndSaveNowShowingData(region)
     }
 
     override fun onItemAtEndLoaded(itemAtEnd: NowShowingEntry) {
         Log.d("NowshowingCallback", "onItemAtEndLoaded")
-        requestAndSaveNowShowingData(doReload)
+        requestAndSaveNowShowingData(region)
     }
 
-    private fun requestAndSaveNowShowingData(doReload: Boolean) {
+    private fun requestAndSaveNowShowingData(region: String) {
 
         if (isRequestInProgress) return
 
@@ -57,7 +57,7 @@ class NowShowingBoundaryCallbacks(
 
         getNowShowingMovies(service,"en-US",
                 lastRequestedPage,
-                "US|IN|UK",
+                region,
                 { movierequest ->
                     val nowShowingEntryList: MutableList<NowShowingEntry> = mutableListOf()
                     for (i in 0 until movierequest.results!!.size){

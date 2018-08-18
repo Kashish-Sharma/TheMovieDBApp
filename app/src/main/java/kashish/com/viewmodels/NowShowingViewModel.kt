@@ -19,7 +19,7 @@ class NowShowingViewModel(private val repository: NowShowingRepository ) : ViewM
         private const val VISIBLE_THRESHOLD = 5
     }
 
-    private val queryLiveData = MutableLiveData<Boolean>()
+    private val queryLiveData = MutableLiveData<String>()
     private val nowShowingResult: LiveData<NowShowingResults> = Transformations.map(queryLiveData, {
         repository.nowShowing(it)
     })
@@ -29,8 +29,8 @@ class NowShowingViewModel(private val repository: NowShowingRepository ) : ViewM
     val networkErrors: LiveData<String> = Transformations.switchMap(nowShowingResult,
             { it -> it.networkErrors })
 
-    fun getNowShowing(doReload: Boolean) {
-        queryLiveData.value = doReload
+    fun getNowShowing(region: String) {
+        queryLiveData.value = region
     }
 
 }

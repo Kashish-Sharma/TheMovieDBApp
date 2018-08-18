@@ -19,11 +19,11 @@ class TopRatedRepository(
         private val topRatedCache: TopRatedLocalCache
 ) {
 
-    fun topRated(doReload: Boolean): TopRatedResults {
+    fun topRated(region: String): TopRatedResults {
 
         val dataSourceFactory = topRatedCache.getAllTopRated()
 
-        val boundaryCallback = TopRatedBoundaryCallbacks(doReload, service, topRatedCache)
+        val boundaryCallback = TopRatedBoundaryCallbacks(region, service, topRatedCache)
         val networkErrors = boundaryCallback.networkErrors
         // Get the paged list
         val data = LivePagedListBuilder(dataSourceFactory, DATABASE_PAGE_SIZE)

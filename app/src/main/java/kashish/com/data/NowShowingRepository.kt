@@ -20,11 +20,11 @@ class NowShowingRepository(
         private val nowShowingCache: NowShowingLocalCache
 ) {
 
-    fun nowShowing(doReload: Boolean): NowShowingResults {
+    fun nowShowing(region: String): NowShowingResults {
         // Get data source factory from the local cache
         val dataSourceFactory = nowShowingCache.getAllNowShowing()
 
-        val boundaryCallback = NowShowingBoundaryCallbacks(doReload, service, nowShowingCache)
+        val boundaryCallback = NowShowingBoundaryCallbacks(region, service, nowShowingCache)
         val networkErrors = boundaryCallback.networkErrors
 
         // Get the paged list

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <array name="pref_region_default">
+        <item>@string/pref_region_US_value</item>
+    </array>
+
+    <array name="pref_region_options_label">
+        <item>@string/pref_region_label_all</item>
+        <item>@string/pref_region_label_india</item>
+        <item>@string/pref_region_label_uk</item>
+        <item>@string/pref_region_label_us</item>
+        <item>@string/pref_region_label_canada</item>
+        <item>@string/pref_region_label_italy</item>
+    </array>
+
+    <array name="pref_region_options_values">
+        <item>@string/pref_region_all_value</item>
+        <item>@string/pref_region_india_value</item>
+        <item>@string/pref_region_uk_value</item>
+        <item>@string/pref_region_US_value</item>
+        <item>@string/pref_region_canada_value</item>
+        <item>@string/pref_region_italy_value</item>
+    </array>
+</resources>

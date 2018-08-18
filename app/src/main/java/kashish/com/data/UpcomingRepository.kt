@@ -23,10 +23,10 @@ class UpcomingRepository(
     /**
      * Search repositories whose names match the query.
      */
-    fun upcoming(doReload: Boolean): UpcomingResults {
+    fun upcoming(region: String): UpcomingResults {
         val dataSourceFactory = upcomingCache.getAllUpcoming()
 
-        val boundaryCallback = UpcomingBoundaryCallback(doReload, service, upcomingCache)
+        val boundaryCallback = UpcomingBoundaryCallback(region, service, upcomingCache)
         val networkErrors = boundaryCallback.networkErrors
         // Get the paged list
         val data = LivePagedListBuilder(dataSourceFactory, DATABASE_PAGE_SIZE)

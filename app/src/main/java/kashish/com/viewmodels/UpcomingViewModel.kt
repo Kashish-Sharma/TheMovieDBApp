@@ -18,7 +18,7 @@ class UpcomingViewModel(private val repository: UpcomingRepository) : ViewModel(
         private const val VISIBLE_THRESHOLD = 5
     }
 
-    private val queryLiveData = MutableLiveData<Boolean>()
+    private val queryLiveData = MutableLiveData<String>()
     private val upcomingResult: LiveData<UpcomingResults> = Transformations.map(queryLiveData, {
         repository.upcoming(it)
     })
@@ -28,8 +28,8 @@ class UpcomingViewModel(private val repository: UpcomingRepository) : ViewModel(
     val networkErrors: LiveData<String> = Transformations.switchMap(upcomingResult,
             { it -> it.networkErrors })
 
-    fun getUpcoming(doReload: Boolean) {
-        queryLiveData.value = doReload
+    fun getUpcoming(region: String) {
+        queryLiveData.value = region
     }
 
 }

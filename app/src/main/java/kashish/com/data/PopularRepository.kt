@@ -24,11 +24,11 @@ class PopularRepository(
         private val popularCache: PopularLocalCache
 ) {
 
-    fun popular(doReload: Boolean): PopularResults {
+    fun popular(region: String): PopularResults {
 
         val dataSourceFactory = popularCache.getAllPopular()
 
-        val boundaryCallback = PopularBoundaryCallbacks(doReload, service, popularCache)
+        val boundaryCallback = PopularBoundaryCallbacks(region, service, popularCache)
         val networkErrors = boundaryCallback.networkErrors
 
         val data = LivePagedListBuilder(dataSourceFactory, DATABASE_PAGE_SIZE)

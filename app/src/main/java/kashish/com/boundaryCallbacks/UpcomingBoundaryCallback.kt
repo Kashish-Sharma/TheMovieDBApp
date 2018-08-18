@@ -15,7 +15,7 @@ import java.util.*
  * Created by Kashish on 15-08-2018.
  */
 class UpcomingBoundaryCallback(
-        private val doReload: Boolean,
+        private val region: String,
         private val service: NetworkService,
         private val cache: UpcomingLocalCache) : PagedList.BoundaryCallback<UpcomingEntry>() {
 
@@ -40,22 +40,22 @@ class UpcomingBoundaryCallback(
 
     override fun onZeroItemsLoaded() {
         Log.d("UpcomingCallback", "onZeroItemsLoaded")
-        requestAndSaveUpcomingData(doReload)
+        requestAndSaveUpcomingData(region)
     }
 
     override fun onItemAtEndLoaded(itemAtEnd: UpcomingEntry) {
         Log.d("UpcomingCallback", "onItemAtEndLoaded")
-        requestAndSaveUpcomingData(doReload)
+        requestAndSaveUpcomingData(region)
     }
 
-    private fun requestAndSaveUpcomingData(doReload: Boolean) {
+    private fun requestAndSaveUpcomingData(region: String) {
         if (isRequestInProgress) return
 
         isRequestInProgress = true
 
         getUpcomingMovies(service,"en-US",
                 lastRequestedPage,
-                "US|IN|UK",
+                region,
                 { movierequest ->
                     val upcomingEntryList: MutableList<UpcomingEntry> = mutableListOf()
                     for (i in 0 until movierequest.results!!.size){

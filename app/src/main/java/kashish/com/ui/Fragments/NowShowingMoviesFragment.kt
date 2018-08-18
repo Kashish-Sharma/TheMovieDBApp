@@ -38,6 +38,7 @@ import kashish.com.utils.Constants
 import kashish.com.utils.Constants.Companion.CONTENT_MOVIE
 import kashish.com.utils.Constants.Companion.CONTENT_PROGRESS
 import kashish.com.utils.Constants.Companion.NOWSHOWING
+import kashish.com.utils.Helpers
 import kashish.com.utils.Urls.Companion.TMDB_API_KEY
 import kashish.com.viewmodels.NowShowingViewModel
 import retrofit2.Call
@@ -47,7 +48,7 @@ import retrofit2.Callback
 /**
  * A simple [Fragment] subclass.
  */
-class NowShowingMoviesFragment : Fragment(), OnMovieClickListener {
+class NowShowingMoviesFragment : Fragment(), OnMovieClickListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
     private val TAG:String = "NowShowinMoviesFragment"
     private val GRID_COLUMNS_PORTRAIT = 1
@@ -63,6 +64,8 @@ class NowShowingMoviesFragment : Fragment(), OnMovieClickListener {
     private lateinit var networkService: NetworkService
     private lateinit var mDatabase: AppDatabase
 
+    private var region: String = ""
+
 
 
     lateinit var mMovieAdapter: NowShowingAdapter
@@ -73,9 +76,10 @@ class NowShowingMoviesFragment : Fragment(), OnMovieClickListener {
         mMainView = inflater.inflate(R.layout.fragment_now_showing, container, false)
 
         initViews()
+        getSelectedRegion()
         initRecyclerView()
         setSwipeRefreshLayoutListener()
-        getNowShowingData(false)
+        getNowShowingData(region)
 
         return mMainView
     }
@@ -86,6 +90,8 @@ class NowShowingMoviesFragment : Fragment(), OnMovieClickListener {
         emptyList = mMainView.findViewById(R.id.emptyNowShowingList)
 
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+        mSharedPreferences.registerOnSharedPreferenceChangeListener(this)
+
         networkService = NetworkService.instance
         mDatabase = AppDatabase.getInstance(context!!.applicationContext)
     }
@@ -115,20 +121,39 @@ class NowShowingMoviesFragment : Fragment(), OnMovieClickListener {
                 Toast.makeText(context, "\uD83D\uDE28 Wooops ${it}", Toast.LENGTH_LONG).show()
         })
     }
+
+    private fun getSelectedRegion() {
+        val set: Set<String>? = mSharedPreferences.getStringSet(getString(R.string.pref_region_key), HashSet())
+        if (set != null) {
+            if (set.contains("all")){
+                region = ""
+                return
+            }
+            region = set.toString().replace(" ","").replace("[","").replace("]","").replace(",","|")
+        } else{
+            region = ""
+        }
+    }
+
     private fun setSwipeRefreshLayoutListener() {
         mSwipeRefreshLayout.setOnRefreshListener {
-            AppExecutors.getInstance().diskIO().execute(Runnable {
-                mDatabase.nowShowingDao().deleteAll()
-            })
-            mRecyclerView.scrollToPosition(0)
-            viewModel.getNowShowing(true)
-            mMovieAdapter.submitList(null)
+            refreshTable()
             mSwipeRefreshLayout.isRefreshing = false
         }
     }
 
-    private fun getNowShowingData(doReload: Boolean){
-        viewModel.getNowShowing(doReload)
+    private fun refreshTable(){
+        AppExecutors.getInstance().diskIO().execute(Runnable {
+            mDatabase.nowShowingDao().deleteAll()
+        })
+        mRecyclerView.scrollToPosition(0)
+
+        viewModel.getNowShowing(region)
+        mMovieAdapter.submitList(null)
+    }
+
+    private fun getNowShowingData(region: String){
+        viewModel.getNowShowing(region)
         mMovieAdapter.submitList(null)
         mSwipeRefreshLayout.isRefreshing = false
     }
@@ -184,6 +209,30 @@ class NowShowingMoviesFragment : Fragment(), OnMovieClickListener {
         val detailIntent = Intent(context, DetailActivity::class.java)
         detailIntent.putExtra("movie",movie)
         context!!.startActivity(detailIntent)
+    }
+
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+        if(key.equals(getString(R.string.pref_region_key))){
+            val set: Set<String>? = sharedPreferences!!.getStringSet(getString(R.string.pref_region_key), HashSet())
+            if (set != null) {
+                if (set.contains("all")){
+                    region = ""
+                    return
+                }
+                region = set.toString().replace(" ","")
+                        .replace("[","").replace("]","")
+                        .replace(",","|")
+            } else{
+                region = ""
+            }
+            refreshTable()
+        }
+
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        PreferenceManager.getDefaultSharedPreferences(context).unregisterOnSharedPreferenceChangeListener(this)
     }
 
 }
