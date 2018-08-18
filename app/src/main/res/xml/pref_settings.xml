@@ -18,4 +18,12 @@
         android:summaryOn="@string/pref_night_mode_summary_on"
         android:title="@string/pref_night_mode"/>
 
+    <MultiSelectListPreference
+        android:defaultValue="@array/pref_region_default"
+        android:key="@string/pref_region_key"
+        android:entries="@array/pref_region_options_label"
+        android:entryValues="@array/pref_region_options_values"
+        android:title="@string/pref_region_label"/>
+
+
 </PreferenceScreen>

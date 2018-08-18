@@ -45,7 +45,7 @@ import retrofit2.Callback
 /**
  * A simple [Fragment] subclass.
  */
-class PopularMoviesFragment : Fragment(), OnMovieClickListener {
+class PopularMoviesFragment : Fragment(), OnMovieClickListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
     private val TAG:String = "PopularMoviesFragment"
     private val GRID_COLUMNS_PORTRAIT = 1
@@ -56,6 +56,7 @@ class PopularMoviesFragment : Fragment(), OnMovieClickListener {
     private lateinit var mGridLayoutManager : GridLayoutManager
     private lateinit var emptyList: TextView
 
+    private var region:String = ""
 
     private lateinit var viewModel: PopularViewModel
     private lateinit var mSharedPreferences: SharedPreferences
@@ -70,9 +71,10 @@ class PopularMoviesFragment : Fragment(), OnMovieClickListener {
         mMainView = inflater.inflate(R.layout.fragment_popular_movies, container, false)
 
         initViews()
+        getSelectedRegion()
         initRecyclerView()
         setSwipeRefreshLayoutListener()
-        getPopularData(false)
+        getPopularData(region)
 
         return mMainView
     }
@@ -83,6 +85,8 @@ class PopularMoviesFragment : Fragment(), OnMovieClickListener {
         emptyList = mMainView.findViewById(R.id.emptyPopularList)
 
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+        mSharedPreferences.registerOnSharedPreferenceChangeListener(this)
+
         networkService = NetworkService.instance
         mDatabase = AppDatabase.getInstance(context!!.applicationContext)
     }
@@ -107,20 +111,40 @@ class PopularMoviesFragment : Fragment(), OnMovieClickListener {
         })
     }
 
+    private fun getSelectedRegion() {
+        val set: Set<String>? = mSharedPreferences.getStringSet(getString(R.string.pref_region_key), HashSet())
+        if (set != null) {
+
+            if (set.contains("all")){
+                region = ""
+                return
+            }
+
+            region = set.toString().replace(" ","").replace("[","").replace("]","").replace(",","|")
+        } else{
+            region = ""
+        }
+    }
+
 
     private fun setSwipeRefreshLayoutListener() {
         mSwipeRefreshLayout.setOnRefreshListener {
-            AppExecutors.getInstance().diskIO().execute(Runnable {
-                mDatabase.poplarDao().deleteAll()
-            })
-            mRecyclerView.scrollToPosition(0)
-            viewModel.getPopular(true)
-            mMovieAdapter.submitList(null)
+            refreshTable()
             mSwipeRefreshLayout.isRefreshing = false
         }
     }
-    private fun getPopularData(doReload: Boolean){
-        viewModel.getPopular(doReload)
+
+    private fun refreshTable(){
+        AppExecutors.getInstance().diskIO().execute(Runnable {
+            mDatabase.poplarDao().deleteAll()
+        })
+        mRecyclerView.scrollToPosition(0)
+        viewModel.getPopular(region)
+        mMovieAdapter.submitList(null)
+    }
+
+    private fun getPopularData(region: String){
+        viewModel.getPopular(region)
         mMovieAdapter.submitList(null)
         mSwipeRefreshLayout.isRefreshing = false
     }
@@ -134,31 +158,6 @@ class PopularMoviesFragment : Fragment(), OnMovieClickListener {
         }
     }
 
-    private fun convertEntryToMovieList(list: List<PopularEntry>): MutableList<Movie>{
-        val movieList: MutableList<Movie> = mutableListOf()
-        for(i in 0 until list.size)
-        {       val movie = list.get(i)
-            val passMovie = Movie()
-            passMovie.id = movie.movieId
-            passMovie.voteCount = movie.voteCount
-            passMovie.video = movie.video
-            passMovie.voteAverage = movie.voteAverage
-            passMovie.title = movie.title
-            passMovie.popularity = movie.popularity
-            passMovie.posterPath = movie.posterPath!!
-            passMovie.originalLanguage = movie.originalLanguage
-            passMovie.originalTitle = movie.originalTitle
-            passMovie.backdropPath = movie.backdropPath!!
-            passMovie.adult = movie.adult
-            passMovie.overview = movie.overview
-            passMovie.releaseDate = movie.releaseDate
-            passMovie.genreString = movie.genreString!!
-            passMovie.contentType = Constants.CONTENT_MOVIE
-            passMovie.tableName = Constants.NOWSHOWING
-            movieList.add(passMovie)
-        }
-        return movieList
-    }
 
     override fun onConfigurationChanged(newConfig: Configuration?) {
         super.onConfigurationChanged(newConfig)
@@ -173,6 +172,26 @@ class PopularMoviesFragment : Fragment(), OnMovieClickListener {
         val detailIntent = Intent(context, DetailActivity::class.java)
         detailIntent.putExtra("movie",movie)
         context!!.startActivity(detailIntent)
+    }
+
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+        if(key.equals(getString(R.string.pref_region_key))){
+            val set: Set<String>? = sharedPreferences!!.getStringSet(getString(R.string.pref_region_key), HashSet())
+            if (set != null) {
+                if (set.contains("all")){
+                    region = ""
+                    return
+                }
+                region = set.toString().replace(" ","").replace("[","").replace("]","").replace(",","|")
+            } else{
+                region = ""
+            }
+            refreshTable()
+        }
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+        PreferenceManager.getDefaultSharedPreferences(context).unregisterOnSharedPreferenceChangeListener(this)
     }
 
 }// Required empty public constructor

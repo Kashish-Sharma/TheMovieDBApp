@@ -15,7 +15,7 @@ import java.util.*
  * Created by Kashish on 15-08-2018.
  */
 class TopRatedBoundaryCallbacks(
-        private val doReload: Boolean,
+        private val region: String,
         private val service: NetworkService,
         private val cache: TopRatedLocalCache) : PagedList.BoundaryCallback<TopRatedEntry>() {
 
@@ -40,15 +40,15 @@ class TopRatedBoundaryCallbacks(
 
     override fun onZeroItemsLoaded() {
         Log.d("TopRatedCallback", "onZeroItemsLoaded")
-        requestAndSaveTopRatedData(doReload)
+        requestAndSaveTopRatedData(region)
     }
 
     override fun onItemAtEndLoaded(itemAtEnd: TopRatedEntry) {
         Log.d("TopRatedCallback", "onItemAtEndLoaded")
-        requestAndSaveTopRatedData(doReload)
+        requestAndSaveTopRatedData(region)
     }
 
-    private fun requestAndSaveTopRatedData(doReload: Boolean) {
+    private fun requestAndSaveTopRatedData(region: String) {
         if (isRequestInProgress) return
 
 
@@ -56,7 +56,7 @@ class TopRatedBoundaryCallbacks(
 
         getTopRatedMovies(service,"en-US",
                 lastRequestedPage,
-                "US|IN|UK",
+                region,
                 { movierequest ->
                     val topRatedEntryList: MutableList<TopRatedEntry> = mutableListOf()
                     for (i in 0 until movierequest.results!!.size){

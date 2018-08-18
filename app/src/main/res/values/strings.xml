@@ -41,4 +41,22 @@
 
     <string name="no_results">No results 😓</string>
 
+    <string name="pref_region_label">Choose regions</string>
+    <string name="pref_region_label_all">All</string>
+    <string name="pref_region_label_india">India</string>
+    <string name="pref_region_label_uk">UK</string>
+    <string name="pref_region_label_us">USA</string>
+    <string name="pref_region_label_canada">Canada</string>
+    <string name="pref_region_label_italy">Italy</string>
+
+    <string name="pref_region_key" translatable="false">region</string>
+    <string name="pref_region_all_value" translatable="false">all</string>
+    <string name="pref_region_india_value" translatable="false">IN</string>
+    <string name="pref_region_uk_value" translatable="false">UK</string>
+    <string name="pref_region_US_value" translatable="false">US</string>
+    <string name="pref_region_canada_value" translatable="false">CA</string>
+    <string name="pref_region_italy_value" translatable="false">IT</string>
+
+
+
 </resources>

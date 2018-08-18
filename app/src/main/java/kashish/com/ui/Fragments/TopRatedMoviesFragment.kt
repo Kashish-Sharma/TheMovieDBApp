@@ -48,7 +48,7 @@ import retrofit2.Callback
 /**
  * A simple [Fragment] subclass.
  */
-class TopRatedMoviesFragment : Fragment(), OnMovieClickListener {
+class TopRatedMoviesFragment : Fragment(), OnMovieClickListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
     private val TAG:String = "TopRatedMoviesFragment"
     private val GRID_COLUMNS_PORTRAIT = 1
@@ -64,6 +64,7 @@ class TopRatedMoviesFragment : Fragment(), OnMovieClickListener {
     private lateinit var networkService: NetworkService
     private lateinit var mDatabase: AppDatabase
 
+    private var region: String = ""
 
     lateinit var mMovieAdapter: TopRatedAdapter
     lateinit var data:MutableList<Movie>
@@ -75,7 +76,8 @@ class TopRatedMoviesFragment : Fragment(), OnMovieClickListener {
 
         initViews()
         initRecyclerView()
-        getTopRatedData(false)
+        getSelectedRegion()
+        getTopRatedData(region)
         setSwipeRefreshLayoutListener()
 
         return mMainView
@@ -88,6 +90,8 @@ class TopRatedMoviesFragment : Fragment(), OnMovieClickListener {
 
         data = mutableListOf()
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+        mSharedPreferences.registerOnSharedPreferenceChangeListener(this)
+
         networkService = NetworkService.instance
         mDatabase = AppDatabase.getInstance(context!!.applicationContext)
     }
@@ -111,6 +115,20 @@ class TopRatedMoviesFragment : Fragment(), OnMovieClickListener {
         })
     }
 
+    private fun getSelectedRegion() {
+        val set: Set<String>? = mSharedPreferences.getStringSet(getString(R.string.pref_region_key), HashSet())
+        if (set != null) {
+
+            if (set.contains("all")){
+                region = ""
+                return
+            }
+            region = set.toString().replace(" ","").replace("[","").replace("]","").replace(",","|")
+        } else{
+            region = ""
+        }
+    }
+
 
     private fun showEmptyList(show: Boolean) {
         if (show) {
@@ -122,53 +140,27 @@ class TopRatedMoviesFragment : Fragment(), OnMovieClickListener {
         }
     }
 
-    private fun getTopRatedData(doReload: Boolean){
-        viewModel.getTopRated(doReload)
+    private fun getTopRatedData(region: String){
+        viewModel.getTopRated(region)
         mMovieAdapter.submitList(null)
         mSwipeRefreshLayout.isRefreshing = false
     }
 
     private fun setSwipeRefreshLayoutListener() {
         mSwipeRefreshLayout.setOnRefreshListener {
-            AppExecutors.getInstance().diskIO().execute(Runnable {
-                mDatabase.upcomingDao().deleteAll()
-            })
-            mRecyclerView.scrollToPosition(0)
-            viewModel.getTopRated(true)
-            mMovieAdapter.submitList(null)
+            refreshTable()
             mSwipeRefreshLayout.isRefreshing = false
         }
     }
 
-
-    private fun convertEntryToMovieList(list: List<TopRatedEntry>): MutableList<Movie>{
-        val movieList: MutableList<Movie> = mutableListOf()
-        for(i in 0 until list.size)
-        {       val movie = list.get(i)
-            val passMovie = Movie()
-            passMovie.id = movie.movieId
-            passMovie.voteCount = movie.voteCount
-            passMovie.video = movie.video
-            passMovie.voteAverage = movie.voteAverage
-            passMovie.title = movie.title
-            passMovie.popularity = movie.popularity
-            passMovie.posterPath = movie.posterPath!!
-            passMovie.originalLanguage = movie.originalLanguage
-            passMovie.originalTitle = movie.originalTitle
-            passMovie.backdropPath = movie.backdropPath!!
-            passMovie.adult = movie.adult
-            passMovie.overview = movie.overview
-            passMovie.releaseDate = movie.releaseDate
-            passMovie.genreString = movie.genreString!!
-            passMovie.contentType = Constants.CONTENT_MOVIE
-            passMovie.tableName = NOWSHOWING
-            movieList.add(passMovie)
-        }
-        return movieList
+    private fun refreshTable(){
+        AppExecutors.getInstance().diskIO().execute(Runnable {
+            mDatabase.upcomingDao().deleteAll()
+        })
+        mRecyclerView.scrollToPosition(0)
+        viewModel.getTopRated(region)
+        mMovieAdapter.submitList(null)
     }
-
-
-
 
     override fun onConfigurationChanged(newConfig: Configuration?) {
         super.onConfigurationChanged(newConfig)
@@ -183,6 +175,26 @@ class TopRatedMoviesFragment : Fragment(), OnMovieClickListener {
         val detailIntent = Intent(context, DetailActivity::class.java)
         detailIntent.putExtra("movie",movie)
         context!!.startActivity(detailIntent)
+    }
+
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+        if(key.equals(getString(R.string.pref_region_key))){
+            val set: Set<String>? = sharedPreferences!!.getStringSet(getString(R.string.pref_region_key), HashSet())
+            if (set != null) {
+                if (set.contains("all")){
+                    region = ""
+                    return
+                }
+                region = set.toString().replace(" ","").replace("[","").replace("]","").replace(",","|")
+            } else{
+                region = ""
+            }
+            refreshTable()
+        }
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+        PreferenceManager.getDefaultSharedPreferences(context).unregisterOnSharedPreferenceChangeListener(this)
     }
 
 }// Required empty public constructor

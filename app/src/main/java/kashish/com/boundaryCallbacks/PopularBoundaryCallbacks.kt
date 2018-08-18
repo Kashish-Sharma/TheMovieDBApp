@@ -15,7 +15,7 @@ import java.util.*
  * Created by Kashish on 15-08-2018.
  */
 class PopularBoundaryCallbacks(
-        private val doReload: Boolean,
+        private val region: String,
         private val service: NetworkService,
         private val cache: PopularLocalCache) : PagedList.BoundaryCallback<PopularEntry>() {
 
@@ -40,22 +40,22 @@ class PopularBoundaryCallbacks(
 
     override fun onZeroItemsLoaded() {
         Log.d("NowshowingCallback", "onZeroItemsLoaded")
-        requestAndSavePopularData(doReload)
+        requestAndSavePopularData(region)
     }
 
     override fun onItemAtEndLoaded(itemAtEnd: PopularEntry) {
         Log.d("NowshowingCallback", "onItemAtEndLoaded")
-        requestAndSavePopularData(doReload)
+        requestAndSavePopularData(region)
     }
 
-    private fun requestAndSavePopularData(doReload: Boolean) {
+    private fun requestAndSavePopularData(region: String) {
         if (isRequestInProgress) return
 
         isRequestInProgress = true
 
         getPopularMovies(service,"en-US",
                 lastRequestedPage,
-                "US|IN|UK",
+                region,
                 { movierequest ->
                     val popularEntryList: MutableList<PopularEntry> = mutableListOf()
                     for (i in 0 until movierequest.results!!.size){

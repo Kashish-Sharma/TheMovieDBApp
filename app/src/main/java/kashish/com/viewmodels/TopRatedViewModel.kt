@@ -18,7 +18,7 @@ class TopRatedViewModel(private val repository: TopRatedRepository ) : ViewModel
         private const val VISIBLE_THRESHOLD = 5
     }
 
-    private val queryLiveData = MutableLiveData<Boolean>()
+    private val queryLiveData = MutableLiveData<String>()
     private val nowShowingResult: LiveData<TopRatedResults> = Transformations.map(queryLiveData, {
         repository.topRated(it)
     })
@@ -28,8 +28,8 @@ class TopRatedViewModel(private val repository: TopRatedRepository ) : ViewModel
     val networkErrors: LiveData<String> = Transformations.switchMap(nowShowingResult,
             { it -> it.networkErrors })
 
-    fun getTopRated(doReload: Boolean) {
-        queryLiveData.value = doReload
+    fun getTopRated(region: String) {
+        queryLiveData.value = region
     }
 
 }

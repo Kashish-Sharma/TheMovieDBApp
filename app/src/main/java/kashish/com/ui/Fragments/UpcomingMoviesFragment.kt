@@ -45,7 +45,7 @@ import retrofit2.Call
 import retrofit2.Callback
 
 
-class UpcomingMoviesFragment : Fragment(), OnMovieClickListener {
+class UpcomingMoviesFragment : Fragment(), OnMovieClickListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
     private val TAG:String = "UpcomingMoviesFragment"
     private val GRID_COLUMNS_PORTRAIT = 1
@@ -62,7 +62,7 @@ class UpcomingMoviesFragment : Fragment(), OnMovieClickListener {
     private lateinit var networkService: NetworkService
     private lateinit var mDatabase: AppDatabase
 
-
+    private var region: String = ""
 
 
     lateinit var mMovieAdapter:UpcomingAdapter
@@ -73,8 +73,9 @@ class UpcomingMoviesFragment : Fragment(), OnMovieClickListener {
         mMainView =  inflater.inflate(R.layout.fragment_upcoming_movies, container, false)
 
         initViews()
+        getSelectedRegion()
         initRecyclerView()
-        getUpcomingData(false)
+        getUpcomingData(region)
         setSwipeRefreshLayoutListener()
 
         return mMainView
@@ -89,6 +90,8 @@ class UpcomingMoviesFragment : Fragment(), OnMovieClickListener {
 
         data = mutableListOf()
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+        mSharedPreferences.registerOnSharedPreferenceChangeListener(this)
+
         networkService = NetworkService.instance
         mDatabase = AppDatabase.getInstance(context!!.applicationContext)
     }
@@ -112,6 +115,20 @@ class UpcomingMoviesFragment : Fragment(), OnMovieClickListener {
         })
     }
 
+    private fun getSelectedRegion() {
+        val set: Set<String>? = mSharedPreferences.getStringSet(getString(R.string.pref_region_key), HashSet())
+        if (set != null) {
+            if (set.contains("all")){
+                region = ""
+                return
+            }
+            region = set.toString().replace(" ","").replace("[","").replace("]","").replace(",","|")
+        } else{
+            region = ""
+        }
+    }
+
+
     private fun showEmptyList(show: Boolean) {
         if (show) {
             emptyList.visibility = View.VISIBLE
@@ -122,22 +139,26 @@ class UpcomingMoviesFragment : Fragment(), OnMovieClickListener {
         }
     }
 
-    private fun getUpcomingData(doReload: Boolean){
-        viewModel.getUpcoming(doReload)
+    private fun getUpcomingData(region: String){
+        viewModel.getUpcoming(region)
         mMovieAdapter.submitList(null)
         mSwipeRefreshLayout.isRefreshing = false
     }
 
     private fun setSwipeRefreshLayoutListener() {
         mSwipeRefreshLayout.setOnRefreshListener {
-            AppExecutors.getInstance().diskIO().execute(Runnable {
-                mDatabase.upcomingDao().deleteAll()
-            })
-            mRecyclerView.scrollToPosition(0)
-            viewModel.getUpcoming(true)
-            mMovieAdapter.submitList(null)
+            refreshTable()
             mSwipeRefreshLayout.isRefreshing = false
         }
+    }
+
+    private fun refreshTable(){
+        AppExecutors.getInstance().diskIO().execute(Runnable {
+            mDatabase.upcomingDao().deleteAll()
+        })
+        mRecyclerView.scrollToPosition(0)
+        viewModel.getUpcoming(region)
+        mMovieAdapter.submitList(null)
     }
 
 
@@ -182,6 +203,26 @@ class UpcomingMoviesFragment : Fragment(), OnMovieClickListener {
         val detailIntent = Intent(context, DetailActivity::class.java)
         detailIntent.putExtra("movie",movie)
         context!!.startActivity(detailIntent)
+    }
+
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+        if(key.equals(getString(R.string.pref_region_key))){
+            val set: Set<String>? = sharedPreferences!!.getStringSet(getString(R.string.pref_region_key), HashSet())
+            if (set != null) {
+                if (set.contains("all")){
+                    region = ""
+                    return
+                }
+                region = set.toString().replace(" ","").replace("[","").replace("]","").replace(",","|")
+            } else{
+                region = ""
+            }
+            refreshTable()
+        }
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+        PreferenceManager.getDefaultSharedPreferences(context).unregisterOnSharedPreferenceChangeListener(this)
     }
 
 }
