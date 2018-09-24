@@ -46,6 +46,8 @@ class NowShowingAdapter(private val listener: OnMovieClickListener,
                 if (movie != null){
                     val movieViewHolder = holder as NowShowingViewHolder
                     movieViewHolder.bindNowShowingData(movie,mSharedPreferences)
+                } else{
+                    notifyItemRemoved(position)
                 }
     }
 

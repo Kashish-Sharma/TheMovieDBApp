@@ -41,6 +41,9 @@ import kashish.com.utils.Constants.Companion.CONTENT_PROGRESS
 import kashish.com.utils.Constants.Companion.NOWSHOWING
 import kashish.com.utils.Urls
 import kashish.com.viewmodels.UpcomingViewModel
+import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.runBlocking
 import retrofit2.Call
 import retrofit2.Callback
 
@@ -153,9 +156,13 @@ class UpcomingMoviesFragment : Fragment(), OnMovieClickListener, SharedPreferenc
     }
 
     private fun refreshTable(){
-        AppExecutors.getInstance().diskIO().execute(Runnable {
-            mDatabase.upcomingDao().deleteAll()
-        })
+        mSwipeRefreshLayout.isEnabled = false
+        runBlocking {
+            async(CommonPool) {
+                mDatabase.upcomingDao().deleteAll()
+            }.await()
+        }
+        mSwipeRefreshLayout.isEnabled = true
         mRecyclerView.scrollToPosition(0)
         viewModel.getUpcoming(region)
         mMovieAdapter.submitList(null)

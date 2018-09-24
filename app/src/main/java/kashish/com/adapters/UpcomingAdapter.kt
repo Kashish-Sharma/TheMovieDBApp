@@ -36,6 +36,8 @@ class UpcomingAdapter(private val listener: OnMovieClickListener,
         if (movie != null){
             val movieViewHolder = holder as UpcomingViewHolder
             movieViewHolder.bindNowShowingData(movie,mSharedPreferences)
+        } else{
+            notifyItemRemoved(position)
         }
 
     }

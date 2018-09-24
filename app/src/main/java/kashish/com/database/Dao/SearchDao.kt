@@ -32,4 +32,7 @@ public interface SearchDao {
     @Query("DELETE FROM search")
     fun deleteAll()
 
+    @Query("SELECT COUNT(movieId) FROM search")
+    fun getNumberOfRows(): Int
+
 }
