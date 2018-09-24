@@ -25,5 +25,4 @@
         android:entryValues="@array/pref_region_options_values"
         android:title="@string/pref_region_label"/>
 
-
 </PreferenceScreen>

@@ -31,4 +31,17 @@ import java.util.*
     var genreString: String? = ""
     var timeAdded: Long? = null
     var tableName: Int = NOWSHOWING
+
+    override fun equals(other: Any?): Boolean {
+        return movieId == other
+    }
+
+    override fun hashCode(): Int {
+        return movieId!!
+    }
+
+    override fun toString(): String {
+        return "Movie(id=$movieId, timeAdded=$timeAdded)"
+    }
+
 }

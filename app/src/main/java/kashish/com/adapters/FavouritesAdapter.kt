@@ -35,6 +35,8 @@ class FavouritesAdapter(private val listener: OnMovieClickListener,
         if (movie != null){
             val movieViewHolder = holder as FavouritesViewHolder
             movieViewHolder.bindFavoriteData(movie,mSharedPreferences)
+        } else{
+            notifyItemRemoved(position)
         }
     }
 

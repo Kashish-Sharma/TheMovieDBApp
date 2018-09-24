@@ -6,6 +6,9 @@ import android.util.Log
 import kashish.com.database.Dao.NowShowingDao
 import kashish.com.database.Dao.PopularDao
 import kashish.com.database.Entities.PopularEntry
+import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.runBlocking
 import java.util.concurrent.Executor
 
 /**
@@ -30,4 +33,16 @@ class PopularLocalCache(
     fun getAllPopular(): DataSource.Factory<Int, PopularEntry> {
         return popularDao.loadAllPopular()
     }
+
+    fun getAllItemsInPopular(): Int {
+        val data  = runBlocking {
+            async(CommonPool) {
+                val numItems = popularDao.getNumberOfRows()
+                return@async numItems
+            }.await()
+        }
+        return data
+
+    }
+
 }

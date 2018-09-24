@@ -37,6 +37,8 @@ class SearchAdapter(private val listener: OnMovieClickListener,
                 if (movie != null){
                     val searchViewHolder = holder as SearchViewHolder
                     searchViewHolder.bindSearchData(movie,mSharedPreferences)
+                } else{
+                    notifyItemRemoved(position)
                 }
 
     }

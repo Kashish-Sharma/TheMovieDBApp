@@ -30,4 +30,7 @@ import kashish.com.database.Entities.SearchEntry
     @Query("DELETE FROM nowshowing")
     fun deleteAll()
 
+    @Query("SELECT COUNT(movieId) FROM nowshowing")
+    fun getNumberOfRows(): Int
+
 }

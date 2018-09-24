@@ -5,6 +5,9 @@ import android.arch.paging.DataSource
 import android.util.Log
 import kashish.com.database.Dao.NowShowingDao
 import kashish.com.database.Entities.NowShowingEntry
+import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.runBlocking
 import java.util.concurrent.Executor
 
 /**
@@ -29,4 +32,16 @@ class NowShowingLocalCache(
     fun getAllNowShowing(): DataSource.Factory<Int, NowShowingEntry> {
         return nowShowingDao.loadAllNowShowing()
     }
+
+    fun getAllItemsInNowShowing(): Int {
+        val data  = runBlocking {
+            async(CommonPool) {
+                val numItems = nowShowingDao.getNumberOfRows()
+                return@async numItems
+            }.await()
+        }
+        return data
+
+    }
+
 }

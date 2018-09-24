@@ -2,13 +2,15 @@
 <resources>
     <color name="colorPrimary">#000</color>
     <color name="colorPrimaryDark">#000</color>
-    <color name="colorAccent">#3cb371</color>
+    <color name="colorAccent">#00ab6c</color>
 
     <color name="background">#E9E9E9</color>
     <color name="background_night">#1F1E24</color>
     <color name="black">#000</color>
     <color name="white">#FFF</color>
     <color name="gray">#bdbdbd</color>
+
+    <color name="divider_night">#09091a</color>
 
     <color name="bg_dark">#E4E4E2</color>
 

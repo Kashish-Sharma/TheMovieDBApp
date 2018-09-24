@@ -6,6 +6,9 @@ import android.arch.paging.PagedList
 import android.util.Log
 import kashish.com.database.Dao.TopRatedDao
 import kashish.com.database.Entities.TopRatedEntry
+import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.runBlocking
 import java.util.concurrent.Executor
 
 /**
@@ -30,4 +33,16 @@ class TopRatedLocalCache(
     fun getAllTopRated(): DataSource.Factory<Int, TopRatedEntry> {
         return topRatedDao.loadAllToprated()
     }
+
+    fun getAllItemsInTopRated(): Int {
+        val data  = runBlocking {
+            async(CommonPool) {
+                val numItems = topRatedDao.getNumberOfRows()
+                return@async numItems
+            }.await()
+        }
+        return data
+
+    }
+
 }

@@ -7,7 +7,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:fontFamily">@font/open_sans_regular</item>
-        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
+        <!--<item name="preferenceTheme">@style/PreferenceThemeOverlay</item>-->
         <item name="primaryTextColor">@color/dark_dark_gray</item>
         <item name="secondaryTextColor">@color/dark_gray</item>
         <item name="backgroundColor">@color/background</item>
@@ -15,6 +15,9 @@
         <item name="bgColor">@color/white</item>
         <item name="titleColor">@color/black</item>
         <item name="cardBgColor">@color/white</item>
+        <item name="preferenceTheme">
+            @style/PreferenceThemeOverlay.v14.Material
+        </item>
     </style>
 
 
@@ -24,11 +27,13 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:fontFamily">@font/open_sans_regular</item>
-        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
+        <item name="preferenceTheme">
+            @style/PreferenceThemeOverlay.v14.Material
+        </item>
         <item name="primaryTextColor">@color/off_white</item>
         <item name="secondaryTextColor">@color/gray</item>
         <item name="backgroundColor">@color/background_night</item>
-        <item name="dividerColor">@color/dark_dark_gray</item>
+        <item name="dividerColor">@color/divider_night</item>
         <item name="bgColor">@color/bgColor_night</item>
         <item name="titleColor">@color/white</item>
         <item name="cardBgColor">@color/background_night</item>
@@ -41,7 +46,9 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:fontFamily">@font/open_sans_regular</item>
-        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
+        <item name="preferenceTheme">
+            @style/PreferenceThemeOverlay.v14.Material
+        </item>
         <item name="primaryTextColor">@color/dark_dark_gray</item>
         <item name="secondaryTextColor">@color/dark_gray</item>
         <item name="backgroundColor">@color/background</item>
@@ -57,11 +64,13 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:fontFamily">@font/open_sans_regular</item>
-        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
+        <item name="preferenceTheme">
+            @style/PreferenceThemeOverlay.v14.Material
+        </item>
         <item name="primaryTextColor">@color/off_white</item>
         <item name="secondaryTextColor">@color/gray</item>
         <item name="backgroundColor">@color/background_night</item>
-        <item name="dividerColor">@color/dark_dark_gray</item>
+        <item name="dividerColor">@color/divider_night</item>
         <item name="bgColor">@color/bgColor_night</item>
         <item name="titleColor">@color/white</item>
         <item name="cardBgColor">@color/background_night</item>
