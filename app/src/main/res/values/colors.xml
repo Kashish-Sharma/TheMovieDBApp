@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <color name="colorPrimary">#000</color>
     <color name="colorPrimaryDark">#000</color>
-    <color name="colorAccent">#00ab6c</color>
+    <color name="colorAccent">#3cb371</color>
 
     <color name="background">#E9E9E9</color>
-    <color name="background_night">#1F1E24</color>
+    <color name="background_night">#09091a</color>
     <color name="black">#000</color>
     <color name="white">#FFF</color>
     <color name="gray">#bdbdbd</color>
@@ -19,7 +20,7 @@
 
     <color name="dark_dark_gray">#424242</color>
 
-    <color name="bgColor_night">#181816</color>
+    <color name="bgColor_night">#161629</color>
     <color name="off_white">#fffff0</color>
 
 </resources>
