@@ -1,10 +1,10 @@
 package kashish.com.interfaces
 
-import kashish.com.models.Video
+import kashish.com.models.MovieVideo
 
 /**
  * Created by Kashish on 06-08-2018.
  */
 interface OnVideoClickListener {
-    fun onVideoClickListener(video:Video)
+    fun onVideoClickListener(movieVideo: MovieVideo)
 }

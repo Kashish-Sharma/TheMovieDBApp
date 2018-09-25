@@ -1,6 +1,5 @@
 package kashish.com.ui.Activities
 
-import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.res.Configuration
@@ -8,33 +7,37 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.preference.PreferenceManager
+import android.support.design.widget.AppBarLayout
+import android.support.design.widget.CollapsingToolbarLayout
+import android.support.v4.content.ContextCompat
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.app.ActionBar
-import android.support.v7.app.AppCompatDelegate
 import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
 import android.util.Log
-import android.view.View
-import android.widget.AbsListView
-import android.widget.ProgressBar
-import android.widget.Toast
-import com.android.volley.Request
-import com.android.volley.Response
-import com.android.volley.toolbox.JsonObjectRequest
 import kashish.com.R
 import kashish.com.adapters.MovieAdapter
 import kashish.com.interfaces.OnMovieClickListener
 import kashish.com.models.Movie
-import kashish.com.singleton.VolleySingleton
 import kashish.com.utils.Constants
-import kashish.com.utils.Helpers
-import org.json.JSONArray
-import org.json.JSONObject
-import android.view.LayoutInflater
 import android.view.MenuItem
-import android.widget.TextView
+import android.widget.*
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.bumptech.glide.request.RequestOptions
+import kashish.com.database.AppDatabase
+import kashish.com.database.AppExecutors
+import kashish.com.database.Entities.FavouritesEntry
+import kashish.com.requestmodels.MovieRequest
+import kashish.com.network.NetworkService
+import kashish.com.utils.DateUtils
+import kashish.com.utils.Helpers
+import kashish.com.utils.Urls
+import retrofit2.Call
+import retrofit2.Callback
+import java.util.*
 
 
 class SimilarMoviesActivity : AppCompatActivity(), OnMovieClickListener, SharedPreferences.OnSharedPreferenceChangeListener {
@@ -51,19 +54,24 @@ class SimilarMoviesActivity : AppCompatActivity(), OnMovieClickListener, SharedP
     private lateinit var movie: Movie
 
     private lateinit var mSharedPreferences: SharedPreferences
+    private lateinit var networkService: NetworkService
 
     private var pageNumber:Int = 1
     private var doPagination:Boolean = true
     private var isScrolling:Boolean = false
-    private  var currentItem:Int = -1
-    private  var totalItem:Int = -1
-    private  var scrolledOutItem:Int = -1
     private var isLoading: Boolean = false
 
-    //Toolbar
+    //Collapsing Toolbar
+    private lateinit var mCollapsingToolbar: CollapsingToolbarLayout
+    private lateinit var mActionBar: ActionBar
     private lateinit var mToolbar: Toolbar
-    private lateinit var mToolbarTitle:TextView
-    private lateinit var mToolbarSubtitle:TextView
+    private lateinit var mAppBarLayout: AppBarLayout
+    private lateinit var mBackdropImageView: ImageView
+    private lateinit var mAddToFavourite: CheckBox
+    private lateinit var mToolbarMovieTitle: TextView
+
+    //Database
+    private lateinit var mDatabase: AppDatabase
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -78,26 +86,30 @@ class SimilarMoviesActivity : AppCompatActivity(), OnMovieClickListener, SharedP
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_similar_movies)
+        Helpers.setUpTransparentStatusBar(window)
 
         getMovie()
         initViews()
-        setToolbar()
+        initToolBar()
+        setupCollapsingToolbar()
         initContentList()
         initSimilarRecyclerView()
         delayByfewSeconds()
         setRecyclerViewScrollListener()
         setSwipeRefreshLayoutListener()
+        setFavouriteOnClickListener()
 
     }
 
     private fun initViews(){
-        mToolbar = findViewById(R.id.activity_similar_toolbar)
-        mToolbarSubtitle = mToolbar.findViewById(R.id.similar_toolbar_subtitle)
-        mToolbarTitle = mToolbar.findViewById(R.id.similar_toolbar_title)
+
         mSimilarRecyclerView = findViewById(R.id.activity_similar_recycler_view)
         mSimilarSwipeToRefresh = findViewById(R.id.activity_similar_swipe_to_refresh)
 
-        mSharedPreferences.registerOnSharedPreferenceChangeListener(this)
+        similarData = mutableListOf()
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+        networkService = NetworkService.instance
+        mDatabase = AppDatabase.getInstance(applicationContext)
     }
 
     private fun initSimilarRecyclerView(){
@@ -107,80 +119,108 @@ class SimilarMoviesActivity : AppCompatActivity(), OnMovieClickListener, SharedP
     }
 
     private fun fetchSimilarMovie(){
+        val call: Call<MovieRequest> = networkService.tmdbApi.getRecommendedMovies(movie.id.toString(),Urls.TMDB_API_KEY
+                ,"en-US",pageNumber)
 
-        val jsonObjectRequest = JsonObjectRequest(Request.Method.GET,
-                Helpers.buildRecommendedMoviesUrl(pageNumber,movie.id.toString()),
-                null, Response.Listener { response ->
+        call.enqueue(object : Callback<MovieRequest> {
+            override fun onResponse(call: Call<MovieRequest>?, response: retrofit2.Response<MovieRequest>?) {
 
-            val jsonArray: JSONArray = response.getJSONArray(Constants.RESULTS)
+                val movieRequest: MovieRequest = response!!.body()!!
+                Log.i("jhasbfbiuf",movieRequest.page.toString()+ " are the total pages")
 
-            if (jsonArray.length() == 0){
-                //stop call to pagination in any case
-                doPagination = false
+                if (movieRequest.results!!.isEmpty()){
+                    //stop call to pagination in any case
+                    doPagination = false
+                    //show msg no posts
+                    if(pageNumber == 1)
+                        Toast.makeText(this@SimilarMoviesActivity,"Something went wrong", Toast.LENGTH_SHORT).show()
 
-                //show msg no posts
-                //if(pageNumber == 1)
-                    //Toast.makeText(this,"Something went wrong", Toast.LENGTH_SHORT).show()
-                similarData.removeAt(similarData.size - 1)
-                mSimilarAdapter.notifyItemRemoved(similarData.size-1)
-                mSimilarSwipeToRefresh.isRefreshing = false
+                    similarData.removeAt(similarData.size - 1)
+                    mSimilarAdapter.notifyItemRemoved(similarData.size-1)
+                    mSimilarSwipeToRefresh.isRefreshing = false
 
-            } else {
+                }
+                else {
 
-                //Data loaded, remove progress
-                similarData.removeAt(similarData.size-1)
-                mSimilarAdapter.notifyItemRemoved(similarData.size-1)
+                    //Data loaded, remove progress
+                    similarData.removeAt(similarData.size-1)
+                    mSimilarAdapter.notifyItemRemoved(similarData.size-1)
 
+                    for (i in 0 until movieRequest.results!!.size){
+                        val movie: Movie = movieRequest.results!!.get(i)
+                        for (j in 0 until movie.genreIds!!.size) {
+                            if(j==movie.genreIds!!.size-1)
+                                movie.genreString += Constants.getGenre(movie.genreIds!!.get(j))
+                            else
+                                movie.genreString += Constants.getGenre(movie.genreIds!!.get(j))+", "
+                        }
 
-                for (i in 0 until jsonArray.length()) {
-                    val jresponse: JSONObject = jsonArray.getJSONObject(i)
+                        if (movie.posterPath.isNullOrEmpty()){
+                            movie.posterPath = "asdsadad"
+                        }
 
-                    val movie = Movie()
+                        if (movie.backdropPath.isNullOrEmpty()){
+                            movie.backdropPath = "asdsadad"
+                        }
 
-                    movie.totalPages = response.getInt(Constants.TOTAL_PAGES)
-                    movie.voteCount = jresponse.getInt(Constants.VOTE_COUNT)
-                    movie.id = jresponse.getInt(Constants.ID)
-                    movie.video = jresponse.getBoolean(Constants.VIDEO)
-                    movie.voteAverage = jresponse.getDouble(Constants.VOTE_AVERAGE).toFloat()
-                    movie.title = jresponse.getString(Constants.TITLE)
-                    movie.popularity = jresponse.getDouble(Constants.POPULARITY).toFloat()
-                    movie.posterPath = jresponse.getString(Constants.POSTER_PATH)
-                    movie.originalLanguage = jresponse.getString(Constants.ORIGINAL_LANGUAGE)
-                    movie.originalTitle = jresponse.getString(Constants.ORIGINAL_TITLE)
+                        movie.contentType = Constants.CONTENT_SIMILAR
+                        similarData.add(movie)
 
-                    val array: JSONArray = jresponse.getJSONArray(Constants.GENRE_IDS)
-                    //val genreList: MutableList<Int> = mutableListOf()
-                    for (j in 0 until array.length()) {
-                        //genreList.add(array.getInt(j))
-                        movie.genreString += Constants.getGenre(array.getInt(j)) + ", "
                     }
 
-                    //movie.genreIds = genreList
-                    movie.backdropPath = jresponse.getString(Constants.BACKDROP_PATH)
-                    movie.adult = jresponse.getBoolean(Constants.ADULT)
-                    movie.overview = jresponse.getString(Constants.OVERVIEW)
-                    movie.releaseDate = jresponse.getString(Constants.RELEASE_DATE)
-                    movie.contentType = Constants.CONTENT_SIMILAR
-
-                    similarData.add(movie)
+                    isLoading = false
+                    if (mSimilarSwipeToRefresh.isRefreshing())
+                        mSimilarSwipeToRefresh.setRefreshing(false)
+                    mSimilarAdapter.notifyItemRangeInserted(similarData.size - movieRequest.results!!.size, movieRequest.results!!.size)
                 }
 
-                //addProgressBarInList()
 
-                mSimilarAdapter.notifyItemRangeInserted(similarData.size - jsonArray.length(), jsonArray.length())
-
-                isLoading = false
-
-                if (mSimilarSwipeToRefresh.isRefreshing())
-                    mSimilarSwipeToRefresh.setRefreshing(false)
             }
 
-        }, Response.ErrorListener { error ->
-            Log.i(TAG,error.message+" is the error message")
+            override fun onFailure(call: Call<MovieRequest>?, t: Throwable?) {
+                Log.i(TAG,t!!.message+" is the error message")
+            }
+
+        })
+    }
+
+    private fun initToolBar(){
+        mCollapsingToolbar = findViewById(R.id.activity_similar_collapsing_layout)
+        mToolbar = findViewById(R.id.activity_similar_toolbar)
+        mAppBarLayout = findViewById(R.id.activity_similar_app_bar_layout)
+        mBackdropImageView = findViewById(R.id.activity_similar_backdrop_image)
+
+        mToolbarMovieTitle = findViewById(R.id.activity_similar_movie_title)
+        mAddToFavourite = findViewById(R.id.activity_similar_add_to_favourite)
+
+        setSupportActionBar(mToolbar)
+        mActionBar = supportActionBar!!
+        mActionBar.setDisplayHomeAsUpEnabled(true)
+    }
+
+    private fun setupCollapsingToolbar(){
+        mSharedPreferences.registerOnSharedPreferenceChangeListener(this)
+
+        if (mSharedPreferences.getBoolean(getString(R.string.pref_cache_data_key),true)){
+            Glide.with(this).load(Helpers.buildBackdropImageUrl(movie.backdropPath!!))
+                    .transition(DrawableTransitionOptions.withCrossFade()).into(mBackdropImageView)
+        } else{
+            Glide.with(this).load(Helpers.buildBackdropImageUrl(movie.backdropPath!!))
+                    .apply(RequestOptions().diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true))
+                    .transition(DrawableTransitionOptions.withCrossFade()).into(mBackdropImageView)
+        }
+
+
+        mToolbarMovieTitle.setText(movie.title)
+
+        //Checking if already added to favourite
+        AppExecutors.getInstance().diskIO().execute(Runnable {
+            val isCheck = mDatabase.favouritesDao().checkIfFavourite(movie.id!!)
+            runOnUiThread(Runnable {
+                mAddToFavourite.isChecked = isCheck
+            })
         })
 
-        jsonObjectRequest.setShouldCache(mSharedPreferences.getBoolean(getString(R.string.pref_cache_data_key),true))
-        VolleySingleton.getInstance(this).addToRequestQueue(jsonObjectRequest)
     }
 
     private fun addProgressBarInList() {
@@ -250,13 +290,42 @@ class SimilarMoviesActivity : AppCompatActivity(), OnMovieClickListener, SharedP
         similarData.clear()
         mSimilarAdapter.notifyItemRangeRemoved(0, size)
     }
+    private fun setFavouriteOnClickListener(){
+        mAddToFavourite.setOnClickListener({
+            val movieEntry = FavouritesEntry()
+            movieEntry.movieId = movie.id
+            movieEntry.voteCount = movie.voteCount
+            movieEntry.video = movie.video
+            movieEntry.voteAverage = movie.voteAverage
+            movieEntry.title = movie.title
+            movieEntry.popularity = movie.popularity
+            movieEntry.posterPath = movie.posterPath
+            movieEntry.originalLanguage = movie.originalLanguage
+            movieEntry.originalTitle = movie.originalTitle
+            movieEntry.genreIds = movie.genreString
+            movieEntry.backdropPath = movie.backdropPath
+            movieEntry.adult = movie.adult
+            movieEntry.overview = movie.overview
+            movieEntry.releaseDate = movie.releaseDate
+            movieEntry.genreString = movie.genreString
+            movieEntry.timeAdded = Date().time
+            movieEntry.tableName = Constants.FAVOURITES
 
-    private fun setToolbar(){
-        mToolbarTitle.setText(movie.title)
-        mToolbarSubtitle.setText("Similar movies")
-        setSupportActionBar(mToolbar)
-        supportActionBar!!.setDisplayShowTitleEnabled(false)
-        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+            if (mAddToFavourite.isChecked){
+                AppExecutors.getInstance().diskIO().execute({
+                    kotlin.run {
+                        mDatabase.favouritesDao().insertFavourite(movieEntry)
+                    }
+                })
+                Toast.makeText(this,"Added", Toast.LENGTH_SHORT).show()
+            } else{
+                AppExecutors.getInstance().diskIO().execute({
+                    kotlin.run {
+                        mDatabase.favouritesDao().deleteFavourite(movieEntry)
+                    }
+                })
+            }
+        })
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
@@ -281,9 +350,9 @@ class SimilarMoviesActivity : AppCompatActivity(), OnMovieClickListener, SharedP
 
 
     override fun onMovieClickListener(movie: Movie) {
-        val detailIntent = Intent(this, DetailActivity::class.java)
-        detailIntent.putExtra("movie",movie)
-        startActivity(detailIntent)
+        val similarIntent = Intent(this, DetailActivity::class.java)
+        similarIntent.putExtra("movie",movie)
+        startActivity(similarIntent)
     }
 
     private fun restartActivity(){
@@ -291,12 +360,8 @@ class SimilarMoviesActivity : AppCompatActivity(), OnMovieClickListener, SharedP
     }
 
     override fun onSharedPreferenceChanged(p0: SharedPreferences?, key: String?) {
-        if(key.equals(getString(R.string.pref_night_mode_key))){
-            if (p0!!.getBoolean(key,resources.getBoolean(R.bool.pref_night_mode_default_value))){
-                restartActivity()
-            } else{
-                restartActivity()            }
-        }
+        if(key.equals(getString(R.string.pref_night_mode_key)))
+            restartActivity()
     }
 
     override fun onDestroy() {

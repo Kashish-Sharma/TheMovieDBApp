@@ -1,17 +1,15 @@
-package kashish.com.database
+package kashish.com.database.Entities
 
 import android.arch.persistence.room.Entity
-import android.arch.persistence.room.Ignore
 import android.arch.persistence.room.PrimaryKey
-import android.arch.persistence.room.TypeConverters
+import kashish.com.utils.Constants.Companion.UPCOMING
 import java.util.*
 
 /**
- * Created by Kashish on 11-08-2018.
+ * Created by Kashish on 13-08-2018.
  */
-
-@Entity(tableName = "favourites")
-class MovieEntry {
+@Entity(tableName = "upcoming")
+class UpcomingEntry {
 
     @PrimaryKey
     var movieId: Int? = null
@@ -31,6 +29,7 @@ class MovieEntry {
     var contentType: Int? = null
     var totalPages: Int? = null
     var genreString: String? = ""
-    var timeAdded: Date? = null
+    var timeAdded: Long? = null
+    var tableName: Int = UPCOMING
 
 }

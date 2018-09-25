@@ -89,7 +89,7 @@ object Helpers {
 
     fun buildMovieReviewUrl(movieId: String, pageNumber: Int): String {
         return MOVIE_DETAILS_BASE_URL + movieId + "/reviews?api_key=" + TMDB_API_KEY +
-                "&language=en-US&page="+ pageNumber + "&append_to_response=recommendations"
+                "&language=en-US&page="+ pageNumber
     }
 
     fun buildImdbUrl(id: String):String{

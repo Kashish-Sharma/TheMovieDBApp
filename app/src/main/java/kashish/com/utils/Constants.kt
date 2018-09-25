@@ -54,7 +54,7 @@ class Constants {
         val CAST = "cast"
         val CREW = "crew"
 
-
+        val RANDOM_PATH = "asdfghjkl"
 
         //CONTENT_TYPES
         val CONTENT_MOVIE = 0
@@ -63,9 +63,20 @@ class Constants {
         val CONTENT_SIMILAR = 3
         val CONTENT_PROGRESS = 777
 
+        //TABLE CONTENT TYPES
+        val CONTENT_FAVOURITE = 111
+
         //Shared preferences
         val USER_DEFAULT_REGION = "user_default_region"
         val USER_DEFAULT_REGION_STATUS = "user_default_region_status"
+
+        //Constants
+        val FAVOURITES: Int = 1231
+        val TOP_RATED: Int = 1232
+        val UPCOMING: Int = 1233
+        val NOWSHOWING: Int = 1234
+        val POPULAR: Int = 1235
+        val SEARCHES: Int = 1236
 
     }
 
