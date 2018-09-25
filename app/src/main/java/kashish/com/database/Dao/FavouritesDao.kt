@@ -24,4 +24,7 @@ import kashish.com.database.Entities.FavouritesEntry
     @Delete
     fun deleteFavourite(favouritesEntry: FavouritesEntry)
 
+    @Query("SELECT COUNT(movieId) FROM favourites")
+    fun getNumberOfRows(): Int
+
 }

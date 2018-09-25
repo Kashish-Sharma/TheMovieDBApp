@@ -30,5 +30,8 @@ interface UpcomingDao {
     @Query("DELETE FROM upcoming")
     fun deleteAll()
 
+    @Query("SELECT COUNT(movieId) FROM upcoming")
+    fun getNumberOfRows(): Int
+
 
 }

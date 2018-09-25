@@ -41,6 +41,9 @@ import kashish.com.utils.Constants.Companion.NOWSHOWING
 import kashish.com.utils.Helpers
 import kashish.com.utils.Urls.Companion.TMDB_API_KEY
 import kashish.com.viewmodels.NowShowingViewModel
+import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.runBlocking
 import retrofit2.Call
 import retrofit2.Callback
 
@@ -136,19 +139,23 @@ class NowShowingMoviesFragment : Fragment(), OnMovieClickListener, SharedPrefere
     }
 
     private fun setSwipeRefreshLayoutListener() {
-        mSwipeRefreshLayout.setOnRefreshListener {
-            refreshTable()
-            mSwipeRefreshLayout.isRefreshing = false
+            mSwipeRefreshLayout.setOnRefreshListener {
+                    refreshTable()
+                    mSwipeRefreshLayout.isRefreshing = false
         }
     }
 
-    private fun refreshTable(){
-        AppExecutors.getInstance().diskIO().execute(Runnable {
-            mDatabase.nowShowingDao().deleteAll()
-        })
+    private fun refreshTable() {
+        mSwipeRefreshLayout.isEnabled = false
+        runBlocking {
+            async(CommonPool) {
+                mDatabase.nowShowingDao().deleteAll()
+            }.await()
+        }
+        mSwipeRefreshLayout.isEnabled = true
         mRecyclerView.scrollToPosition(0)
-
         viewModel.getNowShowing(region)
+
         mMovieAdapter.submitList(null)
     }
 

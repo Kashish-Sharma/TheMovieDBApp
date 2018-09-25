@@ -38,6 +38,9 @@ import kashish.com.ui.Activities.DetailActivity
 import kashish.com.utils.Constants
 import kashish.com.utils.Urls
 import kashish.com.viewmodels.PopularViewModel
+import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.runBlocking
 import retrofit2.Call
 import retrofit2.Callback
 
@@ -135,9 +138,13 @@ class PopularMoviesFragment : Fragment(), OnMovieClickListener, SharedPreference
     }
 
     private fun refreshTable(){
-        AppExecutors.getInstance().diskIO().execute(Runnable {
-            mDatabase.poplarDao().deleteAll()
-        })
+        mSwipeRefreshLayout.isEnabled = false
+        runBlocking {
+            async(CommonPool) {
+                mDatabase.poplarDao().deleteAll()
+            }.await()
+        }
+        mSwipeRefreshLayout.isEnabled = true
         mRecyclerView.scrollToPosition(0)
         viewModel.getPopular(region)
         mMovieAdapter.submitList(null)

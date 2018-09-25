@@ -30,4 +30,7 @@ interface PopularDao {
     @Query("DELETE FROM popular")
     fun deleteAll()
 
+    @Query("SELECT COUNT(movieId) FROM popular")
+    fun getNumberOfRows(): Int
+
 }
