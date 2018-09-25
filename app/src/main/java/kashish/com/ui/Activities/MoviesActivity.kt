@@ -9,12 +9,14 @@ import android.support.v4.view.ViewPager
 import android.support.design.widget.TabLayout
 import android.support.v7.app.AppCompatDelegate
 import android.support.v7.widget.Toolbar
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import kashish.com.R
 import kashish.com.adapters.MovieViewPagerAdapter
 import kashish.com.ui.Fragments.*
+import java.util.*
 
 class MoviesActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -116,10 +118,7 @@ class MoviesActivity : AppCompatActivity(), SharedPreferences.OnSharedPreference
 
     override fun onSharedPreferenceChanged(p0: SharedPreferences?, key: String?) {
         if(key.equals(getString(R.string.pref_night_mode_key))){
-            if (p0!!.getBoolean(key,resources.getBoolean(R.bool.pref_night_mode_default_value))){
-                restartActivity()
-            } else{
-                restartActivity()            }
+            restartActivity()
         }
     }
 

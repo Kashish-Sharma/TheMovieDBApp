@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.Adapter
+import android.util.Log
 import android.view.ViewGroup
 import android.view.LayoutInflater
 import android.view.View
@@ -74,19 +75,20 @@ class MovieAdapter(movieList: List<Movie>,listener: OnMovieClickListener,private
 
                 movieViewHolder.movieTitle.setText(movie.title)
                 movieViewHolder.movieRating.rating = movie.voteAverage!!.div(2)
-                movieViewHolder.moviePopularity.setText("Popularity: ".plus(movie.popularity.toString()))
-                movieViewHolder.movieReleaseDate.setText("Release date: ".plus(DateUtils.getStringDate(movie.releaseDate!!)))
+                movieViewHolder.movieReleaseDate.text = "Release date: ".plus(DateUtils.getStringDate(movie.releaseDate!!))
+                movieViewHolder.movieOverview.text = movie.overview
 
                 movieViewHolder.itemView.single_item_movie_type.setText("Genre: "+movie.genreString)
 
-                if (mSharedPreferences.getBoolean(mContext.getString(R.string.pref_cache_data_key),true)){
-                    Glide.with(mContext).load(buildImageUrl(movie.posterPath!!)).thumbnail(0.05f)
-                            .transition(withCrossFade()).into(movieViewHolder.moviePoster)
-                } else{
-                    Glide.with(mContext).load(buildImageUrl(movie.posterPath!!)).thumbnail(0.05f)
-                            .apply(RequestOptions().diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true))
-                            .transition(withCrossFade()).into(movieViewHolder.moviePoster)
-                }
+
+                    if (mSharedPreferences.getBoolean(mContext.getString(R.string.pref_cache_data_key),true)){
+                        Glide.with(mContext).load(buildImageUrl(movie.posterPath!!)).thumbnail(0.05f)
+                                .transition(withCrossFade()).into(movieViewHolder.moviePoster)
+                    } else{
+                        Glide.with(mContext).load(buildImageUrl(movie.posterPath!!)).thumbnail(0.05f)
+                                .apply(RequestOptions().diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true))
+                                .transition(withCrossFade()).into(movieViewHolder.moviePoster)
+                    }
 
             }
 
@@ -120,7 +122,7 @@ class MovieAdapter(movieList: List<Movie>,listener: OnMovieClickListener,private
     }
 
     override fun getItemViewType(position: Int): Int {
-        return movieList.get(position).contentType!!
+        return movieList.get(position).contentType
     }
 
     override fun getItemCount(): Int = movieList.size

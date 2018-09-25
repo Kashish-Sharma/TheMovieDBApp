@@ -1,6 +1,9 @@
 package kashish.com.ui.Fragments
 
 
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
+import android.arch.paging.PagedList
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.res.Configuration
@@ -15,45 +18,37 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AbsListView
+import android.widget.TextView
 import android.widget.Toast
-import com.android.volley.Request
-import com.android.volley.Response
-import com.android.volley.toolbox.JsonObjectRequest
+import kashish.com.Injection
 
 import kashish.com.R
 import kashish.com.adapters.MovieAdapter
+import kashish.com.adapters.NowShowingAdapter
+import kashish.com.adapters.TopRatedAdapter
+import kashish.com.database.AppDatabase
+import kashish.com.database.AppExecutors
+import kashish.com.database.Entities.TopRatedEntry
+import kashish.com.database.Entities.UpcomingEntry
 import kashish.com.interfaces.OnMovieClickListener
 import kashish.com.models.Movie
-import kashish.com.singleton.VolleySingleton
+import kashish.com.requestmodels.MovieRequest
+import kashish.com.network.NetworkService
 import kashish.com.ui.Activities.DetailActivity
 import kashish.com.utils.Constants
-import kashish.com.utils.Constants.Companion.ADULT
-import kashish.com.utils.Constants.Companion.BACKDROP_PATH
-import kashish.com.utils.Constants.Companion.CONTENT_MOVIE
 import kashish.com.utils.Constants.Companion.CONTENT_PROGRESS
-import kashish.com.utils.Constants.Companion.GENRE_IDS
-import kashish.com.utils.Constants.Companion.ID
-import kashish.com.utils.Constants.Companion.ORIGINAL_LANGUAGE
-import kashish.com.utils.Constants.Companion.ORIGINAL_TITLE
-import kashish.com.utils.Constants.Companion.OVERVIEW
-import kashish.com.utils.Constants.Companion.POPULARITY
-import kashish.com.utils.Constants.Companion.POSTER_PATH
-import kashish.com.utils.Constants.Companion.RELEASE_DATE
-import kashish.com.utils.Constants.Companion.RESULTS
-import kashish.com.utils.Constants.Companion.TITLE
-import kashish.com.utils.Constants.Companion.VIDEO
-import kashish.com.utils.Constants.Companion.VOTE_AVERAGE
-import kashish.com.utils.Constants.Companion.VOTE_COUNT
-import kashish.com.utils.Helpers.buildTopRatedMoviesUrl
-import org.json.JSONArray
-import org.json.JSONObject
+import kashish.com.utils.Constants.Companion.NOWSHOWING
+import kashish.com.utils.Urls
+import kashish.com.viewmodels.TopRatedViewModel
+import kashish.com.viewmodels.UpcomingViewModel
+import retrofit2.Call
+import retrofit2.Callback
 
 
 /**
  * A simple [Fragment] subclass.
  */
-class TopRatedMoviesFragment : Fragment(), OnMovieClickListener {
+class TopRatedMoviesFragment : Fragment(), OnMovieClickListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
     private val TAG:String = "TopRatedMoviesFragment"
     private val GRID_COLUMNS_PORTRAIT = 1
@@ -62,19 +57,16 @@ class TopRatedMoviesFragment : Fragment(), OnMovieClickListener {
     private lateinit var mRecyclerView : RecyclerView
     private lateinit var mSwipeRefreshLayout : SwipeRefreshLayout
     private lateinit var mGridLayoutManager : GridLayoutManager
+    private lateinit var emptyList: TextView
 
+    private lateinit var viewModel: TopRatedViewModel
     private lateinit var mSharedPreferences: SharedPreferences
+    private lateinit var networkService: NetworkService
+    private lateinit var mDatabase: AppDatabase
 
+    private var region: String = ""
 
-    private var pageNumber:Int = 1
-    private var doPagination:Boolean = true
-    private var isScrolling:Boolean = false
-    private  var currentItem:Int = -1
-    private  var totalItem:Int = -1
-    private  var scrolledOutItem:Int = -1
-    private var isLoading: Boolean = false
-
-    lateinit var mMovieAdapter: MovieAdapter
+    lateinit var mMovieAdapter: TopRatedAdapter
     lateinit var data:MutableList<Movie>
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -83,11 +75,10 @@ class TopRatedMoviesFragment : Fragment(), OnMovieClickListener {
         mMainView = inflater.inflate(R.layout.fragment_top_rated_movies, container, false)
 
         initViews()
-        initContentList()
-        fetchData()
         initRecyclerView()
+        getSelectedRegion()
+        getTopRatedData(region)
         setSwipeRefreshLayoutListener()
-        setRecyclerViewScrollListener()
 
         return mMainView
     }
@@ -95,161 +86,115 @@ class TopRatedMoviesFragment : Fragment(), OnMovieClickListener {
     private fun initViews(){
         mRecyclerView = mMainView.findViewById(R.id.fragment_top_rated_movies_recycler_view)
         mSwipeRefreshLayout = mMainView.findViewById(R.id.fragment_top_rated_movies_swipe_refresh)
+        emptyList = mMainView.findViewById(R.id.emptyTopRatedList)
 
+        data = mutableListOf()
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+        mSharedPreferences.registerOnSharedPreferenceChangeListener(this)
+
+        networkService = NetworkService.instance
+        mDatabase = AppDatabase.getInstance(context!!.applicationContext)
     }
-    private fun clearList() {
-        val size = data.size
-        data.clear()
-        mMovieAdapter.notifyItemRangeRemoved(0, size)
-    }
+
     private fun initRecyclerView() {
         configureRecyclerAdapter(resources.configuration.orientation)
-        mMovieAdapter = MovieAdapter(data,this,mSharedPreferences)
-        mRecyclerView.setAdapter(mMovieAdapter)
-        mRecyclerView.setHasFixedSize(true)
+        viewModel = ViewModelProviders.of(this, Injection.provideTopRatedViewModelFactory(context!!))
+                .get(TopRatedViewModel::class.java)
+
+        mMovieAdapter = TopRatedAdapter(this,mSharedPreferences)
+        mRecyclerView.adapter = mMovieAdapter
+
+
+        viewModel.topRated.observe(this, Observer<PagedList<TopRatedEntry>> {
+            Log.i("asdfghjkjhgfdfghj", "list: ${it?.size}")
+            showEmptyList(it?.size == 0)
+            mMovieAdapter.submitList(it!!)
+        })
+        viewModel.networkErrors.observe(this, Observer<String> {
+            Toast.makeText(context, "\uD83D\uDE28 Wooops ${it}", Toast.LENGTH_LONG).show()
+        })
     }
-    private fun setSwipeRefreshLayoutListener() {
-        mSwipeRefreshLayout.setOnRefreshListener {
-            pageNumber = 1
-            doPagination = true
-            clearList()
-            addProgressBarInList()
-            fetchData()
+
+    private fun getSelectedRegion() {
+        val set: Set<String>? = mSharedPreferences.getStringSet(getString(R.string.pref_region_key), HashSet())
+        if (set != null) {
+
+            if (set.contains("all")){
+                region = ""
+                return
+            }
+            region = set.toString().replace(" ","").replace("[","").replace("]","").replace(",","|")
+        } else{
+            region = ""
         }
     }
-    private fun initContentList(){
-        data = mutableListOf()
-        addProgressBarInList()
+
+
+    private fun showEmptyList(show: Boolean) {
+        if (show) {
+            emptyList.visibility = View.VISIBLE
+            mRecyclerView.visibility = View.GONE
+        } else {
+            emptyList.visibility = View.GONE
+            mRecyclerView.visibility = View.VISIBLE
+        }
     }
-    private fun setRecyclerViewScrollListener() {
-        //Fetching next page's data on reaching bottom
-        mRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
 
-                val reachedBottom = !recyclerView!!.canScrollVertically(1) && dy!=0
-                if (reachedBottom && doPagination && !isLoading) {
-                    addProgressBarInList()
-                    mMovieAdapter.notifyItemInserted(data.size-1)
-                    pageNumber++
-                    isLoading = true
-                    delayByfewSeconds()
-                }
+    private fun getTopRatedData(region: String){
+        viewModel.getTopRated(region)
+        mMovieAdapter.submitList(null)
+        mSwipeRefreshLayout.isRefreshing = false
+    }
 
-            }
-            override fun onScrollStateChanged(recyclerView: RecyclerView?, newState: Int) {
-                super.onScrollStateChanged(recyclerView, newState)
+    private fun setSwipeRefreshLayoutListener() {
+        mSwipeRefreshLayout.setOnRefreshListener {
+            refreshTable()
+            mSwipeRefreshLayout.isRefreshing = false
+        }
+    }
 
-            }
+    private fun refreshTable(){
+        AppExecutors.getInstance().diskIO().execute(Runnable {
+            mDatabase.upcomingDao().deleteAll()
         })
-    }
-    private fun fetchData(){
-
-        val jsonObjectRequest = JsonObjectRequest(Request.Method.GET,
-                buildTopRatedMoviesUrl(pageNumber),null, Response.Listener { response ->
-
-            val jsonArray: JSONArray = response.getJSONArray(RESULTS)
-
-            if (jsonArray.length() == 0){
-                //stop call to pagination in any case
-                doPagination = false
-
-                //show msg no posts
-                if(pageNumber == 1)
-                    Toast.makeText(getContext(),"Something went wrong",Toast.LENGTH_SHORT).show()
-                data.removeAt(data.size - 1)
-                mMovieAdapter.notifyItemRemoved(data.size-1)
-                mSwipeRefreshLayout.isRefreshing = false
-
-            } else {
-
-                //Data loaded, remove progress
-                    data.removeAt(data.size-1)
-                    mMovieAdapter.notifyItemRemoved(data.size-1)
-
-                for (i in 0 until jsonArray.length()) {
-                    val jresponse: JSONObject = jsonArray.getJSONObject(i)
-
-                    val movie = Movie()
-
-                    movie.totalPages = response.getInt(Constants.TOTAL_PAGES)
-                    movie.voteCount = jresponse.getInt(VOTE_COUNT)
-                    movie.id = jresponse.getInt(ID)
-                    movie.video = jresponse.getBoolean(VIDEO)
-                    movie.voteAverage = jresponse.getDouble(VOTE_AVERAGE).toFloat()
-                    movie.title = jresponse.getString(TITLE)
-                    movie.popularity = jresponse.getDouble(POPULARITY).toFloat()
-                    movie.posterPath = jresponse.getString(POSTER_PATH)
-                    movie.originalLanguage = jresponse.getString(ORIGINAL_LANGUAGE)
-                    movie.originalTitle = jresponse.getString(ORIGINAL_TITLE)
-
-                    val array: JSONArray = jresponse.getJSONArray(GENRE_IDS)
-                    //val genreList: MutableList<Int> = mutableListOf()
-                    for (j in 0 until array.length()) {
-                        //genreList.add(array.getInt(j))
-                        movie.genreString += Constants.getGenre(array.getInt(j)) + ", "
-                    }
-
-                    //movie.genreIds = genreList
-                    movie.backdropPath = jresponse.getString(BACKDROP_PATH)
-                    movie.adult = jresponse.getBoolean(ADULT)
-                    movie.overview = jresponse.getString(OVERVIEW)
-                    movie.releaseDate = jresponse.getString(RELEASE_DATE)
-                    movie.contentType = CONTENT_MOVIE
-
-                    data.add(movie)
-                }
-
-                //addProgressBarInList()
-
-                mMovieAdapter.notifyItemRangeInserted(data.size - jsonArray.length(), jsonArray.length())
-
-                isLoading = false
-
-                if (mSwipeRefreshLayout.isRefreshing())
-                    mSwipeRefreshLayout.setRefreshing(false)
-            }
-
-        }, Response.ErrorListener { error ->
-            Log.i(TAG,error.message+" is the error message")
-        })
-
-        jsonObjectRequest.setShouldCache(mSharedPreferences.getBoolean(getString(R.string.pref_cache_data_key),true))
-        VolleySingleton.getInstance(this.context!!).addToRequestQueue(jsonObjectRequest)
-    }
-    private fun delayByfewSeconds(){
-        val handler = Handler()
-        handler.postDelayed(Runnable {
-            fetchData()
-        }, 2000)
-    }
-    override fun onDestroyView() {
-        super.onDestroyView()
-        Log.i("asdfghjkl","OnDestroyView")
-        clearList()
-    }
-    private fun addProgressBarInList() {
-        val progressBarContent = Movie()
-        progressBarContent.contentType = CONTENT_PROGRESS
-        data.add(progressBarContent)
+        mRecyclerView.scrollToPosition(0)
+        viewModel.getTopRated(region)
+        mMovieAdapter.submitList(null)
     }
 
     override fun onConfigurationChanged(newConfig: Configuration?) {
         super.onConfigurationChanged(newConfig)
         configureRecyclerAdapter(newConfig!!.orientation)
     }
-
     private fun configureRecyclerAdapter(orientation: Int) {
         val isPortrait = orientation == Configuration.ORIENTATION_PORTRAIT
         mGridLayoutManager = GridLayoutManager(context, if (isPortrait) GRID_COLUMNS_PORTRAIT else GRID_COLUMNS_LANDSCAPE)
         mRecyclerView.setLayoutManager(mGridLayoutManager)
     }
-
     override fun onMovieClickListener(movie: Movie) {
         val detailIntent = Intent(context, DetailActivity::class.java)
         detailIntent.putExtra("movie",movie)
         context!!.startActivity(detailIntent)
+    }
+
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+        if(key.equals(getString(R.string.pref_region_key))){
+            val set: Set<String>? = sharedPreferences!!.getStringSet(getString(R.string.pref_region_key), HashSet())
+            if (set != null) {
+                if (set.contains("all")){
+                    region = ""
+                    return
+                }
+                region = set.toString().replace(" ","").replace("[","").replace("]","").replace(",","|")
+            } else{
+                region = ""
+            }
+            refreshTable()
+        }
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+        PreferenceManager.getDefaultSharedPreferences(context).unregisterOnSharedPreferenceChangeListener(this)
     }
 
 }// Required empty public constructor

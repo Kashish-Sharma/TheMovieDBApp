@@ -15,7 +15,6 @@
                 android:endColor="?attr/bgColor"
                 android:startColor="?attr/bgColor"
                 android:type="linear" />
-            <corners android:radius="4dp" />
         </shape>
     </item>
 </ripple>
