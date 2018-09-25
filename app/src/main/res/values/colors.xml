@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#222233</color>
-    <color name="colorPrimaryDark">#161629</color>
-    <color name="colorAccent">#1fbad6</color>
+
+    <color name="colorPrimary">#000</color>
+    <color name="colorPrimaryDark">#000</color>
+    <color name="colorAccent">#3cb371</color>
 
     <color name="background">#E9E9E9</color>
     <color name="background_night">#09091a</color>
@@ -10,11 +11,12 @@
     <color name="white">#FFF</color>
     <color name="gray">#bdbdbd</color>
 
+    <color name="divider_night">#09091a</color>
+
     <color name="bg_dark">#E4E4E2</color>
 
     <color name="dark_gray">#757575</color>
     <color name="dark_gray_night">#6D6D6D</color>
-    <color name="divider_night">#09091a</color>
 
     <color name="dark_dark_gray">#424242</color>
 

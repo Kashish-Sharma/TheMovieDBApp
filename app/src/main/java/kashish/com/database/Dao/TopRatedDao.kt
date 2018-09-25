@@ -29,4 +29,7 @@ interface TopRatedDao {
     @Query("DELETE FROM toprated")
     fun deleteAll()
 
+    @Query("SELECT COUNT(movieId) FROM toprated")
+    fun getNumberOfRows(): Int
+
 }

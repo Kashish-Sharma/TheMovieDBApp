@@ -36,6 +36,8 @@ class TopRatedAdapter(private val listener: OnMovieClickListener,
         if (movie != null){
             val movieViewHolder = holder as TopRatedViewHolder
             movieViewHolder.bindPopularData(movie,mSharedPreferences)
+        } else{
+            notifyItemRemoved(position)
         }
 
     }

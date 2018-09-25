@@ -32,4 +32,16 @@ class UpcomingEntry {
     var timeAdded: Long? = null
     var tableName: Int = UPCOMING
 
+    override fun equals(other: Any?): Boolean {
+        return movieId == other
+    }
+
+    override fun hashCode(): Int {
+        return movieId!!
+    }
+
+    override fun toString(): String {
+        return "Movie(id=$movieId, timeAdded=$timeAdded)"
+    }
+
 }

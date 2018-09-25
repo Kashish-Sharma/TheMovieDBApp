@@ -4,8 +4,8 @@ import android.content.SharedPreferences
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.support.v7.app.AppCompatDelegate
 import kashish.com.R
+import kashish.com.ui.Fragments.SettingsFragment
 
 class SettingsActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenceChangeListener {
 

@@ -4,6 +4,8 @@ import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.paging.PagedList
 import android.util.Log
+import kashish.com.database.AppExecutors
+import kashish.com.database.Dao.NowShowingDao
 import kashish.com.database.Entities.NowShowingEntry
 import kashish.com.database.LocalCache.NowShowingLocalCache
 import kashish.com.network.NetworkService
@@ -24,7 +26,8 @@ class NowShowingBoundaryCallbacks(
     }
 
     // keep the last requested page. When the request is successful, increment the page number.
-    private var lastRequestedPage = 1
+
+    var lastRequestedPage: Int = (cache.getAllItemsInNowShowing()/20) + 1
 
     private val _networkErrors = MutableLiveData<String>()
     // LiveData of network errors.

@@ -32,4 +32,16 @@ class TopRatedEntry {
     var timeAdded: Long? = null
     var tableName: Int = TOP_RATED
 
+    override fun equals(other: Any?): Boolean {
+        return movieId == other
+    }
+
+    override fun hashCode(): Int {
+        return movieId!!
+    }
+
+    override fun toString(): String {
+        return "Movie(id=$movieId, timeAdded=$timeAdded)"
+    }
+
 }

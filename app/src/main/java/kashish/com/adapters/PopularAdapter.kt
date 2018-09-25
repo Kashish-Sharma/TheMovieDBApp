@@ -37,6 +37,8 @@ class PopularAdapter(private val listener: OnMovieClickListener,
             val movieViewHolder = holder as PopularViewHolder
             movieViewHolder.bindPopularData(movie,mSharedPreferences)
 
+        } else{
+            notifyItemRemoved(position)
         }
 
     }

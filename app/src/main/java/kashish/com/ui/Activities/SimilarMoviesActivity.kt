@@ -132,8 +132,10 @@ class SimilarMoviesActivity : AppCompatActivity(), OnMovieClickListener, SharedP
                     //stop call to pagination in any case
                     doPagination = false
                     //show msg no posts
-                    if(pageNumber == 1)
-                        Toast.makeText(this@SimilarMoviesActivity,"Something went wrong", Toast.LENGTH_SHORT).show()
+                    if(pageNumber == 1){
+                        Toast.makeText(this@SimilarMoviesActivity,"Can't find similar movies", Toast.LENGTH_SHORT).show()
+                        finish()
+                    }
 
                     similarData.removeAt(similarData.size - 1)
                     mSimilarAdapter.notifyItemRemoved(similarData.size-1)
@@ -178,7 +180,9 @@ class SimilarMoviesActivity : AppCompatActivity(), OnMovieClickListener, SharedP
             }
 
             override fun onFailure(call: Call<MovieRequest>?, t: Throwable?) {
-                Log.i(TAG,t!!.message+" is the error message")
+                Toast.makeText(this@SimilarMoviesActivity,"Error: "+t!!.message, Toast.LENGTH_SHORT).show()
+                Log.i(TAG,t.message+" is the error message")
+                finish()
             }
 
         })

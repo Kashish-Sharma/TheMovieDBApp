@@ -24,7 +24,7 @@ class TopRatedBoundaryCallbacks(
     }
 
     // keep the last requested page. When the request is successful, increment the page number.
-    private var lastRequestedPage = 1
+    private var lastRequestedPage = (cache.getAllItemsInTopRated()/20) + 1
 
     private val _networkErrors = MutableLiveData<String>()
     // LiveData of network errors.
