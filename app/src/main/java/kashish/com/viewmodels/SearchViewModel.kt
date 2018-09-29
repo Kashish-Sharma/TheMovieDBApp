@@ -5,8 +5,7 @@ import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.Transformations
 import android.arch.lifecycle.ViewModel
 import android.arch.paging.PagedList
-import android.util.Log
-import kashish.com.data.SearchRepository
+import kashish.com.repositories.SearchRepository
 import kashish.com.database.DatabaseResults.SearchResults
 import kashish.com.database.Entities.SearchEntry
 

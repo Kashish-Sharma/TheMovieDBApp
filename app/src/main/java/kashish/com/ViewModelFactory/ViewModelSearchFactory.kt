@@ -2,7 +2,7 @@ package kashish.com.ViewModelFactory
 
 import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider
-import kashish.com.data.SearchRepository
+import kashish.com.repositories.SearchRepository
 import kashish.com.viewmodels.SearchViewModel
 
 /**

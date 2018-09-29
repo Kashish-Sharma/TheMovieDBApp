@@ -1,5 +1,6 @@
 package kashish.com.ui.Activities
 
+import android.annotation.SuppressLint
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
@@ -12,13 +13,11 @@ import android.preference.PreferenceManager
 import android.support.design.widget.AppBarLayout
 import android.support.design.widget.BottomSheetDialog
 import android.support.design.widget.CollapsingToolbarLayout
-import android.support.v4.widget.NestedScrollView
 import android.support.v7.app.ActionBar
 import android.support.v7.widget.*
 import android.support.v7.widget.Toolbar
 import android.text.method.LinkMovementMethod
 import android.text.method.ScrollingMovementMethod
-import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.*
@@ -39,6 +38,7 @@ import kashish.com.adapters.VideoAdapter
 import kashish.com.database.AppDatabase
 import kashish.com.database.AppExecutors
 import kashish.com.database.Entities.FavouritesEntry
+import kashish.com.database.Entities.NowShowingEntry
 import kashish.com.interfaces.OnReviewReadMoreClickListener
 import kashish.com.interfaces.OnVideoClickListener
 import kashish.com.models.*
@@ -50,11 +50,7 @@ import kashish.com.utils.Constants
 import kashish.com.utils.Helpers
 import kashish.com.utils.Helpers.buildImdbUrl
 import kashish.com.utils.Helpers.buildWikiUrl
-import kashish.com.utils.Urls
 import kashish.com.viewmodels.MovieDetailsViewModel
-import kashish.com.viewmodels.NowShowingViewModel
-import retrofit2.Call
-import retrofit2.Callback
 import java.util.*
 
 
@@ -80,8 +76,6 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
     private lateinit var mToolbarMovieDate: TextView
     private lateinit var mToolbarMoviePoster: ImageView
 
-    //Nested scroll view
-    private lateinit var mNestedScrollView: NestedScrollView
     private var movieDetail: MovieDetail = MovieDetail()
     private lateinit var mAddToFavourite: CheckBox
 
@@ -109,13 +103,11 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
 
     //Cast
     lateinit var mCastAdapter: CastAdapter
-    var castData: MutableList<Cast> = mutableListOf()
     private lateinit var mCastRecyclerView : RecyclerView
     private lateinit var mCastProgressBar : ProgressBar
 
     //Crew
     lateinit var mCrewAdapter: CrewAdapter
-    var crewData: MutableList<Crew> = mutableListOf()
     private lateinit var mCrewRecyclerView : RecyclerView
     private lateinit var mCrewProgressBar : ProgressBar
 
@@ -130,10 +122,6 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
     private lateinit var mWikipediaBtn : TextView
     private lateinit var mImdbBtn : TextView
 
-    companion object {
-        private val DEFAULT_TASK_ID: Int = -1
-    }
-    private var mMovieId = DEFAULT_TASK_ID
     private lateinit var mDatabase: AppDatabase
     private lateinit var networkService: NetworkService
     private lateinit var detailsViewModel: MovieDetailsViewModel
@@ -207,17 +195,18 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
         }
 
 
-        mToolbarMovieTitle.setText(movie.title)
-        mToolbarMovieDate.setText(DateUtils.getStringDate(movie.releaseDate!!))
+        mToolbarMovieTitle.text = movie.title
+        mToolbarMovieDate.text = DateUtils.getStringDate(movie.releaseDate!!)
     }
 
     private fun isMovieFavourite(){
         //Checking if already added to favourite
-        AppExecutors.getInstance().diskIO().execute(Runnable {
-            val isCheck = mDatabase.favouritesDao().checkIfFavourite(movie.id!!)
-            runOnUiThread(Runnable {
-                mAddToFavourite.isChecked = isCheck
-            })
+        val entry:LiveData<MutableList<FavouritesEntry>> = mDatabase.favouritesDao().checkIfFavourite(movie.id!!)
+        entry.observe(this, Observer {
+            when {
+                it!!.size == 0 -> mAddToFavourite.isChecked = false
+                else -> mAddToFavourite.isChecked = true
+            }
         })
     }
 
@@ -252,7 +241,7 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
         mTrailerProgressBar = findViewById(R.id.activity_detail_trailer_progress_bar)
 
         mSimilarMoviesBtn = findViewById(R.id.activity_similar_movie_text)
-        mSimilarMoviesBtn.setOnClickListener(View.OnClickListener {
+        mSimilarMoviesBtn.setOnClickListener({
             val similarIntent = Intent(this, SimilarMoviesActivity::class.java)
             similarIntent.putExtra("movie",movie)
             startActivity(similarIntent)
@@ -270,61 +259,63 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
     }
     private fun initReviewRecyclerView(){
         mLinearLayoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-        mReviewRecyclerView.setLayoutManager(mLinearLayoutManager)
+        mReviewRecyclerView.layoutManager = mLinearLayoutManager
         mReviewReviewAdapter = MovieReviewAdapter(this)
-        mReviewRecyclerView.setAdapter(mReviewReviewAdapter)
+        mReviewRecyclerView.adapter = mReviewReviewAdapter
         mReviewSnapHelper.attachToRecyclerView(mReviewRecyclerView)
     }
     private fun initCastRecyclerView(){
         mLinearLayoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-        mCastRecyclerView.setLayoutManager(mLinearLayoutManager)
+        mCastRecyclerView.layoutManager = mLinearLayoutManager
         mCastAdapter = CastAdapter(mSharedPreferences)
-        mCastRecyclerView.setAdapter(mCastAdapter)
+        mCastRecyclerView.adapter = mCastAdapter
         mCastSnapHelper.attachToRecyclerView(mCastRecyclerView)
     }
     private fun initCrewRecyclerView(){
         mLinearLayoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-        mCrewRecyclerView.setLayoutManager(mLinearLayoutManager)
+        mCrewRecyclerView.layoutManager = mLinearLayoutManager
         mCrewAdapter = CrewAdapter(mSharedPreferences)
-        mCrewRecyclerView.setAdapter(mCrewAdapter)
+        mCrewRecyclerView.adapter = mCrewAdapter
         mCrewSnapHelper.attachToRecyclerView(mCrewRecyclerView)
     }
     private fun initTrailerRecyclerView(){
         mLinearLayoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-        mTrailerRecyclerView.setLayoutManager(mLinearLayoutManager)
+        mTrailerRecyclerView.layoutManager = mLinearLayoutManager
         mTrailerAdapter = VideoAdapter(trailerData,this,mSharedPreferences)
-        mTrailerRecyclerView.setAdapter(mTrailerAdapter)
+        mTrailerRecyclerView.adapter = mTrailerAdapter
         mTrailerSnapHelper.attachToRecyclerView(mTrailerRecyclerView)
     }
 
 
+    @SuppressLint("SetTextI18n")
     private fun setRatingsData(){
-        if (movie.adult!!) mAdult.setText("adult: true")
-        else mAdult.setText("adult: false")
+        if (movie.adult!!) mAdult.text = "adult: true"
+        else mAdult.text = "adult: false"
 
-        mVoteAvg.setText("rating: "+movie.voteAverage.toString()+"/10")
+        mVoteAvg.text = "rating: "+movie.voteAverage.toString()+"/10"
 
-        if (movie.voteCount!! >= 1000) mVotes.setText("votes: "+("%.2f".format(movie.voteCount!!.toFloat().div(1000)))+"k")
-        else mVotes.setText("votes: "+movie.voteCount.toString())
+        if (movie.voteCount!! >= 1000) mVotes.text = "votes: "+("%.2f".format(movie.voteCount!!.toFloat().div(1000)))+"k"
+        else mVotes.text = "votes: "+movie.voteCount.toString()
 
     }
     private fun setOverViewData(){
-        mDetailOverView.setText(movie.overview)
-        mDetailGenre.setText(movie.genreString)
+        mDetailOverView.text = movie.overview
+        mDetailGenre.text = movie.genreString
         mDetailRatingBar.rating = movie.voteAverage!!.div(2)
     }
 
 
+    @SuppressLint("SetTextI18n")
     private fun setRuntimeAndBudget(runtime: Int, budget: Int){
 
-        if (runtime == 0) mRunTimeTextView.setText("runtime: unavailable")
-        else mRunTimeTextView.setText("runtime: "+runtime+"mins")
+        if (runtime == 0) mRunTimeTextView.text = "runtime: unavailable"
+        else mRunTimeTextView.text = "runtime: "+runtime+"mins"
 
-        if (budget == 0) mBudgetTextView.setText("budget: unavailable")
-        else mBudgetTextView.setText("budget: $"+(budget.div(1000))+"k")
+        if (budget == 0) mBudgetTextView.text = "budget: unavailable"
+        else mBudgetTextView.text = "budget: $"+(budget.div(1000))+"k"
     }
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        val id = item!!.getItemId()
+        val id = item!!.itemId
         if (id == android.R.id.home) {
             onBackPressed()
             return true
@@ -345,11 +336,9 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
                 if (videoResult.videos!!.isEmpty()){
                     mTrailerProgressBar.visibility = View.GONE
                 } else{
-                    for (i in 0 until videoResult.videos!!.size) {
-                        var trailer: MovieVideo
-                        trailer = videoResult.videos!!.get(i)
-                        trailerData.add(trailer)
-                    }
+                    (0 until videoResult.videos!!.size)
+                            .map { videoResult.videos!![it] }
+                            .forEach { trailerData.add(it) }
 
                     mTrailerAdapter.notifyItemRangeInserted(trailerData.size - videoResult.videos!!.size,videoResult.videos!!.size)
                     mTrailerProgressBar.visibility = View.GONE
@@ -397,19 +386,19 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
 
 
     private fun setOnClickListenersOnWikiImdnb(){
-        mWikipediaBtn.setOnClickListener(View.OnClickListener {
+        mWikipediaBtn.setOnClickListener({
 
             val dateArray = movie.title!!.split(" ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-            var processedTitle:String = ""
+            var processedTitle = ""
             for (i in 0 until dateArray.size){
-                if (i == dateArray.size-1){
-                    processedTitle+=dateArray[i].capitalize()
+                processedTitle += if (i == dateArray.size-1){
+                    dateArray[i].capitalize()
                 } else{
-                    processedTitle+=dateArray[i].capitalize()+"_"
+                    dateArray[i].capitalize()+"_"
                 }
             }
 
-            val wikiIntent: Intent = Intent(Intent.ACTION_VIEW,Uri.parse(buildWikiUrl(processedTitle)))
+            val wikiIntent = Intent(Intent.ACTION_VIEW,Uri.parse(buildWikiUrl(processedTitle)))
 
             val title = "Select a browser"
             // Create intent to show the chooser dialog
@@ -421,8 +410,8 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
             }
 
         })
-        mImdbBtn.setOnClickListener(View.OnClickListener {
-                val imdbIntent: Intent = Intent(Intent.ACTION_VIEW,Uri.parse(buildImdbUrl(movieDetail.imdbId)))
+        mImdbBtn.setOnClickListener({
+                val imdbIntent = Intent(Intent.ACTION_VIEW,Uri.parse(buildImdbUrl(movieDetail.imdbId)))
                 val title = "Select a browser"
                 // Create intent to show the chooser dialog
                 val chooser = Intent.createChooser(imdbIntent, title)
@@ -434,6 +423,7 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
             })
 
     }
+    @SuppressLint("InflateParams")
     private fun showReviewReadMoreBottomSheet(review: MovieReview){
         val view = layoutInflater.inflate(R.layout.review_read_more_bottom_sheet_layout, null)
         mReviewReadMoreBottomSheet = BottomSheetDialog(this)
@@ -443,9 +433,9 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
         mReviewReadMoreContent = mReviewReadMoreBottomSheet.findViewById(R.id.review_read_more_content)!!
         mReviewReadMoreContent.movementMethod = ScrollingMovementMethod()
 
-        mReviewReadMoreAuthor.setText(review.author)
-        mReviewReadMoreContent.setText(review.content)
-        mReviewReadMoreContent.setMovementMethod(LinkMovementMethod.getInstance());
+        mReviewReadMoreAuthor.text = review.author
+        mReviewReadMoreContent.text = review.content
+        mReviewReadMoreContent.movementMethod = LinkMovementMethod.getInstance()
 
         mReviewReadMoreBottomSheet.setCancelable(false)
         mReviewReadMoreBottomSheet.setCanceledOnTouchOutside(true)
@@ -507,10 +497,6 @@ class DetailActivity : AppCompatActivity(), OnReviewReadMoreClickListener, OnVid
     }
 
 
-    override fun onResume() {
-        super.onResume()
-        isMovieFavourite()
-    }
     override fun onDestroy() {
         super.onDestroy()
         PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this)

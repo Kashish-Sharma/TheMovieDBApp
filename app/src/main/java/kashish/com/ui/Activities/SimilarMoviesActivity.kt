@@ -1,5 +1,6 @@
 package kashish.com.ui.Activities
 
+import android.arch.lifecycle.LiveData
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.res.Configuration
@@ -98,6 +99,7 @@ class SimilarMoviesActivity : AppCompatActivity(), OnMovieClickListener, SharedP
         setRecyclerViewScrollListener()
         setSwipeRefreshLayoutListener()
         setFavouriteOnClickListener()
+        isMovieFavourite()
 
     }
 
@@ -217,14 +219,17 @@ class SimilarMoviesActivity : AppCompatActivity(), OnMovieClickListener, SharedP
 
         mToolbarMovieTitle.setText(movie.title)
 
-        //Checking if already added to favourite
-        AppExecutors.getInstance().diskIO().execute(Runnable {
-            val isCheck = mDatabase.favouritesDao().checkIfFavourite(movie.id!!)
-            runOnUiThread(Runnable {
-                mAddToFavourite.isChecked = isCheck
-            })
-        })
+    }
 
+    private fun isMovieFavourite(){
+        //Checking if already added to favourite
+        val entry: LiveData<MutableList<FavouritesEntry>> = mDatabase.favouritesDao().checkIfFavourite(movie.id!!)
+        entry.observe(this, android.arch.lifecycle.Observer {
+            when {
+                it!!.size == 0 -> mAddToFavourite.isChecked = false
+                else -> mAddToFavourite.isChecked = true
+            }
+        })
     }
 
     private fun addProgressBarInList() {
