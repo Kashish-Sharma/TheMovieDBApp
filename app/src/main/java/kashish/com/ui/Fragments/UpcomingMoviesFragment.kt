@@ -127,7 +127,7 @@ class UpcomingMoviesFragment : Fragment(), OnMovieClickListener, SharedPreferenc
             }
             region = set.toString().replace(" ","").replace("[","").replace("]","").replace(",","|")
         } else{
-            region = ""
+            region = "US"
         }
     }
 
@@ -143,7 +143,10 @@ class UpcomingMoviesFragment : Fragment(), OnMovieClickListener, SharedPreferenc
     }
 
     private fun getUpcomingData(region: String){
-        viewModel.getUpcoming(region)
+        if (region.isEmpty())
+            viewModel.getUpcoming("US")
+        else
+            viewModel.getUpcoming(region)
         mMovieAdapter.submitList(null)
         mSwipeRefreshLayout.isRefreshing = false
     }
@@ -222,7 +225,7 @@ class UpcomingMoviesFragment : Fragment(), OnMovieClickListener, SharedPreferenc
                 }
                 region = set.toString().replace(" ","").replace("[","").replace("]","").replace(",","|")
             } else{
-                region = ""
+                region = "US"
             }
             refreshTable()
         }

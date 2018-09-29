@@ -125,7 +125,7 @@ class PopularMoviesFragment : Fragment(), OnMovieClickListener, SharedPreference
 
             region = set.toString().replace(" ","").replace("[","").replace("]","").replace(",","|")
         } else{
-            region = ""
+            region = "US"
         }
     }
 
@@ -151,7 +151,12 @@ class PopularMoviesFragment : Fragment(), OnMovieClickListener, SharedPreference
     }
 
     private fun getPopularData(region: String){
-        viewModel.getPopular(region)
+
+        if (region.isEmpty())
+            viewModel.getPopular("US")
+        else
+            viewModel.getPopular(region)
+
         mMovieAdapter.submitList(null)
         mSwipeRefreshLayout.isRefreshing = false
     }
@@ -191,7 +196,7 @@ class PopularMoviesFragment : Fragment(), OnMovieClickListener, SharedPreference
                 }
                 region = set.toString().replace(" ","").replace("[","").replace("]","").replace(",","|")
             } else{
-                region = ""
+                region = "US"
             }
             refreshTable()
         }
