@@ -2,7 +2,7 @@ package kashish.com.ViewModelFactory
 
 import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider
-import kashish.com.data.PopularRepository
+import kashish.com.repositories.PopularRepository
 import kashish.com.viewmodels.PopularViewModel
 
 /**

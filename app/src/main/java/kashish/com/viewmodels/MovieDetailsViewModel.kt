@@ -2,9 +2,7 @@ package kashish.com.viewmodels
 
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.ViewModel
-import kashish.com.data.MovieDetailsRepository
-import kashish.com.models.Cast
-import kashish.com.models.Crew
+import kashish.com.repositories.MovieDetailsRepository
 import kashish.com.models.MovieDetail
 import kashish.com.requestmodels.MovieCreditRequest
 import kashish.com.requestmodels.MovieReviewsRequest

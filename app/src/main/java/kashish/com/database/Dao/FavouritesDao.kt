@@ -16,7 +16,7 @@ import kashish.com.database.Entities.FavouritesEntry
     fun loadAllFavourites(): LiveData<MutableList<FavouritesEntry>>
 
     @Query("SELECT * FROM favourites WHERE movieId = :id ORDER BY timeAdded")
-    fun checkIfFavourite(id: Int):Boolean
+    fun checkIfFavourite(id: Int):LiveData<MutableList<FavouritesEntry>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertFavourite(favouritesEntry: FavouritesEntry)

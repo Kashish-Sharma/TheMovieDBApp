@@ -4,8 +4,6 @@ import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.paging.PagedList
 import android.util.Log
-import kashish.com.database.AppExecutors
-import kashish.com.database.Dao.NowShowingDao
 import kashish.com.database.Entities.NowShowingEntry
 import kashish.com.database.LocalCache.NowShowingLocalCache
 import kashish.com.network.NetworkService
@@ -20,10 +18,6 @@ class NowShowingBoundaryCallbacks(
         private val region: String,
         private val service: NetworkService,
         private val cache: NowShowingLocalCache) : PagedList.BoundaryCallback<NowShowingEntry>() {
-
-    companion object {
-        private const val NETWORK_PAGE_SIZE = 50
-    }
 
     // keep the last requested page. When the request is successful, increment the page number.
 

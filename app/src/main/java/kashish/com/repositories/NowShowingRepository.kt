@@ -1,16 +1,10 @@
-package kashish.com.data
+package kashish.com.repositories
 
-import android.arch.lifecycle.MutableLiveData
 import android.arch.paging.LivePagedListBuilder
-import android.util.Log
 import kashish.com.boundaryCallbacks.NowShowingBoundaryCallbacks
 import kashish.com.database.DatabaseResults.NowShowingResults
-import kashish.com.database.Entities.NowShowingEntry
 import kashish.com.database.LocalCache.NowShowingLocalCache
 import kashish.com.network.NetworkService
-import kashish.com.network.getNowShowingMovies
-import kashish.com.utils.Constants
-import java.util.*
 
 /**
  * Created by Kashish on 14-08-2018.

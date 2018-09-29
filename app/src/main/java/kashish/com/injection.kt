@@ -3,7 +3,7 @@ package kashish.com
 import android.arch.lifecycle.ViewModelProvider
 import android.content.Context
 import kashish.com.ViewModelFactory.*
-import kashish.com.data.*
+import kashish.com.repositories.*
 import kashish.com.database.AppDatabase
 import kashish.com.database.LocalCache.*
 import kashish.com.network.NetworkService
