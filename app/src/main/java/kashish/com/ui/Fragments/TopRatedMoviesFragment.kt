@@ -128,7 +128,7 @@ class TopRatedMoviesFragment : Fragment(), OnMovieClickListener, SharedPreferenc
             }
             region = set.toString().replace(" ","").replace("[","").replace("]","").replace(",","|")
         } else{
-            region = ""
+            region = "US"
         }
     }
 
@@ -144,7 +144,10 @@ class TopRatedMoviesFragment : Fragment(), OnMovieClickListener, SharedPreferenc
     }
 
     private fun getTopRatedData(region: String){
-        viewModel.getTopRated(region)
+        if (region.isEmpty())
+            viewModel.getTopRated("US")
+        else
+            viewModel.getTopRated(region)
         mMovieAdapter.submitList(null)
         mSwipeRefreshLayout.isRefreshing = false
     }
@@ -194,7 +197,7 @@ class TopRatedMoviesFragment : Fragment(), OnMovieClickListener, SharedPreferenc
                 }
                 region = set.toString().replace(" ","").replace("[","").replace("]","").replace(",","|")
             } else{
-                region = ""
+                region = "US"
             }
             refreshTable()
         }

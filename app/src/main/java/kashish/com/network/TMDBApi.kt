@@ -117,7 +117,7 @@ fun getSearchMovies( service: NetworkService,
 fun getNowShowingMovies( service: NetworkService,
                          language: String = "en-US",
                          page: Int,
-                         region: String = "US|IN|UK",
+                         region: String = "US",
                          onSuccess: (movierequest: MovieRequest) -> Unit,
                          onError: (error: String) -> Unit){
 
@@ -150,7 +150,7 @@ fun getNowShowingMovies( service: NetworkService,
 fun getUpcomingMovies( service: NetworkService,
                          language: String = "en-US",
                          page: Int,
-                         region: String = "US|IN|UK",
+                         region: String = "US",
                          onSuccess: (movierequest: MovieRequest) -> Unit,
                          onError: (error: String) -> Unit){
 
@@ -182,7 +182,7 @@ fun getUpcomingMovies( service: NetworkService,
 fun getTopRatedMovies( service: NetworkService,
                          language: String = "en-US",
                          page: Int,
-                         region: String = "US|IN|UK",
+                         region: String = "US",
                          onSuccess: (movierequest: MovieRequest) -> Unit,
                          onError: (error: String) -> Unit){
 
@@ -214,7 +214,7 @@ fun getTopRatedMovies( service: NetworkService,
 fun getPopularMovies( service: NetworkService,
                        language: String = "en-US",
                        page: Int,
-                       region: String = "US|IN|UK",
+                       region: String = "US",
                        onSuccess: (movierequest: MovieRequest) -> Unit,
                        onError: (error: String) -> Unit){
 

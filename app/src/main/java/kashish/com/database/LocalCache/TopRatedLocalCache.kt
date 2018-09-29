@@ -24,7 +24,6 @@ class TopRatedLocalCache(
      */
     fun insert(repos: List<TopRatedEntry>, insertFinished: ()-> Unit) {
         ioExecutor.execute {
-            Log.d("GithubLocalCache", "inserting ${repos.size} repos")
             topRatedDao.insert(repos)
             insertFinished()
         }

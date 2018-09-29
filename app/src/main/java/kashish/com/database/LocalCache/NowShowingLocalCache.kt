@@ -23,7 +23,6 @@ class NowShowingLocalCache(
      */
     fun insert(repos: List<NowShowingEntry>, insertFinished: ()-> Unit) {
         ioExecutor.execute {
-            Log.d("GithubLocalCache", "inserting ${repos.size} repos")
             nowShowingDao.insert(repos)
             insertFinished()
         }
