@@ -2,7 +2,7 @@ package kashish.com.ViewModelFactory
 
 import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider
-import kashish.com.data.UpcomingRepository
+import kashish.com.repositories.UpcomingRepository
 import kashish.com.viewmodels.UpcomingViewModel
 
 /**

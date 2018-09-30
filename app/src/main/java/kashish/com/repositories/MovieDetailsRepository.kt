@@ -1,16 +1,13 @@
-package kashish.com.data
+package kashish.com.repositories
 
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.util.Log
-import kashish.com.models.Cast
 import kashish.com.models.MovieDetail
-import kashish.com.models.MovieReview
 import kashish.com.network.NetworkService
 import kashish.com.requestmodels.MovieCreditRequest
 import kashish.com.requestmodels.MovieReviewsRequest
 import kashish.com.utils.Urls.Companion.TMDB_API_KEY
-import kashish.com.viewmodels.MovieDetailsViewModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

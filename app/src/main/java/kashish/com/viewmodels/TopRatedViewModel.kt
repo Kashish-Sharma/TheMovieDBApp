@@ -5,7 +5,7 @@ import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.Transformations
 import android.arch.lifecycle.ViewModel
 import android.arch.paging.PagedList
-import kashish.com.data.TopRatedRepository
+import kashish.com.repositories.TopRatedRepository
 import kashish.com.database.DatabaseResults.TopRatedResults
 import kashish.com.database.Entities.TopRatedEntry
 

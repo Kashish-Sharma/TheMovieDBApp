@@ -5,7 +5,7 @@ import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.Transformations
 import android.arch.lifecycle.ViewModel
 import android.arch.paging.PagedList
-import kashish.com.data.PopularRepository
+import kashish.com.repositories.PopularRepository
 import kashish.com.database.DatabaseResults.PopularResults
 import kashish.com.database.Entities.PopularEntry
 
