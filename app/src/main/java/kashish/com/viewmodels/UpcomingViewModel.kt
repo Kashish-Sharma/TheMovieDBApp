@@ -5,7 +5,7 @@ import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.Transformations
 import android.arch.lifecycle.ViewModel
 import android.arch.paging.PagedList
-import kashish.com.data.UpcomingRepository
+import kashish.com.repositories.UpcomingRepository
 import kashish.com.database.DatabaseResults.UpcomingResults
 import kashish.com.database.Entities.UpcomingEntry
 
