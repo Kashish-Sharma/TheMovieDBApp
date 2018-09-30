@@ -7,7 +7,7 @@ import kashish.com.models.MovieDetail
 import kashish.com.network.NetworkService
 import kashish.com.requestmodels.MovieCreditRequest
 import kashish.com.requestmodels.MovieReviewsRequest
-import kashish.com.utils.Urls.Companion.TMDB_API_KEY
+import kashish.com.API_KEY.Companion.TMDB_API_KEY
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
