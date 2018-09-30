@@ -20,7 +20,6 @@ class SearchLocalCache(
      */
     fun insert(repos: List<SearchEntry>, insertFinished: ()-> Unit) {
         ioExecutor.execute {
-            Log.d("GithubLocalCache", "inserting ${repos.size} repos")
             searchDao.insert(repos)
             insertFinished()
         }

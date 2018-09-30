@@ -134,7 +134,7 @@ class NowShowingMoviesFragment : Fragment(), OnMovieClickListener, SharedPrefere
             }
             region = set.toString().replace(" ","").replace("[","").replace("]","").replace(",","|")
         } else{
-            region = ""
+            region = "US"
         }
     }
 
@@ -160,7 +160,12 @@ class NowShowingMoviesFragment : Fragment(), OnMovieClickListener, SharedPrefere
     }
 
     private fun getNowShowingData(region: String){
-        viewModel.getNowShowing(region)
+
+        if (region.isEmpty())
+            viewModel.getNowShowing("US")
+        else
+            viewModel.getNowShowing(region)
+
         mMovieAdapter.submitList(null)
         mSwipeRefreshLayout.isRefreshing = false
     }
@@ -230,7 +235,7 @@ class NowShowingMoviesFragment : Fragment(), OnMovieClickListener, SharedPrefere
                         .replace("[","").replace("]","")
                         .replace(",","|")
             } else{
-                region = ""
+                region = "US"
             }
             refreshTable()
         }
