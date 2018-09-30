@@ -24,28 +24,19 @@ import android.widget.Toast
 import kashish.com.Injection
 
 import kashish.com.R
-import kashish.com.adapters.MovieAdapter
 import kashish.com.adapters.NowShowingAdapter
 import kashish.com.database.AppDatabase
-import kashish.com.database.AppExecutors
 import kashish.com.database.Entities.NowShowingEntry
 import kashish.com.interfaces.OnMovieClickListener
 import kashish.com.models.Movie
-import kashish.com.requestmodels.MovieRequest
 import kashish.com.network.NetworkService
 import kashish.com.ui.Activities.DetailActivity
 import kashish.com.utils.Constants
-import kashish.com.utils.Constants.Companion.CONTENT_MOVIE
-import kashish.com.utils.Constants.Companion.CONTENT_PROGRESS
 import kashish.com.utils.Constants.Companion.NOWSHOWING
-import kashish.com.utils.Helpers
-import kashish.com.utils.Urls.Companion.TMDB_API_KEY
 import kashish.com.viewmodels.NowShowingViewModel
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.runBlocking
-import retrofit2.Call
-import retrofit2.Callback
 
 
 /**

@@ -1,14 +1,12 @@
 package kashish.com.network
 
 import android.util.Log
-import kashish.com.database.DatabaseResults.SearchResults
-import kashish.com.database.Entities.SearchEntry
 import kashish.com.models.MovieDetail
 import kashish.com.requestmodels.MovieCreditRequest
 import kashish.com.requestmodels.MovieRequest
 import kashish.com.requestmodels.MovieReviewsRequest
 import kashish.com.requestmodels.MovieVideosRequest
-import kashish.com.utils.Urls
+import kashish.com.API_KEY.Companion.TMDB_API_KEY
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -89,7 +87,7 @@ fun getSearchMovies( service: NetworkService,
 
     Log.i("SearchInfo", query + " is the API")
 
-    service.tmdbApi.getSearchMovies(Urls.TMDB_API_KEY, "en-US",
+    service.tmdbApi.getSearchMovies(TMDB_API_KEY, "en-US",
             query, page,"false","US|IN|UK",
             "2|3").enqueue(
             object : Callback<MovieRequest> {
@@ -121,7 +119,7 @@ fun getNowShowingMovies( service: NetworkService,
                          onSuccess: (movierequest: MovieRequest) -> Unit,
                          onError: (error: String) -> Unit){
 
-    service.tmdbApi.getNowShowingMovies(Urls.TMDB_API_KEY,language,
+    service.tmdbApi.getNowShowingMovies(TMDB_API_KEY,language,
             page,region,"2|3").enqueue(
             object : Callback<MovieRequest> {
                 override fun onFailure(call: Call<MovieRequest>?, t: Throwable) {
@@ -154,7 +152,7 @@ fun getUpcomingMovies( service: NetworkService,
                          onSuccess: (movierequest: MovieRequest) -> Unit,
                          onError: (error: String) -> Unit){
 
-    service.tmdbApi.getUpcomingMovies(Urls.TMDB_API_KEY,language,
+    service.tmdbApi.getUpcomingMovies(TMDB_API_KEY,language,
             page,region,"2|3").enqueue(
             object : Callback<MovieRequest> {
                 override fun onFailure(call: Call<MovieRequest>?, t: Throwable) {
@@ -186,7 +184,7 @@ fun getTopRatedMovies( service: NetworkService,
                          onSuccess: (movierequest: MovieRequest) -> Unit,
                          onError: (error: String) -> Unit){
 
-    service.tmdbApi.getTopRatedMovies(Urls.TMDB_API_KEY,language,
+    service.tmdbApi.getTopRatedMovies(TMDB_API_KEY,language,
             page,region,"2|3").enqueue(
             object : Callback<MovieRequest> {
                 override fun onFailure(call: Call<MovieRequest>?, t: Throwable) {
@@ -218,7 +216,7 @@ fun getPopularMovies( service: NetworkService,
                        onSuccess: (movierequest: MovieRequest) -> Unit,
                        onError: (error: String) -> Unit){
 
-    service.tmdbApi.getPopularMovies(Urls.TMDB_API_KEY,language,
+    service.tmdbApi.getPopularMovies(TMDB_API_KEY,language,
             page,region,"2|3").enqueue(
             object : Callback<MovieRequest> {
                 override fun onFailure(call: Call<MovieRequest>?, t: Throwable) {
@@ -250,7 +248,7 @@ fun getRecommendedMovies( service: NetworkService,
                       onSuccess: (movierequest: MovieRequest) -> Unit,
                       onError: (error: String) -> Unit){
 
-    service.tmdbApi.getRecommendedMovies(movieId,Urls.TMDB_API_KEY,language,page).
+    service.tmdbApi.getRecommendedMovies(movieId,TMDB_API_KEY,language,page).
             enqueue( object : Callback<MovieRequest> {
                 override fun onFailure(call: Call<MovieRequest>?, t: Throwable) {
                     Log.d(TAG, "fail to get data")

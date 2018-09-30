@@ -1,25 +1,13 @@
 package kashish.com.utils
 
-import android.animation.AnimatorSet
-import android.animation.ObjectAnimator
-import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Build
-import android.view.MotionEvent
 import android.view.View
 import android.view.Window
 import kashish.com.utils.DateUtils.Companion.getDateFromEpoch
 import kashish.com.utils.Urls.Companion.MOVIE_DETAILS_BASE_URL
-import kashish.com.utils.Urls.Companion.TMDB_API_KEY
-import java.text.ParseException
-import java.text.SimpleDateFormat
-import android.R.id.edit
-import android.content.SharedPreferences
-import android.content.Context.MODE_PRIVATE
-import android.app.Activity
-import android.content.Context
-import android.content.Context.MODE_PRIVATE
 import android.view.WindowManager
+import kashish.com.API_KEY.Companion.TMDB_API_KEY
 import kashish.com.utils.DateUtils.Companion.getYear
 import java.util.*
 

@@ -10,7 +10,6 @@ import android.os.Handler
 import android.preference.PreferenceManager
 import android.support.design.widget.AppBarLayout
 import android.support.design.widget.CollapsingToolbarLayout
-import android.support.v4.content.ContextCompat
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.app.ActionBar
 import android.support.v7.widget.GridLayoutManager
@@ -33,9 +32,8 @@ import kashish.com.database.AppExecutors
 import kashish.com.database.Entities.FavouritesEntry
 import kashish.com.requestmodels.MovieRequest
 import kashish.com.network.NetworkService
-import kashish.com.utils.DateUtils
+import kashish.com.API_KEY.Companion.TMDB_API_KEY
 import kashish.com.utils.Helpers
-import kashish.com.utils.Urls
 import retrofit2.Call
 import retrofit2.Callback
 import java.util.*
@@ -121,7 +119,7 @@ class SimilarMoviesActivity : AppCompatActivity(), OnMovieClickListener, SharedP
     }
 
     private fun fetchSimilarMovie(){
-        val call: Call<MovieRequest> = networkService.tmdbApi.getRecommendedMovies(movie.id.toString(),Urls.TMDB_API_KEY
+        val call: Call<MovieRequest> = networkService.tmdbApi.getRecommendedMovies(movie.id.toString(),TMDB_API_KEY
                 ,"en-US",pageNumber)
 
         call.enqueue(object : Callback<MovieRequest> {
