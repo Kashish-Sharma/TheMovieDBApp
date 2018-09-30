@@ -24,7 +24,6 @@ class PopularLocalCache(
      */
     fun insert(repos: List<PopularEntry>, insertFinished: ()-> Unit) {
         ioExecutor.execute {
-            Log.d("GithubLocalCache", "inserting ${repos.size} repos")
             popularDao.insert(repos)
             insertFinished()
         }

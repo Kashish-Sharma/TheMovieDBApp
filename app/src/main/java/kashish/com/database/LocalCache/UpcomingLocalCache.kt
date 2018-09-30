@@ -23,7 +23,6 @@ class UpcomingLocalCache(
      */
     fun insert(repos: List<UpcomingEntry>, insertFinished: ()-> Unit) {
         ioExecutor.execute {
-            Log.d("GithubLocalCache", "inserting ${repos.size} repos")
             upcomingDao.insert(repos)
             insertFinished()
         }
