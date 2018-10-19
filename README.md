@@ -3,7 +3,7 @@ Before you continue
 ------
 * The App is still under development so this may contain some errors.<br>
 * Generate your own TheMovieDb api [key](https://developers.themoviedb.org/3/getting-started/introduction) <br>
-* Create a class named **API_KEY.kt** in **app\src\main\java\kashish\com**
+* Create a class named **API_KEY.kt** in [app\src\main\java\kashish\com](https://github.com/Kashish-Sharma/TheMovieDBApp/tree/master/app/src/main/java/kashish/com)
 * Copy and paste following code with your API KEY :
   ```kotlin
   class API_KEY{
