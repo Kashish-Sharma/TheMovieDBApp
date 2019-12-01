@@ -1,5 +1,7 @@
-<a href='https://play.google.com/store/apps/details?id=com.cinopsys.movieshows&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://github.com/Kashish-Sharma/TheMovieDBApp/blob/master/google-play-badge-small.png' height="100" width="250" /></a><br>
-Google Play and the Google Play logo are trademarks of Google LLC.
+<a href="https://www.producthunt.com/posts/cinopsys?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-cinopsys" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=176299&theme=light" alt="Cinopsys - Movie & TV Show Manager | Product Hunt Embed" style="width: 250px; height: 54px;" width="250px" height="54px" /></a>
+
+<a href='https://play.google.com/store/apps/details?id=com.cinopsys.movieshows&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://github.com/Kashish-Sharma/TheMovieDBApp/blob/master/google-play-badge-small.png' height="100" width="250" /></a>
+##### Google Play and the Google Play logo are trademarks of Google LLC.
 
 # TheMovieDBApp 
 Before you continue
