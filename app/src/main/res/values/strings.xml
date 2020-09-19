@@ -40,6 +40,7 @@
     <string name="search_hint">Search a movie</string>
 
     <string name="no_results">No results 😓</string>
+    <string name="no_favorites">No favorites</string>
 
     <string name="pref_region_label">Choose regions</string>
     <string name="pref_region_label_all">All</string>

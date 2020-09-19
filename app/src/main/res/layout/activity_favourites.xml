@@ -21,7 +21,17 @@
             android:layout_below="@+id/activity_favourites_toolbar"
             android:id="@+id/activity_favourites_movies_recycler_view"
             android:layout_width="match_parent"
+            tools:listitem="@layout/movie_single_item"
             android:layout_height="match_parent">
         </android.support.v7.widget.RecyclerView>
+
+    <TextView
+        android:id="@+id/empty_tv"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="@string/no_favorites"
+        android:textSize="20sp" />
 
 </RelativeLayout>

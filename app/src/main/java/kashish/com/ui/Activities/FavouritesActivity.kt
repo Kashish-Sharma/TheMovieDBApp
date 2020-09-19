@@ -28,7 +28,10 @@ import kashish.com.utils.Constants.Companion.CONTENT_MOVIE
 import kashish.com.viewmodels.FavouritesViewModel
 import kashish.com.database.AppExecutors
 import android.support.v7.widget.helper.ItemTouchHelper
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import kashish.com.database.AppDatabase
+import kotlinx.android.synthetic.main.activity_favourites.*
 
 
 class FavouritesActivity : AppCompatActivity(), OnMovieClickListener, SharedPreferences.OnSharedPreferenceChangeListener  {
@@ -88,10 +91,9 @@ class FavouritesActivity : AppCompatActivity(), OnMovieClickListener, SharedPref
 
     private fun fetchFavouriteMovie(){
 
-        favouriteviewModel.getMovies().observe(this, object : Observer<MutableList<FavouritesEntry>>{
-            override fun onChanged(t: MutableList<FavouritesEntry>?) {
-                mFavouriteAdapter.submitList(t!!)
-            }
+        favouriteviewModel.getMovies().observe(this, Observer { t ->
+            empty_tv.visibility = if (t!!.isEmpty()) VISIBLE else GONE
+            mFavouriteAdapter.submitList(t)
         })
         Log.d("FavouritesViewModelTAG","Retreiving updates from livedata")
     }
