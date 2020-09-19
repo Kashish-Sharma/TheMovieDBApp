@@ -26,11 +26,11 @@ class MoviesActivity : AppCompatActivity(), SharedPreferences.OnSharedPreference
     private lateinit var mSharedPreferences: SharedPreferences
 
     //Fragments
-    internal lateinit var mUpcomingMoviesFragment   : UpcomingMoviesFragment
-    internal lateinit var mTopRatedMoviesFragment   : TopRatedMoviesFragment
-    internal lateinit var mPopularMoviesFragment    : PopularMoviesFragment
-    internal lateinit var mNowShowingMoviesFragment : NowShowingMoviesFragment
-    internal lateinit var mMovieViewPagerAdapter    : MovieViewPagerAdapter
+    private lateinit var mUpcomingMoviesFragment   : UpcomingMoviesFragment
+    private lateinit var mTopRatedMoviesFragment   : TopRatedMoviesFragment
+    private lateinit var mPopularMoviesFragment    : PopularMoviesFragment
+    private lateinit var mNowShowingMoviesFragment : NowShowingMoviesFragment
+    private lateinit var mMovieViewPagerAdapter    : MovieViewPagerAdapter
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,7 +54,7 @@ class MoviesActivity : AppCompatActivity(), SharedPreferences.OnSharedPreference
 
     override fun onBackPressed() {
         if (mViewPager.currentItem == 0) super.onBackPressed()
-        else mViewPager.setCurrentItem(mViewPager.currentItem-1)
+        else mViewPager.currentItem = mViewPager.currentItem - 1
     }
     private fun initViews(){
         mToolBar = findViewById(R.id.activity_movies_toolbar)
@@ -68,7 +68,7 @@ class MoviesActivity : AppCompatActivity(), SharedPreferences.OnSharedPreference
         setSupportActionBar(mToolBar)
     }
     private fun setupViewPager() {
-        mMovieViewPagerAdapter = MovieViewPagerAdapter(getSupportFragmentManager())
+        mMovieViewPagerAdapter = MovieViewPagerAdapter(supportFragmentManager)
         mUpcomingMoviesFragment = UpcomingMoviesFragment()
         mTopRatedMoviesFragment = TopRatedMoviesFragment()
         mPopularMoviesFragment = PopularMoviesFragment()
@@ -92,21 +92,10 @@ class MoviesActivity : AppCompatActivity(), SharedPreferences.OnSharedPreference
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when (item!!.itemId){
-            R.id.action_settings -> {
-                val settingsIntent: Intent = Intent(this,SettingsActivity::class.java)
-                startActivity(settingsIntent)
-            }
-
-            R.id.action_favourite -> {
-                val favouriteIntent: Intent = Intent(this,FavouritesActivity::class.java)
-                startActivity(favouriteIntent)
-            }
-
-            R.id.action_search -> {
-                val searchIntent: Intent = Intent(this,SearchActivity::class.java)
-                startActivity(searchIntent)
-            }
+        when (item?.itemId) {
+            R.id.action_settings -> startActivity(Intent(this, SettingsActivity::class.java))
+            R.id.action_favourite -> startActivity(Intent(this, FavouritesActivity::class.java))
+            R.id.action_search -> startActivity(Intent(this, SearchActivity::class.java))
 
         }
         return super.onOptionsItemSelected(item)
